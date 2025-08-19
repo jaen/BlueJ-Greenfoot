@@ -9,17 +9,21 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
+import bluej.NonParallelisableTests;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import bluej.stride.framedjava.slots.Operator.Precedence;
 
+@Category(NonParallelisableTests.class)
 public class TestExpressionSlot
 {
     // Need to run tests on FX thread:

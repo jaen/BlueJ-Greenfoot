@@ -22,6 +22,7 @@
 package bluej.parser;
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.GenTypeClass;
 import bluej.debugger.gentype.MethodReflective;
 import bluej.extensions2.SourceType;
@@ -36,6 +37,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import java.text.ParseException;
 import java.util.Collections;
@@ -45,6 +48,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
+@Category(NonParallelisableTests.class)
 public class KotlinEditorParserTest
 {
     @Rule

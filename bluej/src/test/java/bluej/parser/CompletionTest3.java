@@ -22,6 +22,7 @@
 package bluej.parser;
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.Reflective;
 import bluej.parser.ParseUtility.StartEnd;
 import bluej.parser.entity.ClassLoaderResolver;
@@ -34,6 +35,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
@@ -50,6 +53,7 @@ import static org.junit.Assert.*;
 /**
  * Test for code completion, especially around local variables.
  */
+@Category(NonParallelisableTests.class)
 public class CompletionTest3
 {
     @Rule

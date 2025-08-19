@@ -22,6 +22,7 @@
 package bluej.editor.flow;
 
 import bluej.Config;
+import bluej.NonParallelisableTests;
 import bluej.editor.flow.gen.GenRandom;
 import bluej.editor.flow.gen.GenString;
 import bluej.parser.InitConfig;
@@ -42,6 +43,8 @@ import javafx.stage.Stage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitQuickcheck.class)
+@Category(NonParallelisableTests.class)
 public class TestBasicEditorInteraction extends FXTest
 {
     private Stage stage;
@@ -80,7 +84,7 @@ public class TestBasicEditorInteraction extends FXTest
         stage.setScene(new Scene(new BorderPane(flowEditor, new MenuBar(flowEditor.getFXMenu().toArray(Menu[]::new)), null, null, null)));
         stage.show();
     }
-    
+
     interface KeyboardMover
     {
         // Moves to new pos and returns expected position.  For convenience, current position and length are given
@@ -88,7 +92,7 @@ public class TestBasicEditorInteraction extends FXTest
         // The new pos is inherently determined, e.g. a keyboard mover for end-of-line will always move to the current end of line
         int move(int curPos, int curLen, AtomicInteger targetColumn);
     }
-    
+
     class NamedKeyboardMover
     {
         private final String name;
@@ -100,7 +104,7 @@ public class TestBasicEditorInteraction extends FXTest
             this.mover = mover;
         }
     }
-    
+
     @Property(trials = 5)
     public void testKeyboardMovement(@From(GenString.class) String rawContent, @From(GenRandom.class) Random r)
     {
@@ -175,7 +179,7 @@ public class TestBasicEditorInteraction extends FXTest
                 press(KeyCode.SHIFT);
                 curPos = mover.mover.move(curPos, content.length(), new AtomicInteger(-1));
                 release(KeyCode.SHIFT);
-            }            
+            }
             boolean deleteForward = r.nextBoolean();
             if (curPos == curAnchor)
             {
@@ -220,7 +224,7 @@ public class TestBasicEditorInteraction extends FXTest
                 curLineEnd = content.length();
             else
                 curLineEnd += 1; // Go past the newline
-            
+
             final String prevClip = "X" + r.nextInt();
             final String expected;
             if (curPos == curAnchor)
@@ -240,7 +244,7 @@ public class TestBasicEditorInteraction extends FXTest
             String line = content.substring(curLineStart, curLineEnd);
             // Line should have no \n (if last line) or only last char should be \n:
             MatcherAssert.assertThat(line.indexOf('\n'), Matchers.either(Matchers.equalTo(line.length() - 1)).or(Matchers.equalTo(-1)));
-            
+
             // Pick one of cut, copy, paste, delete, cut-line, cut-end-of-line, copy-line:
             int action = r.nextInt(7);
             switch (action)
@@ -350,13 +354,13 @@ public class TestBasicEditorInteraction extends FXTest
             }
         }
     }
-    
+
     @Property(trials = 3)
     public void testWordActions(@From(GenRandom.class) Random r)
     {
         List<String> words = List.of("java", "fooBar", "Kölling", "a", "63", "1_000", "a_B");
         List<String> nonWords = List.of(" ", "\n", "{", ".", "+", "    ");
-        
+
         // Make a random String with no two words directly adjacent:
         boolean lastWasWord = false;
         String content = "";
@@ -386,7 +390,7 @@ public class TestBasicEditorInteraction extends FXTest
                 lastWasWord = false;
             }
         }
-        
+
         setText(content);
         clickOn(flowEditorPane);
         fx_(() -> flowEditorPane.positionCaret(wordBoundaries.get(0)[0]));
@@ -425,8 +429,8 @@ public class TestBasicEditorInteraction extends FXTest
             assertEquals("Anchor word-left after " + prevPos + " shift: " + holdShift, expectedAnchor, fx(() -> flowEditorPane.getAnchorPosition()).intValue());
         }
     }
-    
-    private static final String BLOCK_TEST = 
+
+    private static final String BLOCK_TEST =
         "public class Foo\n" +
                 "{\n" +
                 "    // Field comment\n" +
@@ -459,7 +463,7 @@ public class TestBasicEditorInteraction extends FXTest
                 "        }\n" +
                 "    }\n" +
                 "}";
-    
+
     @Test
     public void testAutoIndent()
     {
@@ -490,7 +494,7 @@ public class TestBasicEditorInteraction extends FXTest
         setText(BLOCK_TEST);
         clickOn(flowEditorPane);
         int indexOfMethod = BLOCK_TEST.indexOf("public int method");
-        
+
         fx_(() -> {
             flowEditor.enableParser(true);
             flowEditor.getSourceDocument().flushReparseQueue();
@@ -505,9 +509,9 @@ public class TestBasicEditorInteraction extends FXTest
             "     * @param x A parameter\n" +
             "     * @param y A parameter\n" +
             "     * @return The return value\n" +
-            "     */\n" + 
+            "     */\n" +
             BLOCK_TEST.substring(indexOfMethod - 4);
-        
+
         assertEquals(expected, fx(() -> flowEditorPane.getDocument().getFullContent()));
     }
 
@@ -569,7 +573,7 @@ public class TestBasicEditorInteraction extends FXTest
             assertEquals(docLines.stream().collect(Collectors.joining("\n")), fx(() -> flowEditorPane.getDocument().getFullContent()));
 
 
-            
+
             fx_(() -> flowEditor.getActions().getActionByName(comment ? "comment-block" : "uncomment-block").actionPerformed(false));
             for (int line = startLine; line <= endLine; line++)
             {
@@ -638,7 +642,7 @@ public class TestBasicEditorInteraction extends FXTest
             }
             assertEquals((indent ? "Indented" : "Deindented") + " lines " + startLine + " to " + endLine + " inclusive", docLines.stream().collect(Collectors.joining("\n")), fx(() -> flowEditorPane.getDocument().getFullContent()));
         }
-        
+
         // Autoindent to restore:
         fx_(() -> {
             flowEditor.enableParser(true);
@@ -788,7 +792,7 @@ public class TestBasicEditorInteraction extends FXTest
                 int[] visibleRange = flowEditorPane.getLineRangeVisible();
                 int numLines = visibleRange[1] - visibleRange[0];
                 int curLine = document.getLineFromPosition(flowEditorPane.getCaretPosition());
-                
+
                 int curLineStart = document.getLineStart(curLine);
                 if (curLine <= numLines)
                     return 0;

@@ -31,6 +31,7 @@ import java.util.concurrent.Executor;
 
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.FieldReflective;
 import bluej.debugger.gentype.GenTypeClass;
 import bluej.debugger.gentype.GenTypeSolid;
@@ -51,9 +52,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.*;
 
+@Category(NonParallelisableTests.class)
 public class CompletionTest
 {
     @Rule

@@ -22,6 +22,7 @@
 package bluej.parser;
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.nodes.NodeTree;
 import bluej.parser.nodes.NodeTree.NodeAndPosition;
@@ -31,6 +32,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ import static org.junit.Assert.assertEquals;
  * Test switch expressions.  Many tests are borrowed from
  * https://docs.oracle.com/en/java/javase/13/language/switch-expressions.html
  */
+@Category(NonParallelisableTests.class)
 public class SwitchExpressionTest
 {
     @Rule

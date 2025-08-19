@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Properties;
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.PackageResolver;
@@ -39,6 +40,8 @@ import bluej.parser.symtab.ClassInfo;
 import bluej.parser.symtab.Selection;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.*;
 import static bluej.utility.ResourceFileReader.getResourceFile;
@@ -48,6 +51,7 @@ import static bluej.utility.ResourceFileReader.getResourceFile;
  *
  * @author  Andrew Patterson
  */
+@Category(NonParallelisableTests.class)
 public class BasicParseTest
 {
     @Rule

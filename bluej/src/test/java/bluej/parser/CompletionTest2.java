@@ -22,6 +22,7 @@
 package bluej.parser;
 
 import bluej.JavaFXThreadingRule;
+import bluej.NonParallelisableTests;
 import bluej.parser.ParseUtility.StartEnd;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.utility.Debug;
@@ -29,6 +30,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -43,6 +46,7 @@ import static org.junit.Assert.assertNull;
  * Test for code completion, especially around lambdas and
  * features from Java 11-17 inclusive.
  */
+@Category(NonParallelisableTests.class)
 public class CompletionTest2
 {
     @Rule

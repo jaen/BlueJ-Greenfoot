@@ -1,5 +1,6 @@
 package bluej.utility;
 
+import bluej.NonParallelisableTests;
 import bluej.utility.javafx.BetterVBox;
 import bluej.utility.javafx.HangingFlowPane;
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -25,8 +27,11 @@ import java.util.stream.Collectors;
 /**
  * Tests the HangingFlowPane class, specifically its layout algorithm.
  */
+@Category(NonParallelisableTests.class)
 public class TestHangingFlowPane
 {
+
+
     // Need to run tests on FX thread:
     @Rule
     public TestRule runOnFXThreadRule = new TestRule() {
