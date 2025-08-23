@@ -26,6 +26,8 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -61,8 +63,8 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        // Foundation phase: parselet validates but doesn't create nodes yet
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        // With NodeFactory, parselets now create nodes
+        assertNotNull("Should create an AST node for integer literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
         // canHandle method removed - parse behavior is sufficient validation
     }
@@ -74,7 +76,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for long literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -84,7 +86,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for float literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -94,7 +96,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for double literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -104,7 +106,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for string literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -114,7 +116,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for multiline string literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -124,7 +126,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for character literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -134,7 +136,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for boolean true literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -144,7 +146,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for boolean false literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -154,7 +156,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNotNull("Should create an AST node for null literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
     }
 
     @Test
@@ -198,7 +200,7 @@ public class LiteralParseletTest extends TestCase {
             ParsedNode result = parselet.parse(freshParser, token);
             assertNotNull("Should create AST nodes for valid literal tokens", result);
             assertFalse("Should not produce errors for valid literal tokens", freshParser.hasErrors());
-            assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
+            assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
             assertNotNull("Should provide description for token type " + tokenType,
                 parselet.getHandledConstruct(tokenType));
         }
@@ -245,8 +247,8 @@ public class LiteralParseletTest extends TestCase {
         assertNotNull("First parse should create an AST node", result1);
         assertNotNull("Second parse should create an AST node", result2);
         assertFalse("No errors should be reported", testParser.hasErrors());
-        assertEquals("First should be expression node", ParsedNode.NODETYPE_EXPRESSION, result1.getNodeType());
-        assertEquals("Second should be expression node", ParsedNode.NODETYPE_EXPRESSION, result2.getNodeType());
+        assertTrue("First should be a TestNode", result1 instanceof TestNodeFactory.TestNode);
+        assertTrue("Second should be a TestNode", result2 instanceof TestNodeFactory.TestNode);
     }
 
     /**
@@ -266,7 +268,7 @@ public class LiteralParseletTest extends TestCase {
         private String lastError = "";
 
         public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null);  // Use 2-parameter constructor that creates and initializes registry
+            super(new TestTokenOperations(), null, new TestNodeFactory());  // Use 3-parameter constructor with NodeFactory
         }
 
         @Override
@@ -275,13 +277,7 @@ public class LiteralParseletTest extends TestCase {
             lastError = message;
         }
 
-        @Override
-        public ParsedNode createLiteralNode(LocatableToken token) {
-            // Create a test ExpressionNode for testing
-            ExpressionNode node = new ExpressionNode(null);
-            node.setComplete(true, token.getPosition(), token.getEndPosition());
-            return node;
-        }
+        // NodeFactory handles node creation now, not the parser
 
         public boolean hasErrors() {
             return hasErrors;

@@ -25,6 +25,7 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.PrefixParselet;
 
@@ -105,13 +106,18 @@ public final class GroupParselet implements PrefixParselet {
             return null;
         }
 
-        // For the foundation phase, we validate the structure but don't create AST nodes yet
-        // The parentheses are purely syntactic - they don't create a separate AST node
-        // Full AST integration will be implemented in the legacy integration phase
+        // Create the grouped expression node using the NodeFactory
+        // This ensures thread-safe AST node creation
+        NodeFactory nodeFactory = parser.getNodeFactory();
+        if (nodeFactory == null) {
+            parser.error("NodeFactory not available for AST node creation", token);
+            return null;
+        }
 
-        // TODO: Return innerExpression directly when AST creation is enabled
-        // Parentheses don't create separate AST nodes - they just affect parsing precedence
-        return null;
+        // Return the grouped expression
+        // The factory may return the inner expression directly since
+        // parentheses are often purely syntactic and don't create separate AST nodes
+        return nodeFactory.createGroupNode(innerExpression);
     }
 
     /**

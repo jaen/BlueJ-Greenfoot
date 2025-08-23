@@ -53,7 +53,7 @@ public class SynchronizationTokenTest {
     @BeforeEach
     void setUp() {
         tokenOps = new TestTokenOperations();
-        parser = new KotlinPrattParser(tokenOps, null);
+        parser = new KotlinPrattParser(tokenOps, null, new TestNodeFactory());
     }
 
     @Test

@@ -55,7 +55,9 @@ public class KotlinPrattParserTest extends TestCase {
         JavaTokenFilter tokenStream = sourceParser.getTokenStream();
         // Create test token operations that directly delegate to tokenStream
         TokenOperations tokenOps = new TestTokenOperations(tokenStream);
-        return new KotlinPrattParser(tokenOps, sourceParser);
+        // Create test node factory for AST node creation
+        NodeFactory nodeFactory = new TestNodeFactory();
+        return new KotlinPrattParser(tokenOps, sourceParser, nodeFactory);
     }
 
     /**
@@ -69,7 +71,9 @@ public class KotlinPrattParserTest extends TestCase {
         SourceParser sourceParser = new SourceParser(new StringReader(source), SourceType.Kotlin);
         JavaTokenFilter tokenStream = sourceParser.getTokenStream();
         TokenOperations tokenOps = new TestTokenOperations(tokenStream);
-        return new KotlinPrattParser(tokenOps, sourceParser, registry);
+        // Create test node factory for AST node creation
+        NodeFactory nodeFactory = new TestNodeFactory();
+        return new KotlinPrattParser(tokenOps, sourceParser, nodeFactory, registry);
     }
 
     // ========== Parser Initialization Tests ==========
@@ -423,36 +427,5 @@ public class KotlinPrattParserTest extends TestCase {
         assertNotNull("Current token should be set after pushback", parser.getCurrentToken());
     }
 
-    /**
-     * Test implementation of TokenOperations for unit testing.
-     * This implementation directly delegates to JavaTokenFilter without
-     * threading constraints, suitable for test environments.
-     */
-    private static class TestTokenOperations implements TokenOperations {
-        private final JavaTokenFilter tokenStream;
 
-        TestTokenOperations(JavaTokenFilter tokenStream) {
-            this.tokenStream = tokenStream;
-        }
-
-        @Override
-        public LocatableToken nextToken() {
-            return tokenStream.nextToken();
-        }
-
-        @Override
-        public LocatableToken LA(int distance) {
-            return tokenStream.LA(distance);
-        }
-
-        @Override
-        public void pushBack(LocatableToken token) {
-            tokenStream.pushBack(token);
-        }
-
-        @Override
-        public LocatableToken getMostRecent() {
-            return tokenStream.getMostRecent();
-        }
-    }
 }

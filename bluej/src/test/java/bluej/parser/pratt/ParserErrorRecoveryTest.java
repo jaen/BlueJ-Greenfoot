@@ -54,7 +54,7 @@ public class ParserErrorRecoveryTest {
     void setUp() {
         // Create parser with test token operations for controlled testing
         tokenOps = new TestTokenOperations();
-        parser = new KotlinPrattParser(tokenOps, null);
+        parser = new KotlinPrattParser(tokenOps, null, new TestNodeFactory());
 
         // Set up basic parselets for testing
         ParseletRegistry registry = parser.getRegistry();

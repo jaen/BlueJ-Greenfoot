@@ -76,8 +76,8 @@ public class GroupParseletTest extends TestCase {
 
 
 
-        // Assert - Foundation phase returns null but should not generate errors
-        assertNull("Foundation phase should return null", result);
+        // Assert - With NodeFactory, parselets now create nodes
+        assertNotNull("Should create a node for parenthesized expression", result);
 
         assertTrue("All tokens should be consumed", tokenOps.getAllTokens().isEmpty());
         assertFalse("Should not have parsing errors", parser.hasErrors());
@@ -97,8 +97,8 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen1);
 
-        // Assert - Foundation phase should handle nested structure
-        assertNull("Foundation phase should return null", result);
+        // Assert - With NodeFactory, parselets now create nodes for nested structure
+        assertNotNull("Should create a node for nested parentheses", result);
         assertTrue("All tokens should be consumed", tokenOps.getAllTokens().isEmpty());
         assertFalse("Should not have parsing errors for nested parentheses", parser.hasErrors());
     }
@@ -115,8 +115,8 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen);
 
-        // Assert
-        assertNull("Foundation phase should return null", result);
+        // Assert - With NodeFactory, parselets now create nodes
+        assertNotNull("Should create a node for parenthesized string literal", result);
         assertFalse("Should not have parsing errors for string literal", parser.hasErrors());
     }
 
@@ -132,8 +132,8 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen);
 
-        // Assert
-        assertNull("Foundation phase should return null", result);
+        // Assert - With NodeFactory, parselets now create nodes
+        assertNotNull("Should create a node for parenthesized boolean literal", result);
         assertFalse("Should not have parsing errors for boolean literal", parser.hasErrors());
     }
 
@@ -187,7 +187,7 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen);
 
-        // Assert
+        // Assert - Empty parentheses should fail because parseExpression finds RPAREN
         assertNull(result);
         assertTrue("Should report error for empty parentheses", parser.hasErrors());
     }
@@ -290,8 +290,8 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen);
 
-        // Assert
-        assertNull("Foundation phase should return null", result);
+        // Assert - With NodeFactory, parselets now create nodes
+        assertNotNull("Should create a node for integrated parsing", result);
         assertFalse("Should integrate without errors", parser.hasErrors());
     }
 
@@ -306,10 +306,8 @@ public class GroupParseletTest extends TestCase {
         // Act
         boolean isValid = parselet.validateStructure(parser, lparen);
 
-        // Assert - During foundation phase, validation might return true even with null result
-        // The important thing is that it doesn't crash and handles the structure
-        // For now just verify it returns a boolean value
-        assertTrue("Validate structure should return true or false", isValid || !isValid);
+        // Assert - With NodeFactory, validation should succeed for valid structure
+        assertTrue("Should validate correct parenthesized structure", isValid);
     }
 
     @Test
@@ -338,8 +336,20 @@ public class GroupParseletTest extends TestCase {
         private String lastError = "";
 
         public TestKotlinPrattParser(TestTokenOperations tokenOps) {
-            super(tokenOps, null);  // Use 2-parameter constructor that creates and initializes registry
+            super(tokenOps, null, new bluej.parser.pratt.TestNodeFactory());  // Use 3-parameter constructor with NodeFactory
             this.tokenOps = tokenOps;
+
+            // Register parselets needed for testing
+            // Without these, parseExpression will fail when trying to parse literals
+            bluej.parser.pratt.parselets.LiteralParselet literalParselet = new bluej.parser.pratt.parselets.LiteralParselet();
+            getRegistry().register(JavaTokenTypes.NUM_INT, literalParselet);
+            getRegistry().register(JavaTokenTypes.STRING_LITERAL, literalParselet);
+            getRegistry().register(JavaTokenTypes.LITERAL_true, literalParselet);
+            getRegistry().register(JavaTokenTypes.LITERAL_false, literalParselet);
+            getRegistry().register(JavaTokenTypes.LITERAL_null, literalParselet);
+
+            // Also register GroupParselet for nested parentheses
+            getRegistry().register(JavaTokenTypes.LPAREN, new bluej.parser.pratt.parselets.GroupParselet());
         }
 
         @Override

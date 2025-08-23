@@ -67,15 +67,20 @@ public class KotlinPrattParser {
     /** List of errors encountered during parsing */
     private final List<ParseError> errors;
 
+    /** Factory for creating AST nodes with proper threading */
+    private final NodeFactory nodeFactory;
+
     /**
      * Creates a new KotlinPrattParser with the specified token operations and parent parser.
      *
      * @param tokenOps The token operations interface for accessing tokens
      * @param sourceParser The parent SourceParser for integration
+     * @param nodeFactory The factory for creating AST nodes
      */
-    public KotlinPrattParser(TokenOperations tokenOps, SourceParser sourceParser) {
+    public KotlinPrattParser(TokenOperations tokenOps, SourceParser sourceParser, NodeFactory nodeFactory) {
         this.tokenOps = tokenOps;
         this.sourceParser = sourceParser;
+        this.nodeFactory = nodeFactory;
         this.registry = new ParseletRegistry();
         this.errors = new ArrayList<>();
 
@@ -85,16 +90,18 @@ public class KotlinPrattParser {
 
     /**
      * Creates a new KotlinPrattParser with the specified token operations, parent parser,
-     * and custom parselet registry.
+     * node factory, and custom parselet registry.
      *
      * @param tokenOps The token operations interface for accessing tokens
      * @param sourceParser The parent SourceParser for integration
+     * @param nodeFactory The factory for creating AST nodes
      * @param registry Custom parselet registry to use
      */
     public KotlinPrattParser(TokenOperations tokenOps, SourceParser sourceParser,
-                           ParseletRegistry registry) {
+                           NodeFactory nodeFactory, ParseletRegistry registry) {
         this.tokenOps = tokenOps;
         this.sourceParser = sourceParser;
+        this.nodeFactory = nodeFactory;
         this.registry = registry;
         this.errors = new ArrayList<>();
     }
@@ -335,10 +342,19 @@ public class KotlinPrattParser {
     /**
      * Gets the parent SourceParser.
      *
-     * @return The parent SourceParser, may be null
+     * @return The parent SourceParser instance
      */
     public SourceParser getSourceParser() {
         return sourceParser;
+    }
+
+    /**
+     * Gets the NodeFactory for creating AST nodes.
+     *
+     * @return The NodeFactory instance
+     */
+    public NodeFactory getNodeFactory() {
+        return nodeFactory;
     }
 
     /**
@@ -819,11 +835,11 @@ public class KotlinPrattParser {
 
     /**
      * Creates a literal AST node for the given token.
-     * 
+     *
      * <p>This method creates an appropriate AST node to represent a literal value.
      * For now, it returns null as a placeholder while we're working on threading issues.
      * The actual node creation needs to happen on the appropriate thread.</p>
-     * 
+     *
      * @param token The literal token to create a node for
      * @return An ExpressionNode representing the literal (currently null for foundation)
      */

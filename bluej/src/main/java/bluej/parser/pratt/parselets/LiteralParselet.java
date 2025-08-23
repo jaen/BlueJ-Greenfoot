@@ -26,6 +26,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.PrefixParselet;
 
 /**
@@ -80,13 +81,17 @@ public final class LiteralParselet implements PrefixParselet {
             return null;
         }
 
-        // For the foundation phase, we validate the token but don't create AST nodes yet
-        // Full AST integration will be implemented in the legacy integration phase
-        // This allows testing the parselet registration and dispatch mechanism
+        // Create the literal node using the NodeFactory
+        // This ensures thread-safe AST node creation
+        NodeFactory nodeFactory = parser.getNodeFactory();
+        if (nodeFactory == null) {
+            parser.error("NodeFactory not available for AST node creation", token);
+            return null;
+        }
 
-        // TODO: Implement proper AST node creation through parser callbacks
-        // The threading adapter will handle node creation on the appropriate thread
-        return null;
+        // Create and return the literal node
+        // The factory handles all threading requirements
+        return nodeFactory.createLiteralNode(token);
     }
 
     /**

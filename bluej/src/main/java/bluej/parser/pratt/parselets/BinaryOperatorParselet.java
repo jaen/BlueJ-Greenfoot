@@ -26,6 +26,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.Precedence;
 
 /**
@@ -126,10 +127,17 @@ public final class BinaryOperatorParselet implements InfixParselet {
             return null;
         }
 
-        // Foundation phase: validate the structure but don't create AST nodes yet
-        // Full binary expression node creation will be implemented in the legacy integration phase
-        // TODO: Create proper BinaryExpressionNode through parser callbacks
-        return null;
+        // Create the binary operator node using the NodeFactory
+        // This ensures thread-safe AST node creation
+        NodeFactory nodeFactory = parser.getNodeFactory();
+        if (nodeFactory == null) {
+            parser.error("NodeFactory not available for AST node creation", operator);
+            return null;
+        }
+
+        // Create and return the binary operator node
+        // The factory handles all threading requirements
+        return nodeFactory.createBinaryOperatorNode(left, operator, right);
     }
 
     /**
