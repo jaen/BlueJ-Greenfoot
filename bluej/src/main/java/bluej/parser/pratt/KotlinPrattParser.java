@@ -485,7 +485,8 @@ public class KotlinPrattParser {
      * Synchronizes the parser to a stable state after an error.
      *
      * <p>This method consumes tokens until it finds a suitable synchronization
-     * point, such as a semicolon, closing brace, or other statement terminator.</p>
+     * point, such as a semicolon, closing brace, or other statement terminator.
+     * This enhanced version includes common Kotlin synchronization patterns.</p>
      *
      * @param synchronizationTokens Token types to synchronize on
      * @return The synchronization token found, or null if EOF reached
@@ -497,10 +498,17 @@ public class KotlinPrattParser {
                 return null;
             }
 
+            // Check explicit synchronization tokens first
             for (int syncToken : synchronizationTokens) {
                 if (token.getType() == syncToken) {
                     return consume();
                 }
+            }
+
+            // Check common recovery points that are generally safe
+            int tokenType = token.getType();
+            if (isCommonSyncPoint(tokenType)) {
+                return consume();
             }
 
             consume(); // Skip the current token
@@ -508,23 +516,183 @@ public class KotlinPrattParser {
     }
 
     /**
+     * Initializes the parser to start reading from the token stream.
+     * This method is primarily used for testing to set up the parser state
+     * after configuring the token operations.
+     */
+    public void initializeWithTokenStream() {
+        // Initialize current token by peeking at the first token
+        // This sets up the parser to be in a consistent state for parsing
+        currentToken = tokenOps.LA(1);
+    }
+
+    /**
+     * Checks if a token type is a common synchronization point.
+     * These are tokens where we can safely resume parsing after an error.
+     */
+    private boolean isCommonSyncPoint(int tokenType) {
+        return tokenType == JavaTokenTypes.SEMI ||
+               tokenType == JavaTokenTypes.RCURLY ||
+               tokenType == JavaTokenTypes.LITERAL_class ||
+               tokenType == JavaTokenTypes.LITERAL_interface ||
+               tokenType == JavaTokenTypes.LITERAL_fun ||
+               tokenType == JavaTokenTypes.LITERAL_val ||
+               tokenType == JavaTokenTypes.LITERAL_var ||
+               tokenType == JavaTokenTypes.LITERAL_if ||
+               tokenType == JavaTokenTypes.LITERAL_while ||
+               tokenType == JavaTokenTypes.LITERAL_for ||
+               tokenType == JavaTokenTypes.LITERAL_return;
+    }
+
+    /**
+     * Synchronizes on statement boundaries.
+     * Common recovery strategy for statement-level errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnStatements() {
+        return synchronize(
+            JavaTokenTypes.SEMI,
+            JavaTokenTypes.RCURLY,
+            JavaTokenTypes.LITERAL_if,
+            JavaTokenTypes.LITERAL_while,
+            JavaTokenTypes.LITERAL_for,
+            JavaTokenTypes.LITERAL_return
+        );
+    }
+
+    /**
+     * Synchronizes on declaration boundaries.
+     * Common recovery strategy for declaration-level errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnDeclarations() {
+        return synchronize(
+            JavaTokenTypes.LITERAL_class,
+            JavaTokenTypes.LITERAL_interface,
+            JavaTokenTypes.LITERAL_fun,
+            JavaTokenTypes.LITERAL_val,
+            JavaTokenTypes.LITERAL_var,
+            JavaTokenTypes.RCURLY
+        );
+    }
+
+    /**
+     * Attempts to recover from an unexpected token by suggesting what was expected.
+     * Provides error messages consistent with legacy parser patterns.
+     *
+     * @param expectedDescription Description of what was expected
+     * @param actualToken The actual token encountered
+     */
+    public void reportUnexpectedToken(String expectedDescription, LocatableToken actualToken) {
+        String actualDescription = getTokenDescription(actualToken);
+        if (actualToken != null && actualToken.getType() == JavaTokenTypes.EOF) {
+            error("Unexpected end-of-file; expected " + expectedDescription, actualToken);
+        } else {
+            error("Expected " + expectedDescription + " but found " + actualDescription, actualToken);
+        }
+    }
+
+    /**
+     * Reports a missing token error consistent with legacy parser patterns.
+     *
+     * @param missingTokenDescription Description of the missing token
+     * @param position Token indicating where the missing token should have been
+     */
+    public void reportMissingToken(String missingTokenDescription, LocatableToken position) {
+        error("Expected " + missingTokenDescription, position);
+    }
+
+    /**
+     * Enhanced expect method with better error reporting.
+     * Provides specific error messages for common token types.
+     */
+    public LocatableToken expectWithMessage(int tokenType, LocatableToken currentToken) {
+        if (currentToken != null && currentToken.getType() == tokenType) {
+            return consume();
+        }
+
+        // Generate specific error message based on token type
+        String expectedDescription = getExpectedTokenDescription(tokenType);
+        reportUnexpectedToken(expectedDescription, currentToken);
+        return null;
+    }
+
+    /**
+     * Gets a description of what token type was expected for error messages.
+     */
+    private String getExpectedTokenDescription(int tokenType) {
+        return switch (tokenType) {
+            case JavaTokenTypes.LPAREN -> "'('";
+            case JavaTokenTypes.RPAREN -> "')'";
+            case JavaTokenTypes.LCURLY -> "'{'";
+            case JavaTokenTypes.RCURLY -> "'}'";
+            case JavaTokenTypes.SEMI -> "';'";
+            case JavaTokenTypes.COMMA -> "','";
+            case JavaTokenTypes.IDENT -> "identifier";
+            case JavaTokenTypes.LITERAL_class -> "keyword 'class'";
+            case JavaTokenTypes.LITERAL_fun -> "keyword 'fun'";
+            case JavaTokenTypes.LITERAL_val -> "keyword 'val'";
+            case JavaTokenTypes.LITERAL_var -> "keyword 'var'";
+            default -> "token type " + tokenType;
+        };
+    }
+
+    /**
      * Gets a human-readable description of a token for error messages.
+     * Provides consistent descriptions matching the legacy parser patterns.
      *
      * @param token The token to describe
      * @return A descriptive string for the token
      */
     private String getTokenDescription(LocatableToken token) {
         if (token == null) {
-            return "null";
+            return "end of input";
         }
 
+        int tokenType = token.getType();
         String text = token.getText();
-        if (text != null && !text.isEmpty()) {
-            return "'" + text + "'";
-        }
 
-        // Return token type name for special tokens
-        return "token type " + token.getType();
+        // Handle special token types with descriptive names
+        return switch (tokenType) {
+            case JavaTokenTypes.EOF -> "end of file";
+            case JavaTokenTypes.IDENT -> "identifier '" + text + "'";
+            case JavaTokenTypes.NUM_INT -> "integer literal '" + text + "'";
+            case JavaTokenTypes.NUM_FLOAT -> "float literal '" + text + "'";
+            case JavaTokenTypes.STRING_LITERAL -> "string literal";
+            case JavaTokenTypes.CHAR_LITERAL -> "character literal";
+            case JavaTokenTypes.LITERAL_true, JavaTokenTypes.LITERAL_false -> "boolean literal '" + text + "'";
+            case JavaTokenTypes.LITERAL_null -> "null literal";
+            case JavaTokenTypes.LPAREN -> "'('";
+            case JavaTokenTypes.RPAREN -> "')'";
+            case JavaTokenTypes.LCURLY -> "'{'";
+            case JavaTokenTypes.RCURLY -> "'}'";
+            case JavaTokenTypes.LBRACK -> "'['";
+            case JavaTokenTypes.RBRACK -> "']'";
+            case JavaTokenTypes.SEMI -> "';'";
+            case JavaTokenTypes.COMMA -> "','";
+            case JavaTokenTypes.DOT -> "'.'";
+            case JavaTokenTypes.LITERAL_class -> "keyword 'class'";
+            case JavaTokenTypes.LITERAL_interface -> "keyword 'interface'";
+            case JavaTokenTypes.LITERAL_fun -> "keyword 'fun'";
+            case JavaTokenTypes.LITERAL_val -> "keyword 'val'";
+            case JavaTokenTypes.LITERAL_var -> "keyword 'var'";
+            case JavaTokenTypes.LITERAL_if -> "keyword 'if'";
+            case JavaTokenTypes.LITERAL_else -> "keyword 'else'";
+            case JavaTokenTypes.LITERAL_while -> "keyword 'while'";
+            case JavaTokenTypes.LITERAL_for -> "keyword 'for'";
+            case JavaTokenTypes.LITERAL_return -> "keyword 'return'";
+            case JavaTokenTypes.LITERAL_import -> "keyword 'import'";
+            case JavaTokenTypes.LITERAL_package -> "keyword 'package'";
+            default -> {
+                if (text != null && !text.isEmpty()) {
+                    yield "'" + text + "'";
+                } else {
+                    yield "token type " + tokenType;
+                }
+            }
+        };
     }
 
     /**
