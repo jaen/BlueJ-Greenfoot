@@ -57,6 +57,12 @@ public class TestNodeFactory implements NodeFactory {
     /** Counter for generating unique node IDs */
     private int nodeIdCounter = 0;
 
+    /** Tracking field for createCallNode method calls */
+    private boolean createCallNodeCalled = false;
+
+    /** Flag to simulate factory failures in tests */
+    private boolean shouldFail = false;
+
     /**
      * Base class for all test nodes.
      * Extends JavaParentNode which provides a public constructor.
@@ -303,6 +309,12 @@ public class TestNodeFactory implements NodeFactory {
 
     @Override
     public ParsedNode createCallNode(ParsedNode function, ParsedNode[] arguments) {
+        createCallNodeCalled = true;
+
+        if (shouldFail) {
+            return null;
+        }
+
         if (function == null) {
             reportError("Cannot create call node with null function", null);
             return null;
@@ -411,5 +423,23 @@ public class TestNodeFactory implements NodeFactory {
      */
     public void resetNodeCounter() {
         nodeIdCounter = 0;
+    }
+
+    /**
+     * Checks if createCallNode was called during testing.
+     *
+     * @return true if createCallNode was called, false otherwise
+     */
+    public boolean wasCreateCallNodeCalled() {
+        return createCallNodeCalled;
+    }
+
+    /**
+     * Sets whether the factory should fail on node creation.
+     *
+     * @param shouldFail true to make factory methods return null, false for normal operation
+     */
+    public void setShouldFail(boolean shouldFail) {
+        this.shouldFail = shouldFail;
     }
 }
