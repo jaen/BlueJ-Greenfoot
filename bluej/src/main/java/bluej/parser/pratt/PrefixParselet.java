@@ -120,38 +120,5 @@ public non-sealed interface PrefixParselet extends Parselet {
      */
     ParsedNode parse(KotlinPrattParser parser, LocatableToken token);
 
-    /**
-     * Checks if this parselet can handle the given token in the current context.
-     *
-     * <p>This method allows for context-sensitive parsing where the same token
-     * might be handled differently based on the parser's state. Most parselets
-     * can use the default implementation which always returns true.</p>
-     *
-     * <p>Example use cases for overriding this method:</p>
-     * <ul>
-     *   <li>Keywords that are only valid in certain contexts</li>
-     *   <li>Operators that have different meanings in different positions</li>
-     *   <li>Context-sensitive language constructs</li>
-     * </ul>
-     *
-     * @param parser The parser instance for checking context
-     * @param token The token to check
-     * @return true if this parselet can handle the token, false otherwise
-     */
-    default boolean canHandle(KotlinPrattParser parser, LocatableToken token) {
-        return true;
-    }
 
-    /**
-     * Gets the expected token types that can follow this prefix construct.
-     *
-     * <p>This information can be used for error recovery and code completion.
-     * For example, after a unary operator, we expect an expression, while after
-     * an opening parenthesis, we expect an expression or a closing parenthesis.</p>
-     *
-     * @return An array of expected token types, or null if any token is acceptable
-     */
-    default int[] getExpectedFollowTokens() {
-        return null;
-    }
 }

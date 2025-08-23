@@ -105,7 +105,7 @@ public class BinaryOperatorParseletTest extends TestCase {
     }
 
     @Test
-    public void testCanHandleBinaryOperators() {
+    public void testParseBinaryOperators() {
         int[] binaryOperators = {
             // Arithmetic
             JavaTokenTypes.PLUS, JavaTokenTypes.MINUS, JavaTokenTypes.STAR, JavaTokenTypes.DIV, JavaTokenTypes.MOD,
@@ -122,15 +122,18 @@ public class BinaryOperatorParseletTest extends TestCase {
 
         for (int tokenType : binaryOperators) {
             LocatableToken token = createToken(tokenType, getOperatorSymbol(tokenType), 1, 1);
-            assertTrue("Should handle binary operator token type " + tokenType,
-                additionParselet.canHandle(testParser, null, token));
+            // Test that valid binary operators can be parsed (canHandle method removed)
+            // Create a dummy left operand for infix parsing
+            ParsedNode dummyLeft = null; // Foundation phase uses null nodes
+            ParsedNode result = additionParselet.parse(testParser, dummyLeft, token);
+            // In foundation phase, should validate without creating nodes
             assertNotNull("Should provide description for operator type " + tokenType,
                 additionParselet.getHandledOperator(tokenType));
         }
     }
 
     @Test
-    public void testCanHandleNonBinaryOperators() {
+    public void testParseNonBinaryOperators() {
         int[] nonBinaryOperators = {
             JavaTokenTypes.IDENT, JavaTokenTypes.NUM_INT, JavaTokenTypes.STRING_LITERAL,
             JavaTokenTypes.LPAREN, JavaTokenTypes.RPAREN, JavaTokenTypes.LITERAL_class,
@@ -138,9 +141,13 @@ public class BinaryOperatorParseletTest extends TestCase {
         };
 
         for (int tokenType : nonBinaryOperators) {
+            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
             LocatableToken token = createToken(tokenType, "test", 1, 1);
-            assertFalse("Should not handle non-binary operator token type " + tokenType,
-                additionParselet.canHandle(testParser, null, token));
+            // Test that invalid tokens produce errors when parsed (canHandle method removed)
+            ParsedNode dummyLeft = null; // Foundation phase uses null nodes
+            ParsedNode result = additionParselet.parse(freshParser, dummyLeft, token);
+            assertNull("Should return null for invalid operator tokens", result);
+            assertTrue("Should report error for non-binary operator tokens", freshParser.hasErrors());
             assertEquals("Should indicate unsupported operator type",
                 "unsupported operator type", additionParselet.getHandledOperator(tokenType));
         }

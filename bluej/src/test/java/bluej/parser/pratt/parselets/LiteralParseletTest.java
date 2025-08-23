@@ -63,7 +63,7 @@ public class LiteralParseletTest extends TestCase {
         // Foundation phase: parselet validates but doesn't create nodes yet
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle integer literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -73,7 +73,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle long literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -83,7 +83,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle float literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -93,7 +93,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle double literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -103,7 +103,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle string literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -113,7 +113,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle multiline string literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -123,7 +123,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle character literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -133,7 +133,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle boolean true literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -143,7 +143,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle boolean false literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -153,7 +153,7 @@ public class LiteralParseletTest extends TestCase {
 
         assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        assertTrue("Should be able to handle null literals", parselet.canHandle(testParser, token));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     @Test
@@ -192,8 +192,10 @@ public class LiteralParseletTest extends TestCase {
 
         for (int tokenType : literalTypes) {
             LocatableToken token = createToken(tokenType, "test", 1, 1);
-            assertTrue("Should handle literal token type " + tokenType,
-                parselet.canHandle(testParser, token));
+            // Test that valid literal tokens parse without errors (foundation phase)
+            ParsedNode result = parselet.parse(testParser, token);
+            assertNull("Foundation phase: should validate but not create nodes", result);
+            assertFalse("Should not produce errors for valid literal tokens", testParser.hasErrors());
             assertNotNull("Should provide description for token type " + tokenType,
                 parselet.getHandledConstruct(tokenType));
         }
@@ -213,9 +215,12 @@ public class LiteralParseletTest extends TestCase {
         };
 
         for (int tokenType : nonLiteralTypes) {
+            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
             LocatableToken token = createToken(tokenType, "test", 1, 1);
-            assertFalse("Should not handle non-literal token type " + tokenType,
-                parselet.canHandle(testParser, token));
+            // Test that invalid tokens produce errors when parsed
+            ParsedNode result = parselet.parse(freshParser, token);
+            assertNull("Should return null for invalid tokens", result);
+            assertTrue("Should report error for non-literal tokens", freshParser.hasErrors());
             assertEquals("Should indicate unsupported token type",
                 "unsupported token type", parselet.getHandledConstruct(tokenType));
         }
@@ -237,8 +242,7 @@ public class LiteralParseletTest extends TestCase {
         assertNull("Foundation phase: first parse validates but doesn't create nodes", result1);
         assertNull("Foundation phase: second parse validates but doesn't create nodes", result2);
         assertFalse("No errors should be reported", testParser.hasErrors());
-        assertTrue("Should handle first token type", parselet.canHandle(testParser, token1));
-        assertTrue("Should handle second token type", parselet.canHandle(testParser, token2));
+        // canHandle method removed - parse behavior is sufficient validation
     }
 
     /**

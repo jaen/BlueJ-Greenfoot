@@ -96,4 +96,17 @@ public sealed interface Parselet permits PrefixParselet, InfixParselet {
     default int getPriority() {
         return 0;
     }
+
+    /**
+     * Gets the expected token types that can follow this parselet construct.
+     *
+     * <p>This information can be used for error recovery and code completion.
+     * For example, after a unary operator, we expect an expression, while after
+     * an opening parenthesis, we expect an expression or a closing parenthesis.</p>
+     *
+     * @return An array of expected token types, or null if any token is acceptable
+     */
+    default int[] getExpectedFollowTokens() {
+        return null;
+    }
 }

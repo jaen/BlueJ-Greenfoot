@@ -142,23 +142,7 @@ public final class BinaryOperatorParselet implements InfixParselet {
         return precedence.getValue();
     }
 
-    /**
-     * Indicates whether this parselet can handle the given token.
-     *
-     * <p>This method checks if the token represents a binary operator and
-     * the parser context is appropriate for infix parsing.</p>
-     *
-     * @param parser The parser instance for context checking
-     * @param token The token to check
-     * @return true if this parselet can handle the token, false otherwise
-     */
-    @Override
-    public boolean canHandle(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
-        if (token == null) {
-            return false;
-        }
-        return isBinaryOperator(token.getType());
-    }
+
 
     /**
      * Determines if a token type represents a binary operator.

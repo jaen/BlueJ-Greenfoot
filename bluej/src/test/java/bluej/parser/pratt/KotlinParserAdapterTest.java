@@ -366,10 +366,7 @@ public class KotlinParserAdapterTest extends TestCase {
             return null; // Simple stub implementation
         }
 
-        @Override
-        public boolean canHandle(KotlinPrattParser parser, LocatableToken token) {
-            return true;
-        }
+
 
         @Override
         public int getPriority() {
@@ -391,10 +388,7 @@ public class KotlinParserAdapterTest extends TestCase {
             return Precedence.ADDITIVE.getValue();
         }
 
-        @Override
-        public boolean canHandle(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
-            return true;
-        }
+
 
         @Override
         public boolean isRightAssociative() {

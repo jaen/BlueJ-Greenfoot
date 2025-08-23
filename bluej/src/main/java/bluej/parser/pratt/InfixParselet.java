@@ -169,42 +169,7 @@ public non-sealed interface InfixParselet extends Parselet {
         return false;
     }
 
-    /**
-     * Checks if this parselet can handle the given token in the current context.
-     *
-     * <p>This method allows for context-sensitive parsing where the same token
-     * might be handled differently based on the parser's state or the type of
-     * the left expression. Most parselets can use the default implementation
-     * which always returns true.</p>
-     *
-     * <p>Example use cases for overriding this method:</p>
-     * <ul>
-     *   <li>Generic type arguments that only apply to certain expressions</li>
-     *   <li>Member access that requires specific left expression types</li>
-     *   <li>Operators valid only in certain contexts</li>
-     * </ul>
-     *
-     * @param parser The parser instance for checking context
-     * @param left The left-hand expression already parsed
-     * @param token The token to check
-     * @return true if this parselet can handle the token, false otherwise
-     */
-    default boolean canHandle(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
-        return true;
-    }
 
-    /**
-     * Gets the expected token types that can follow this infix construct.
-     *
-     * <p>This information can be used for error recovery and code completion.
-     * For example, after a binary operator, we expect an expression, while after
-     * a dot operator, we expect an identifier or keyword.</p>
-     *
-     * @return An array of expected token types, or null if any token is acceptable
-     */
-    default int[] getExpectedFollowTokens() {
-        return null;
-    }
 
     /**
      * Indicates whether this infix parselet requires a right-hand expression.

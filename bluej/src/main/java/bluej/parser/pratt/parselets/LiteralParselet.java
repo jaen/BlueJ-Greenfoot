@@ -139,23 +139,7 @@ public final class LiteralParselet implements PrefixParselet {
         };
     }
 
-    /**
-     * Indicates whether this parselet can handle the given token.
-     *
-     * <p>This method overrides the default implementation to check if the token
-     * represents a literal value that this parselet can process.</p>
-     *
-     * @param parser The parser instance (not used for literal tokens)
-     * @param token The token to check
-     * @return true if this parselet can handle the token, false otherwise
-     */
-    @Override
-    public boolean canHandle(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            return false;
-        }
-        return isLiteralToken(token.getType());
-    }
+
 
     /**
      * Gets the token that this parselet can handle for the given type.

@@ -140,23 +140,7 @@ public final class GroupParselet implements PrefixParselet {
         };
     }
 
-    /**
-     * Indicates whether this parselet can handle the given token.
-     *
-     * <p>This parselet only handles left parenthesis tokens that start
-     * grouped expressions.</p>
-     *
-     * @param parser The parser instance (not used for parenthesis tokens)
-     * @param token The token to check
-     * @return true if the token is a left parenthesis, false otherwise
-     */
-    @Override
-    public boolean canHandle(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            return false;
-        }
-        return token.getType() == JavaTokenTypes.LPAREN;
-    }
+
 
     /**
      * Gets a description of what this parselet handles for the given token type.
