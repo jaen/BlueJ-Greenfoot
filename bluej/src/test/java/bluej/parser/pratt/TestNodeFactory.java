@@ -63,6 +63,12 @@ public class TestNodeFactory implements NodeFactory {
     /** Flag to simulate factory failures in tests */
     private boolean shouldFail = false;
 
+    /** Tracking field for createMemberAccessNode method calls */
+    private boolean createMemberAccessNodeCalled = false;
+
+    /** Tracking field for the last isSafeCall value passed to createMemberAccessNode */
+    private boolean lastSafeCallValue = false;
+
     /**
      * Base class for all test nodes.
      * Extends JavaParentNode which provides a public constructor.
@@ -295,12 +301,20 @@ public class TestNodeFactory implements NodeFactory {
 
     @Override
     public ParsedNode createMemberAccessNode(ParsedNode object, LocatableToken memberName, boolean isSafeCall) {
-        if (object == null || memberName == null) {
-            reportError("Cannot create member access node with null components", memberName);
+        createMemberAccessNodeCalled = true;
+        lastSafeCallValue = isSafeCall;
+
+        if (shouldFail) {
             return null;
         }
-        TestNode node = new TestNode(isSafeCall ? "SafeMemberAccess" : "MemberAccess", ++nodeIdCounter) {};
+
+        if (object == null || memberName == null) {
+            reportError("Cannot create member access node with null components", null);
+            return null;
+        }
+        TestNode node = new TestNode("MemberAccess", ++nodeIdCounter) {};
         node.addChild(object);
+        // Member name is represented by the token, not a separate child node
         if (object instanceof TestNode) {
             node.setOffsets(((TestNode)object).getTestAbsoluteStart(), memberName.getEndPosition());
         }
@@ -441,5 +455,23 @@ public class TestNodeFactory implements NodeFactory {
      */
     public void setShouldFail(boolean shouldFail) {
         this.shouldFail = shouldFail;
+    }
+
+    /**
+     * Checks if createMemberAccessNode was called during testing.
+     *
+     * @return true if createMemberAccessNode was called, false otherwise
+     */
+    public boolean wasCreateMemberAccessNodeCalled() {
+        return createMemberAccessNodeCalled;
+    }
+
+    /**
+     * Gets the last isSafeCall value passed to createMemberAccessNode.
+     *
+     * @return the last isSafeCall value
+     */
+    public boolean getLastSafeCallValue() {
+        return lastSafeCallValue;
     }
 }
