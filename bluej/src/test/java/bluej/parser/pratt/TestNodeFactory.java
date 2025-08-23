@@ -69,6 +69,9 @@ public class TestNodeFactory implements NodeFactory {
     /** Tracking field for the last isSafeCall value passed to createMemberAccessNode */
     private boolean lastSafeCallValue = false;
 
+    /** Tracking field for createArrayAccessNode method calls */
+    private boolean createArrayAccessNodeCalled = false;
+
     /**
      * Base class for all test nodes.
      * Extends JavaParentNode which provides a public constructor.
@@ -358,6 +361,12 @@ public class TestNodeFactory implements NodeFactory {
 
     @Override
     public ParsedNode createArrayAccessNode(ParsedNode array, ParsedNode index) {
+        createArrayAccessNodeCalled = true;
+
+        if (shouldFail) {
+            return null;
+        }
+
         if (array == null || index == null) {
             reportError("Cannot create array access node with null components", null);
             return null;
@@ -473,5 +482,14 @@ public class TestNodeFactory implements NodeFactory {
      */
     public boolean getLastSafeCallValue() {
         return lastSafeCallValue;
+    }
+
+    /**
+     * Checks if createArrayAccessNode was called during testing.
+     *
+     * @return true if createArrayAccessNode was called, false otherwise
+     */
+    public boolean wasCreateArrayAccessNodeCalled() {
+        return createArrayAccessNodeCalled;
     }
 }
