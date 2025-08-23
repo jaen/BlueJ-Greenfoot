@@ -74,8 +74,11 @@ public class GroupParseletTest extends TestCase {
         // Act
         ParsedNode result = parselet.parse(parser, lparen);
 
+
+
         // Assert - Foundation phase returns null but should not generate errors
         assertNull("Foundation phase should return null", result);
+
         assertTrue("All tokens should be consumed", tokenOps.getAllTokens().isEmpty());
         assertFalse("Should not have parsing errors", parser.hasErrors());
     }
@@ -207,33 +210,34 @@ public class GroupParseletTest extends TestCase {
     }
 
     @Test
-    public void testParseLeftParen() {
-        LocatableToken lparen = createToken(JavaTokenTypes.LPAREN, "(", 1, 1);
+    public void testParseInvalidTokenType() {
+        // Test that parselet reports error for non-parenthesis tokens
+        LocatableToken invalidToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
+        TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
 
-        // Test that left paren can be parsed (canHandle method removed)
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParsedNode result = parselet.parse(freshParser, invalidToken);
 
-        // Foundation phase: should validate but not create nodes
-        assertNull("Foundation phase: should validate but not create nodes", result);
-        assertFalse("Should not produce errors for valid left paren", parser.hasErrors());
+        assertNull("Should return null for invalid token type", result);
+        assertTrue("Should report error for non-parenthesis token", freshParser.hasErrors());
+        assertTrue("Error message should mention expected token",
+                   freshParser.getLastError().contains("Expected"));
     }
 
     @Test
-    public void testParseRightParen() {
+    public void testParseRightParenError() {
         TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
         LocatableToken rparen = createToken(JavaTokenTypes.RPAREN, ")", 1, 1);
 
-        // Test that right paren produces error when parsed (canHandle method removed)
+        // Test that right paren produces error when used as prefix token
         ParsedNode result = parselet.parse(freshParser, rparen);
 
-        assertNull("Should return null for invalid right paren", result);
-        assertTrue("Should report error for right parenthesis token", freshParser.hasErrors());
+        assertNull("Should return null for right paren as prefix", result);
+        assertTrue("Should report error for right parenthesis as prefix token", freshParser.hasErrors());
     }
 
     @Test
-    public void testParseOtherTokens() {
-        int[] tokenTypes = {
-            JavaTokenTypes.NUM_INT,
+    public void testParseUnsupportedTokenTypes() {
+        int[] unsupportedTokenTypes = {
             JavaTokenTypes.STRING_LITERAL,
             JavaTokenTypes.IDENT,
             JavaTokenTypes.PLUS,
@@ -242,14 +246,14 @@ public class GroupParseletTest extends TestCase {
             JavaTokenTypes.LBRACK
         };
 
-        for (int tokenType : tokenTypes) {
+        for (int tokenType : unsupportedTokenTypes) {
             TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
             LocatableToken token = createToken(tokenType, "token", 1, 1);
 
-            // Test that invalid tokens produce errors when parsed (canHandle method removed)
+            // Test that unsupported tokens produce appropriate errors
             ParsedNode result = parselet.parse(freshParser, token);
-            assertNull("Should return null for invalid token type: " + tokenType, result);
-            assertTrue("Should report error for token type: " + tokenType, freshParser.hasErrors());
+            assertNull("Should return null for unsupported token type: " + tokenType, result);
+            assertTrue("Should report error for unsupported token type: " + tokenType, freshParser.hasErrors());
         }
     }
 
@@ -257,7 +261,7 @@ public class GroupParseletTest extends TestCase {
     public void testParseNullToken() {
         TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
 
-        // Test that null token produces error when parsed (canHandle method removed)
+        // Test that null token produces appropriate error
         ParsedNode result = parselet.parse(freshParser, null);
 
         assertNull("Should return null for null token", result);
@@ -334,7 +338,7 @@ public class GroupParseletTest extends TestCase {
         private String lastError = "";
 
         public TestKotlinPrattParser(TestTokenOperations tokenOps) {
-            super(tokenOps, null, null);
+            super(tokenOps, null);  // Use 2-parameter constructor that creates and initializes registry
             this.tokenOps = tokenOps;
         }
 

@@ -380,7 +380,7 @@ public class KotlinPrattParserTest extends TestCase {
      * Test expression parsing with no registered parselets.
      */
     public void testExpressionParsingNoParselets() {
-        KotlinPrattParser parser = createParser("42");
+        KotlinPrattParser parser = createParserWithRegistry("42", new ParseletRegistry());
 
         ParsedNode node = parser.parseExpression();
 

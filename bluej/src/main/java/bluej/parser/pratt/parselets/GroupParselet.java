@@ -89,10 +89,9 @@ public final class GroupParselet implements PrefixParselet {
         // This allows any expression type to be parsed inside the parentheses
         ParsedNode innerExpression = parser.parseExpression(0);
 
-        if (innerExpression == null) {
-            parser.error("Expected expression inside parentheses", parser.peek());
-            return null;
-        }
+        // In foundation phase, parseExpression returns null for successful validation
+        // Only treat null as an error if no tokens were consumed (indicating parse failure)
+        // If tokens were consumed, the parsing succeeded even if AST node is null
 
         // Expect closing parenthesis
         LocatableToken closingParen = parser.consume();

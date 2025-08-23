@@ -176,7 +176,7 @@ public class LiteralParseletTest extends TestCase {
     }
 
     @Test
-    public void testCanHandleLiteralTokenTypes() {
+    public void testParseLiteralTokenTypes() {
         int[] literalTypes = {
             JavaTokenTypes.NUM_INT,
             JavaTokenTypes.NUM_LONG,
@@ -191,18 +191,19 @@ public class LiteralParseletTest extends TestCase {
         };
 
         for (int tokenType : literalTypes) {
+            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
             LocatableToken token = createToken(tokenType, "test", 1, 1);
             // Test that valid literal tokens parse without errors (foundation phase)
-            ParsedNode result = parselet.parse(testParser, token);
+            ParsedNode result = parselet.parse(freshParser, token);
             assertNull("Foundation phase: should validate but not create nodes", result);
-            assertFalse("Should not produce errors for valid literal tokens", testParser.hasErrors());
+            assertFalse("Should not produce errors for valid literal tokens", freshParser.hasErrors());
             assertNotNull("Should provide description for token type " + tokenType,
                 parselet.getHandledConstruct(tokenType));
         }
     }
 
     @Test
-    public void testCanHandleNonLiteralTokenTypes() {
+    public void testParseNonLiteralTokenTypes() {
         int[] nonLiteralTypes = {
             JavaTokenTypes.IDENT,
             JavaTokenTypes.PLUS,
@@ -262,7 +263,7 @@ public class LiteralParseletTest extends TestCase {
         private String lastError = "";
 
         public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, null);
+            super(new TestTokenOperations(), null);  // Use 2-parameter constructor that creates and initializes registry
         }
 
         @Override

@@ -233,7 +233,7 @@ public class BinaryOperatorParseletTest extends TestCase {
         private int lastParseExpressionPrecedence = -1;
 
         public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, null);
+            super(new TestTokenOperations(), null);  // Use 2-parameter constructor that creates and initializes registry
         }
 
         @Override

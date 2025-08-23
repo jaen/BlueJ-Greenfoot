@@ -25,6 +25,9 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.SourceParser;
+import bluej.parser.pratt.parselets.BinaryOperatorParselet;
+import bluej.parser.pratt.parselets.GroupParselet;
+import bluej.parser.pratt.parselets.LiteralParselet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,11 +103,27 @@ public class KotlinPrattParser {
      * This method will be expanded as new parselets are implemented.
      */
     private void initializeRegistry() {
-        // TODO: Register parselets as they are implemented
-        // Example registrations (to be implemented):
-        // registry.register(JavaTokenTypes.LITERAL_int, new LiteralParselet());
-        // registry.register(JavaTokenTypes.PLUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
-        // registry.register(JavaTokenTypes.LPAREN, new GroupParselet());
+        // Register literal parselets for all literal token types
+        LiteralParselet literalParselet = new LiteralParselet();
+        registry.register(JavaTokenTypes.NUM_INT, literalParselet);
+        registry.register(JavaTokenTypes.NUM_LONG, literalParselet);
+        registry.register(JavaTokenTypes.NUM_FLOAT, literalParselet);
+        registry.register(JavaTokenTypes.NUM_DOUBLE, literalParselet);
+        registry.register(JavaTokenTypes.STRING_LITERAL, literalParselet);
+        registry.register(JavaTokenTypes.STRING_LITERAL_MULTILINE, literalParselet);
+        registry.register(JavaTokenTypes.CHAR_LITERAL, literalParselet);
+        registry.register(JavaTokenTypes.LITERAL_true, literalParselet);
+        registry.register(JavaTokenTypes.LITERAL_false, literalParselet);
+        registry.register(JavaTokenTypes.LITERAL_null, literalParselet);
+
+        // Register group parselet for parenthesized expressions
+        registry.register(JavaTokenTypes.LPAREN, new GroupParselet());
+
+        // Register binary operator parselets
+        registry.register(JavaTokenTypes.PLUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
+        registry.register(JavaTokenTypes.MINUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
+        registry.register(JavaTokenTypes.STAR, new BinaryOperatorParselet(Precedence.MULTIPLICATIVE));
+        registry.register(JavaTokenTypes.DIV, new BinaryOperatorParselet(Precedence.MULTIPLICATIVE));
     }
 
     /**
