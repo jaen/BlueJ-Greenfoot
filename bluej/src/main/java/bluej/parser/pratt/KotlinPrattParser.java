@@ -78,6 +78,9 @@ public class KotlinPrattParser {
     /** Factory for creating AST nodes with proper threading */
     private final NodeFactory nodeFactory;
 
+    /** Error recovery mechanism for handling parse errors gracefully */
+    private final ErrorRecovery errorRecovery;
+
     /**
      * Creates a new KotlinPrattParser with the specified token operations and parent parser.
      *
@@ -91,6 +94,7 @@ public class KotlinPrattParser {
         this.nodeFactory = nodeFactory;
         this.registry = new ParseletRegistry();
         this.errors = new ArrayList<>();
+        this.errorRecovery = new ErrorRecovery();
 
         // Initialize the registry with parselets
         initializeRegistry();
@@ -112,6 +116,7 @@ public class KotlinPrattParser {
         this.nodeFactory = nodeFactory;
         this.registry = registry;
         this.errors = new ArrayList<>();
+        this.errorRecovery = new ErrorRecovery();
     }
 
     /**
@@ -378,6 +383,76 @@ public class KotlinPrattParser {
 
         // Note: We cannot directly report to sourceParser as the error method is protected.
         // The errors are stored in our error list and can be retrieved via getErrors().
+    }
+
+    /**
+     * Records a parse error and attempts recovery using the specified context.
+     *
+     * @param message The error message
+     * @param token The token where the error occurred (may be null)
+     * @param context The parsing context for appropriate recovery strategy
+     * @return true if recovery was successful and parsing can continue, false otherwise
+     */
+    public boolean errorWithRecovery(String message, LocatableToken token, ErrorRecovery.RecoveryContext context) {
+        // Create contextual error message
+        String contextualMessage = ErrorRecovery.createContextualErrorMessage(message, context);
+
+        // Report the error through the recovery system
+        errorRecovery.reportError(this, contextualMessage, token, context);
+
+        // Attempt recovery if appropriate
+        if (errorRecovery.shouldAttemptRecovery()) {
+            return errorRecovery.recoverToSynchronizationPoint(this, context);
+        }
+
+        return false;
+    }
+
+    /**
+     * Attempts to recover from parsing errors in expression context.
+     *
+     * @param message The error message
+     * @param token The problematic token
+     * @return true if recovery successful, false otherwise
+     */
+    public boolean recoverFromExpressionError(String message, LocatableToken token) {
+        return errorWithRecovery(message, token, ErrorRecovery.RecoveryContext.EXPRESSION);
+    }
+
+    /**
+     * Attempts to recover from parsing errors in statement context.
+     *
+     * @param message The error message
+     * @param token The problematic token
+     * @return true if recovery successful, false otherwise
+     */
+    public boolean recoverFromStatementError(String message, LocatableToken token) {
+        return errorWithRecovery(message, token, ErrorRecovery.RecoveryContext.STATEMENT);
+    }
+
+    /**
+     * Gets the error recovery system for advanced error handling.
+     *
+     * @return The ErrorRecovery instance used by this parser
+     */
+    public ErrorRecovery getErrorRecovery() {
+        return errorRecovery;
+    }
+
+    /**
+     * Checks if the parser is currently in error recovery mode.
+     *
+     * @return true if in recovery mode, false otherwise
+     */
+    public boolean isInRecoveryMode() {
+        return errorRecovery.isInRecoveryMode();
+    }
+
+    /**
+     * Exits error recovery mode, typically called after successful parsing.
+     */
+    public void exitRecoveryMode() {
+        errorRecovery.exitRecoveryMode();
     }
 
     /**
