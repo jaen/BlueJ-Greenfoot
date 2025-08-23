@@ -51,7 +51,7 @@ public class KotlinPrattParserTest extends TestCase {
      * @return A configured KotlinPrattParser instance
      */
     private KotlinPrattParser createParser(String source) {
-        SourceParser sourceParser = new SourceParser(new StringReader(source));
+        SourceParser sourceParser = new SourceParser(new StringReader(source), SourceType.Kotlin);
         JavaTokenFilter tokenStream = sourceParser.getTokenStream();
         // Create test token operations that directly delegate to tokenStream
         TokenOperations tokenOps = new TestTokenOperations(tokenStream);

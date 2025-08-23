@@ -109,7 +109,13 @@ public class KotlinParserAdapter {
      */
     public boolean canParseExpression() {
         // Check configuration setting
-        boolean configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser", false);
+        boolean configEnabled;
+        try {
+            configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser", false);
+        } catch (NullPointerException e) {
+            // Config not initialized (e.g., in tests), use system property
+            configEnabled = Boolean.getBoolean("bluej.kotlin.usePrattParser");
+        }
 
         // Check parser capability based on current state and registered parselets
         boolean parserCapable = supportsExpressionParsing();
@@ -155,7 +161,13 @@ public class KotlinParserAdapter {
      */
     public boolean canParseStatement() {
         // Check configuration setting
-        boolean configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser.statements", false);
+        boolean configEnabled;
+        try {
+            configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser.statements", false);
+        } catch (NullPointerException e) {
+            // Config not initialized (e.g., in tests), use system property
+            configEnabled = Boolean.getBoolean("bluej.kotlin.usePrattParser.statements");
+        }
 
         // Check parser capability
         boolean parserCapable = supportsStatementParsing();
@@ -193,7 +205,13 @@ public class KotlinParserAdapter {
      */
     public boolean canParseDeclaration() {
         // Check configuration setting
-        boolean configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser.declarations", false);
+        boolean configEnabled;
+        try {
+            configEnabled = Config.getPropBoolean("bluej.kotlin.usePrattParser.declarations", false);
+        } catch (NullPointerException e) {
+            // Config not initialized (e.g., in tests), use system property
+            configEnabled = Boolean.getBoolean("bluej.kotlin.usePrattParser.declarations");
+        }
 
         // Check parser capability
         boolean parserCapable = supportsDeclarationParsing();

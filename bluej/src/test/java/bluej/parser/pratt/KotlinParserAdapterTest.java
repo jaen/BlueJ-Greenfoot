@@ -97,7 +97,7 @@ public class KotlinParserAdapterTest extends TestCase {
         assertFalse("Should not parse without parselets", adapter.canParseExpression());
 
         // Register a basic parselet
-        registry.registerPrefix(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
 
         // Now should be true
         assertTrue("Should parse when config enabled and parselets present",
@@ -114,19 +114,19 @@ public class KotlinParserAdapterTest extends TestCase {
                     adapter.supportsExpressionParsing());
 
         // Register literal parselets
-        registry.registerPrefix(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
         assertTrue("Should support with literal parselets",
                    adapter.supportsExpressionParsing());
 
         // Clear and register operator parselets
         registry.clear();
-        registry.registerInfix(JavaTokenTypes.PLUS, new TestInfixParselet(), Precedence.SUM);
+        registry.register(JavaTokenTypes.PLUS, new TestInfixParselet());
         assertTrue("Should support with operator parselets",
                    adapter.supportsExpressionParsing());
 
         // Clear and register identifier parselets
         registry.clear();
-        registry.registerPrefix(JavaTokenTypes.IDENT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.IDENT, new TestPrefixParselet());
         assertTrue("Should support with identifier parselets",
                    adapter.supportsExpressionParsing());
     }
@@ -143,14 +143,14 @@ public class KotlinParserAdapterTest extends TestCase {
         assertFalse("Statements need expression support", adapter.canParseStatement());
 
         // Add expression support
-        registry.registerPrefix(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
 
         // Still false without statement parselets
         assertFalse("Should not parse without statement parselets",
                     adapter.canParseStatement());
 
         // Add statement parselet
-        registry.registerPrefix(JavaTokenTypes.LITERAL_if, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.LITERAL_if, new TestPrefixParselet());
 
         // Now should be true
         assertTrue("Should parse statements when fully configured",
@@ -170,7 +170,7 @@ public class KotlinParserAdapterTest extends TestCase {
                     adapter.canParseDeclaration());
 
         // Add declaration parselet
-        registry.registerPrefix(JavaTokenTypes.LITERAL_class, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.LITERAL_class, new TestPrefixParselet());
 
         // Now should be true
         assertTrue("Should parse declarations when configured",
@@ -318,7 +318,7 @@ public class KotlinParserAdapterTest extends TestCase {
     @Test
     public void testConfigurationChanges() {
         // Register parselets
-        registry.registerPrefix(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
 
         // Initially disabled
         System.clearProperty("bluej.kotlin.usePrattParser");
@@ -339,10 +339,10 @@ public class KotlinParserAdapterTest extends TestCase {
     @Test
     public void testMixedParseletSupport() {
         // Add different types of parselets
-        registry.registerPrefix(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
-        registry.registerInfix(JavaTokenTypes.PLUS, new TestInfixParselet(), Precedence.SUM);
-        registry.registerPrefix(JavaTokenTypes.LITERAL_if, new TestPrefixParselet());
-        registry.registerPrefix(JavaTokenTypes.LITERAL_class, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.NUM_INT, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.PLUS, new TestInfixParselet());
+        registry.register(JavaTokenTypes.LITERAL_if, new TestPrefixParselet());
+        registry.register(JavaTokenTypes.LITERAL_class, new TestPrefixParselet());
 
         // Enable all configurations
         System.setProperty("bluej.kotlin.usePrattParser", "true");
@@ -367,7 +367,7 @@ public class KotlinParserAdapterTest extends TestCase {
         }
 
         @Override
-        public boolean canParse(LocatableToken token) {
+        public boolean canHandle(KotlinPrattParser parser, LocatableToken token) {
             return true;
         }
 
@@ -387,12 +387,12 @@ public class KotlinParserAdapterTest extends TestCase {
         }
 
         @Override
-        public int getLeftBindingPower() {
-            return Precedence.SUM.getLeftBindingPower();
+        public int getPrecedence() {
+            return Precedence.ADDITIVE.getValue();
         }
 
         @Override
-        public boolean canParse(ParsedNode left, LocatableToken token) {
+        public boolean canHandle(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
             return true;
         }
 
