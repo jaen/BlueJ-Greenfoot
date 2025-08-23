@@ -551,14 +551,7 @@ public class KotlinPrattParser {
      * @return The synchronization token found, or null if EOF reached
      */
     public LocatableToken synchronizeOnStatements() {
-        return synchronize(
-            JavaTokenTypes.SEMI,
-            JavaTokenTypes.RCURLY,
-            JavaTokenTypes.LITERAL_if,
-            JavaTokenTypes.LITERAL_while,
-            JavaTokenTypes.LITERAL_for,
-            JavaTokenTypes.LITERAL_return
-        );
+        return synchronize(STATEMENT_SYNC_TOKENS);
     }
 
     /**
@@ -568,15 +561,199 @@ public class KotlinPrattParser {
      * @return The synchronization token found, or null if EOF reached
      */
     public LocatableToken synchronizeOnDeclarations() {
-        return synchronize(
-            JavaTokenTypes.LITERAL_class,
-            JavaTokenTypes.LITERAL_interface,
-            JavaTokenTypes.LITERAL_fun,
-            JavaTokenTypes.LITERAL_val,
-            JavaTokenTypes.LITERAL_var,
-            JavaTokenTypes.RCURLY
-        );
+        return synchronize(DECLARATION_SYNC_TOKENS);
     }
+
+    /**
+     * Synchronizes on expression boundaries.
+     * Common recovery strategy for expression-level errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnExpressions() {
+        return synchronize(EXPRESSION_SYNC_TOKENS);
+    }
+
+    /**
+     * Synchronizes on block boundaries.
+     * Common recovery strategy for nested structure errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnBlocks() {
+        return synchronize(BLOCK_SYNC_TOKENS);
+    }
+
+    /**
+     * Synchronizes on parameter or argument boundaries.
+     * Common recovery strategy for function parameter or call argument errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnParameters() {
+        return synchronize(PARAMETER_SYNC_TOKENS);
+    }
+
+    /**
+     * Synchronizes on type boundaries.
+     * Common recovery strategy for type expression or annotation errors.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeOnTypes() {
+        return synchronize(TYPE_SYNC_TOKENS);
+    }
+
+    /**
+     * Comprehensive synchronization using all major recovery points.
+     * Used as a fallback when specific recovery strategies don't apply.
+     *
+     * @return The synchronization token found, or null if EOF reached
+     */
+    public LocatableToken synchronizeComprehensive() {
+        return synchronize(ALL_SYNC_TOKENS);
+    }
+
+    // ==================== Predefined Synchronization Token Sets ====================
+
+    /**
+     * Tokens that commonly mark statement boundaries and are safe recovery points.
+     * These include terminators and statement-starting keywords.
+     */
+    public static final int[] STATEMENT_SYNC_TOKENS = {
+        JavaTokenTypes.SEMI,
+        JavaTokenTypes.RCURLY,
+        JavaTokenTypes.LITERAL_if,
+        JavaTokenTypes.LITERAL_else,
+        JavaTokenTypes.LITERAL_while,
+        JavaTokenTypes.LITERAL_for,
+        JavaTokenTypes.LITERAL_do,
+        JavaTokenTypes.LITERAL_return,
+        JavaTokenTypes.LITERAL_break,
+        JavaTokenTypes.LITERAL_continue,
+        JavaTokenTypes.LITERAL_throw,
+        JavaTokenTypes.LITERAL_try,
+        JavaTokenTypes.LITERAL_when
+    };
+
+    /**
+     * Tokens that mark declaration boundaries and top-level constructs.
+     * Safe recovery points for class-level and file-level parsing errors.
+     */
+    public static final int[] DECLARATION_SYNC_TOKENS = {
+        JavaTokenTypes.LITERAL_class,
+        JavaTokenTypes.LITERAL_interface,
+        JavaTokenTypes.LITERAL_object,
+        JavaTokenTypes.LITERAL_enum,
+        JavaTokenTypes.LITERAL_fun,
+        JavaTokenTypes.LITERAL_val,
+        JavaTokenTypes.LITERAL_var,
+        JavaTokenTypes.LITERAL_constructor,
+        JavaTokenTypes.LITERAL_init,
+        JavaTokenTypes.RCURLY,
+        JavaTokenTypes.LITERAL_package,
+        JavaTokenTypes.LITERAL_import
+    };
+
+    /**
+     * Tokens that mark expression boundaries and are safe for expression recovery.
+     * Used when recovering from expression parsing errors.
+     */
+    public static final int[] EXPRESSION_SYNC_TOKENS = {
+        JavaTokenTypes.SEMI,
+        JavaTokenTypes.COMMA,
+        JavaTokenTypes.RPAREN,
+        JavaTokenTypes.RBRACK,
+        JavaTokenTypes.RCURLY,
+        JavaTokenTypes.LITERAL_else,
+        JavaTokenTypes.LITERAL_catch,
+        JavaTokenTypes.LITERAL_finally,
+        JavaTokenTypes.GT, // End of generic parameter
+        JavaTokenTypes.LITERAL_in // for-in loop boundary
+    };
+
+    /**
+     * Tokens that mark block boundaries, useful for recovering from nested structure errors.
+     * These tokens typically indicate the end of a block scope.
+     */
+    public static final int[] BLOCK_SYNC_TOKENS = {
+        JavaTokenTypes.RCURLY,
+        JavaTokenTypes.RPAREN,
+        JavaTokenTypes.RBRACK,
+        JavaTokenTypes.LITERAL_else,
+        JavaTokenTypes.LITERAL_catch,
+        JavaTokenTypes.LITERAL_finally,
+        JavaTokenTypes.EOF
+    };
+
+    /**
+     * Tokens that mark parameter or argument list boundaries.
+     * Used for recovering from function parameter or call argument parsing errors.
+     */
+    public static final int[] PARAMETER_SYNC_TOKENS = {
+        JavaTokenTypes.COMMA,
+        JavaTokenTypes.RPAREN,
+        JavaTokenTypes.RBRACK,
+        JavaTokenTypes.GT, // End of generic parameters
+        JavaTokenTypes.SEMI,
+        JavaTokenTypes.LCURLY, // Start of function body
+        JavaTokenTypes.ASSIGN // Default parameter value
+    };
+
+    /**
+     * Tokens that mark type boundaries, useful for type expression recovery.
+     * Used when parsing type annotations, generic parameters, or type declarations.
+     */
+    public static final int[] TYPE_SYNC_TOKENS = {
+        JavaTokenTypes.COMMA,
+        JavaTokenTypes.RPAREN,
+        JavaTokenTypes.RBRACK,
+        JavaTokenTypes.GT,
+        JavaTokenTypes.QUESTION, // Nullable type marker
+        JavaTokenTypes.ASSIGN,
+        JavaTokenTypes.LCURLY,
+        JavaTokenTypes.SEMI,
+        JavaTokenTypes.LITERAL_where // Generic constraints
+    };
+
+    /**
+     * Comprehensive set of all major synchronization points.
+     * Used as a fallback when specific recovery strategies don't apply.
+     */
+    public static final int[] ALL_SYNC_TOKENS = {
+        // Statement boundaries
+        JavaTokenTypes.SEMI,
+        JavaTokenTypes.RCURLY,
+        JavaTokenTypes.RPAREN,
+        JavaTokenTypes.RBRACK,
+
+        // Declaration keywords
+        JavaTokenTypes.LITERAL_class,
+        JavaTokenTypes.LITERAL_interface,
+        JavaTokenTypes.LITERAL_object,
+        JavaTokenTypes.LITERAL_enum,
+        JavaTokenTypes.LITERAL_fun,
+        JavaTokenTypes.LITERAL_val,
+        JavaTokenTypes.LITERAL_var,
+
+        // Control flow
+        JavaTokenTypes.LITERAL_if,
+        JavaTokenTypes.LITERAL_else,
+        JavaTokenTypes.LITERAL_while,
+        JavaTokenTypes.LITERAL_for,
+        JavaTokenTypes.LITERAL_return,
+        JavaTokenTypes.LITERAL_break,
+        JavaTokenTypes.LITERAL_continue,
+        JavaTokenTypes.LITERAL_try,
+        JavaTokenTypes.LITERAL_catch,
+        JavaTokenTypes.LITERAL_finally,
+        JavaTokenTypes.LITERAL_when,
+
+        // Special boundaries
+        JavaTokenTypes.LITERAL_package,
+        JavaTokenTypes.LITERAL_import,
+        JavaTokenTypes.EOF
+    };
 
     /**
      * Attempts to recover from an unexpected token by suggesting what was expected.
