@@ -24,8 +24,8 @@ package bluej.parser.pratt;
 import bluej.extensions2.SourceType;
 import bluej.parser.SourceParser;
 import bluej.parser.lexer.JavaTokenFilter;
-import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.nodes.ParsedNode;
 import junit.framework.TestCase;
 
@@ -51,9 +51,11 @@ public class KotlinPrattParserTest extends TestCase {
      * @return A configured KotlinPrattParser instance
      */
     private KotlinPrattParser createParser(String source) {
-        SourceParser sourceParser = new SourceParser(new StringReader(source), SourceType.Kotlin);
+        SourceParser sourceParser = new SourceParser(new StringReader(source));
         JavaTokenFilter tokenStream = sourceParser.getTokenStream();
-        return new KotlinPrattParser(tokenStream, sourceParser);
+        // Create test token operations that directly delegate to tokenStream
+        TokenOperations tokenOps = new TestTokenOperations(tokenStream);
+        return new KotlinPrattParser(tokenOps, sourceParser);
     }
 
     /**
@@ -66,7 +68,8 @@ public class KotlinPrattParserTest extends TestCase {
     private KotlinPrattParser createParserWithRegistry(String source, ParseletRegistry registry) {
         SourceParser sourceParser = new SourceParser(new StringReader(source), SourceType.Kotlin);
         JavaTokenFilter tokenStream = sourceParser.getTokenStream();
-        return new KotlinPrattParser(tokenStream, sourceParser, registry);
+        TokenOperations tokenOps = new TestTokenOperations(tokenStream);
+        return new KotlinPrattParser(tokenOps, sourceParser, registry);
     }
 
     // ========== Parser Initialization Tests ==========
@@ -418,5 +421,38 @@ public class KotlinPrattParserTest extends TestCase {
         parser.pushBack(tokenB);
         // After pushback, current token should revert
         assertNotNull("Current token should be set after pushback", parser.getCurrentToken());
+    }
+
+    /**
+     * Test implementation of TokenOperations for unit testing.
+     * This implementation directly delegates to JavaTokenFilter without
+     * threading constraints, suitable for test environments.
+     */
+    private static class TestTokenOperations implements TokenOperations {
+        private final JavaTokenFilter tokenStream;
+
+        TestTokenOperations(JavaTokenFilter tokenStream) {
+            this.tokenStream = tokenStream;
+        }
+
+        @Override
+        public LocatableToken nextToken() {
+            return tokenStream.nextToken();
+        }
+
+        @Override
+        public LocatableToken LA(int distance) {
+            return tokenStream.LA(distance);
+        }
+
+        @Override
+        public void pushBack(LocatableToken token) {
+            tokenStream.pushBack(token);
+        }
+
+        @Override
+        public LocatableToken getMostRecent() {
+            return tokenStream.getMostRecent();
+        }
     }
 }

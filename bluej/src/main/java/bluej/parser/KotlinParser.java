@@ -1,22 +1,22 @@
 /*
- This file is part of the BlueJ program. 
+ This file is part of the BlueJ program.
  Copyright (C) 2025  Michael Kolling and John Rosenberg
 
- This program is free software; you can redistribute it and/or 
- modify it under the terms of the GNU General Public License 
- as published by the Free Software Foundation; either version 2 
- of the License, or (at your option) any later version. 
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful, 
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License 
- along with this program; if not, write to the Free Software 
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
- This file is subject to the Classpath exception as provided in the  
+ This file is subject to the Classpath exception as provided in the
  LICENSE.txt file that accompanied this code.
  */
 package bluej.parser;
@@ -25,25 +25,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bluej.parser.lexer.*;
+import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.KotlinParserAdapter;
+import bluej.parser.pratt.ParseletRegistry;
 
 import static bluej.parser.lexer.JavaTokenTypes.*;
 
 /**
  * Base class for Kotlin parsers.
- * 
+ *
  * <p>We parse the source, and when we see certain constructs we call a corresponding method
  * from our JavaParserCallbacks parent class, which subclasses can override (for instance,
  * beginForLoop, beginForLoopBody, endForLoop).
- * 
+ *
  * Almost all of the methods defined by this class are final, to avoid accidentally overriding them
  * in subclasses and accidentally changing the parser behaviour.
- * 
+ *
  * In general it is arranged so that a call to beginXYZ() is always followed by a call to
- * endXYZ(). 
+ * endXYZ().
  */
 public class KotlinParser implements ParserBehavior
 {
     private SourceParser parser;
+
+    /**
+     * Adapter for the new Pratt parser implementation.
+     * This will gradually take over parsing responsibilities from the current implementation.
+     */
+    private KotlinParserAdapter prattAdapter;
 
     public static final int TYPEDEF_CLASS = 0;
     public static final int TYPEDEF_INTERFACE = 1;
@@ -57,6 +66,9 @@ public class KotlinParser implements ParserBehavior
     public KotlinParser(SourceParser parser)
     {
         this.parser = parser;
+        // Initialize the Pratt parser adapter for gradual migration
+        // Note: The adapter handles JavaFX threading requirements internally
+        this.prattAdapter = new KotlinParserAdapter(parser.getTokenStream(), parser);
     }
 
     public final JavaTokenFilter getTokenStream()
@@ -101,7 +113,7 @@ public class KotlinParser implements ParserBehavior
     /**
      * Signal a parse error, occurring because the next token in the token stream is
      * not valid in the current context.
-     * 
+     *
      * @param msg A message/code describing the error
      */
     private void error(String msg)
@@ -113,7 +125,7 @@ public class KotlinParser implements ParserBehavior
      * Signal a parser error, occurring because the given token in the token stream is
      * not valid in the current context, but for which a useful error diagnosis can be
      * provided. The entire token will be highlighted as erroneous.
-     * 
+     *
      * @param msg    A message/code describing the error
      * @paran token  The invalid token
      */
@@ -195,7 +207,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a part of a compilation unit, starting from the given state.
-     * 
+     *
      * @param state The state to start parsing from
      * @return The new state after parsing
      */
@@ -309,7 +321,7 @@ public class KotlinParser implements ParserBehavior
             parser.setLastToken(token);
             rval.add(token);
             token = nextToken();
-        }                       
+        }
         getTokenStream().pushBack(token);
 
         return rval;
@@ -323,7 +335,7 @@ public class KotlinParser implements ParserBehavior
         // TODO: Implement annotation parsing for Kotlin
         // For now, just skip the annotation
         LocatableToken token = nextToken();
-        while (token.getType() != JavaTokenTypes.SEMI && 
+        while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.LCURLY &&
                token.getType() != JavaTokenTypes.RCURLY &&
                token.getType() != JavaTokenTypes.EOF) {
@@ -380,7 +392,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse an import statement starting with the given token.
-     * 
+     *
      * @param importToken The "import" token
      */
     public final void parseImportStatement(final LocatableToken importToken)
@@ -456,7 +468,7 @@ public class KotlinParser implements ParserBehavior
     /**
      * Parse a type definition (class, interface, enum).
      * Returns with {@code lastToken} set to the last token seen as part of the definition.
-     * 
+     *
      * @param firstToken  the first token of the type definition, which might still be in the token
      *                    stream, or which might be a modifier already read.
      */
@@ -506,7 +518,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a type body.
-     * 
+     *
      * @param tdType The type definition type
      * @param token The token that starts the type body
      * @return The last token seen during parsing
@@ -676,7 +688,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse the beginning of a type definition.
-     * 
+     *
      * @return The type definition type
      */
     public final int parseTypeDefBegin()
@@ -714,7 +726,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse the second part of a type definition.
-     * 
+     *
      * @param isRecord Whether this is a record definition
      * @return The last token seen during parsing
      */
@@ -791,7 +803,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a class element (field, method, inner class, etc.)
-     * 
+     *
      * @param token The first token of the class element
      */
     public final void parseClassElement(LocatableToken token)
@@ -922,7 +934,7 @@ public class KotlinParser implements ParserBehavior
         else {
             // Not recognized, skip to next semicolon or closing brace
             error("Unexpected token in class body: " + token.getText(), token);
-            while (token.getType() != JavaTokenTypes.SEMI && 
+            while (token.getType() != JavaTokenTypes.SEMI &&
                    token.getType() != JavaTokenTypes.RCURLY &&
                    token.getType() != JavaTokenTypes.EOF) {
                 token = nextToken();
@@ -969,7 +981,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a statement.
-     * 
+     *
      * @return The last token seen during parsing
      */
     public final LocatableToken parseStatement()
@@ -979,7 +991,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a statement.
-     * 
+     *
      * @param token The first token of the statement
      * @param allowComma Whether to allow commas in the statement
      * @return The last token seen during parsing
@@ -997,9 +1009,9 @@ public class KotlinParser implements ParserBehavior
             parseStmtBlock();
             return nextToken();
         }
-        
+
         // For now, just skip to the next semicolon or closing brace
-        while (token.getType() != JavaTokenTypes.SEMI && 
+        while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.RCURLY &&
                token.getType() != JavaTokenTypes.EOF) {
             int line = token.getLine();
@@ -1020,7 +1032,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a "while(...)" loop.
-     * 
+     *
      * @param token The "while" token, which has already been extracted from the token stream.
      * @return The last token that is part of the loop (or null).
      */
@@ -1058,10 +1070,10 @@ public class KotlinParser implements ParserBehavior
         }
         return token;
     }
-    
+
     /**
      * Parse a "for(...)" loop.
-     * 
+     *
      * @param forToken The "for" token, which has already been extracted from the token stream.
      * @return The last token that is part of the loop (or null).
      */
@@ -1075,10 +1087,10 @@ public class KotlinParser implements ParserBehavior
             endForLoop(token);
             return null;
         }
-        
+
         // Parse the variable declaration or expression before 'in'
         parseExpression();
-        
+
         // Look for the 'in' keyword
         token = nextToken();
         if (token.getType() != JavaTokenTypes.LITERAL_in) {
@@ -1087,10 +1099,10 @@ public class KotlinParser implements ParserBehavior
             endForLoop(token);
             return null;
         }
-        
+
         // Parse the iterable expression after 'in'
         parseExpression();
-        
+
         token = nextToken();
         if (token.getType() != JavaTokenTypes.RPAREN) {
             error("Expecting ')' after for loop expression");
@@ -1106,7 +1118,7 @@ public class KotlinParser implements ParserBehavior
         endForLoop(token);
         return token;
     }
-    
+
     private void endForLoop(LocatableToken token)
     {
         if (token == null) {
@@ -1116,7 +1128,7 @@ public class KotlinParser implements ParserBehavior
             parser.endForLoop(token, true);
         }
     }
-    
+
     private void endForLoopBody(LocatableToken token)
     {
         if (token == null) {
@@ -1129,7 +1141,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a type specification.
-     * 
+     *
      * @param processArray Whether to process array declarators
      * @return Whether the parsing was successful
      */
@@ -1140,7 +1152,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse a type specification.
-     * 
+     *
      * @param speculative Whether this is a speculative parse
      * @param processArray Whether to process array declarators
      * @param ttokens List to store tokens
@@ -1162,15 +1174,27 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse an expression.
-     * 
+     *
      * @param isLambdaBody Whether this is a lambda body
      * @param lambdaAllowed Whether lambdas are allowed in this expression
      */
     public final void parseExpression(boolean isLambdaBody, boolean lambdaAllowed)
     {
+        // Attempt to use the new Pratt parser if it's capable of handling expressions
+        if (prattAdapter.canParseExpression()) {
+            // Delegate to the new Pratt parser via the adapter
+            // The adapter handles threading requirements and capability checking
+            ParsedNode result = prattAdapter.parseExpression();
+            if (result != null) {
+                // Successfully parsed with new parser
+                return;
+            }
+            // Fall back to old parser if new parser fails
+        }
+
         // For now, just skip to the next semicolon or closing brace
         LocatableToken token = nextToken();
-        while (token.getType() != JavaTokenTypes.SEMI && 
+        while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.RCURLY &&
                token.getType() != JavaTokenTypes.RPAREN &&
                token.getType() != JavaTokenTypes.EOF &&
@@ -1184,9 +1208,11 @@ public class KotlinParser implements ParserBehavior
         }
     }
 
+
+
     /**
      * Parse variable declarations.
-     * 
+     *
      * @return The last token seen during parsing
      */
     public final LocatableToken parseVariableDeclarations()
@@ -1196,7 +1222,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Parse variable declarations.
-     * 
+     *
      * @param first The first token of the variable declarations
      * @param mustEndWithSemi Whether the declarations must end with a semicolon
      * @return The last token seen during parsing
@@ -1205,7 +1231,7 @@ public class KotlinParser implements ParserBehavior
     {
         // For now, just skip to the next semicolon or closing brace
         LocatableToken token = first;
-        while (token.getType() != JavaTokenTypes.SEMI && 
+        while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.RCURLY &&
                token.getType() != JavaTokenTypes.EOF) {
             token = nextToken();
@@ -1735,7 +1761,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Process a companion object declaration.
-     * 
+     *
      * @param companionToken The 'companion' token
      * @param objectToken The 'object' token
      */
@@ -1787,7 +1813,7 @@ public class KotlinParser implements ParserBehavior
 
     /**
      * Process an object declaration.
-     * 
+     *
      * @param objectToken The 'object' token
      */
     private void processObjectDeclaration(LocatableToken objectToken)

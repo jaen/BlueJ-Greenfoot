@@ -21,13 +21,10 @@
  */
 package bluej.parser.pratt;
 
-import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.SourceParser;
-import threadchecker.OnThread;
-import threadchecker.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +40,16 @@ import java.util.List;
  * each token type can have associated prefix and infix parselets that handle
  * the parsing of specific language constructs.</p>
  *
+ * <p>This class is thread-agnostic. For JavaFX platform threading requirements,
+ * use the {@link KotlinParserAdapter} class which provides thread-safe access.</p>
+ *
  * @author BlueJ Development Team
  * @since BlueJ 5.4.0
  */
-@OnThread(Tag.FXPlatform)
 public class KotlinPrattParser {
 
-    /** The token stream providing tokens from the lexer */
-    private final JavaTokenFilter tokenStream;
+    /** The token operations interface for accessing tokens */
+    private final TokenOperations tokenOps;
 
     /** Registry mapping token types to their parselets */
     private final ParseletRegistry registry;
@@ -65,13 +64,13 @@ public class KotlinPrattParser {
     private final List<ParseError> errors;
 
     /**
-     * Creates a new KotlinPrattParser with the specified token stream and parent parser.
+     * Creates a new KotlinPrattParser with the specified token operations and parent parser.
      *
-     * @param tokenStream The token stream to read tokens from
+     * @param tokenOps The token operations interface for accessing tokens
      * @param sourceParser The parent SourceParser for integration
      */
-    public KotlinPrattParser(JavaTokenFilter tokenStream, SourceParser sourceParser) {
-        this.tokenStream = tokenStream;
+    public KotlinPrattParser(TokenOperations tokenOps, SourceParser sourceParser) {
+        this.tokenOps = tokenOps;
         this.sourceParser = sourceParser;
         this.registry = new ParseletRegistry();
         this.errors = new ArrayList<>();
@@ -81,16 +80,16 @@ public class KotlinPrattParser {
     }
 
     /**
-     * Creates a new KotlinPrattParser with the specified token stream, parent parser,
+     * Creates a new KotlinPrattParser with the specified token operations, parent parser,
      * and custom parselet registry.
      *
-     * @param tokenStream The token stream to read tokens from
+     * @param tokenOps The token operations interface for accessing tokens
      * @param sourceParser The parent SourceParser for integration
      * @param registry Custom parselet registry to use
      */
-    public KotlinPrattParser(JavaTokenFilter tokenStream, SourceParser sourceParser,
+    public KotlinPrattParser(TokenOperations tokenOps, SourceParser sourceParser,
                            ParseletRegistry registry) {
-        this.tokenStream = tokenStream;
+        this.tokenOps = tokenOps;
         this.sourceParser = sourceParser;
         this.registry = registry;
         this.errors = new ArrayList<>();
@@ -187,7 +186,7 @@ public class KotlinPrattParser {
      * @return The next token, or null if at end of stream
      */
     public LocatableToken consume() {
-        currentToken = tokenStream.nextToken();
+        currentToken = tokenOps.nextToken();
         return currentToken;
     }
 
@@ -197,7 +196,7 @@ public class KotlinPrattParser {
      * @return The next token, or null if at end of stream
      */
     public LocatableToken peek() {
-        return tokenStream.LA(1);
+        return tokenOps.LA(1);
     }
 
     /**
@@ -210,7 +209,7 @@ public class KotlinPrattParser {
         if (distance < 1) {
             throw new IllegalArgumentException("Look-ahead distance must be 1 or greater");
         }
-        return tokenStream.LA(distance);
+        return tokenOps.LA(distance);
     }
 
     /**
@@ -220,8 +219,8 @@ public class KotlinPrattParser {
      * @param token The token to push back
      */
     public void pushBack(LocatableToken token) {
-        tokenStream.pushBack(token);
-        currentToken = tokenStream.getMostRecent();
+        tokenOps.pushBack(token);
+        currentToken = tokenOps.getMostRecent();
     }
 
     /**
@@ -332,7 +331,139 @@ public class KotlinPrattParser {
     }
 
     /**
-     * Synchronizes the parser to a recovery point after an error.
+     * Parses a statement starting from the current position.
+     * This is a placeholder implementation that will be expanded
+     * when statement parselets are implemented.
+     *
+     * @return The parsed AST node representing the statement, or null if parsing fails
+     */
+    public ParsedNode parseStatement() {
+        // TODO: Implement statement parsing once statement parselets are available
+        // For now, try to parse as an expression
+        return parseExpression();
+    }
+
+    /**
+     * Parses a declaration (class, function, property, etc.) starting from the current position.
+     * This is a placeholder implementation that will be expanded
+     * when declaration parselets are implemented.
+     *
+     * @return The parsed AST node representing the declaration, or null if parsing fails
+     */
+    public ParsedNode parseDeclaration() {
+        // TODO: Implement declaration parsing once declaration parselets are available
+        return null;
+    }
+
+    /**
+     * Parses a complete compilation unit (file).
+     * This is a placeholder implementation that will be expanded
+     * when compilation unit parsing is fully implemented.
+     *
+     * @return The parsed AST node representing the compilation unit, or null if parsing fails
+     */
+    public ParsedNode parseCompilationUnit() {
+        // TODO: Implement full compilation unit parsing
+        return null;
+    }
+
+    /**
+     * Consumes a token of the specified type, reporting an error if the current token
+     * doesn't match.
+     *
+     * @param expectedType The expected token type
+     * @return The consumed token, or null if the token type doesn't match
+     */
+    public LocatableToken consume(int expectedType) {
+        LocatableToken token = peek();
+        if (token != null && token.getType() == expectedType) {
+            return consume();
+        }
+        error("Expected token type " + expectedType + " but found " + getTokenDescription(token), token);
+        return null;
+    }
+
+    /**
+     * Checks if the next token is of the specified type.
+     *
+     * @param tokenType The token type to check for
+     * @return true if the next token matches the type, false otherwise
+     */
+    public boolean check(int tokenType) {
+        return match(tokenType);
+    }
+
+    /**
+     * Checks if the token at the specified offset is of the specified type.
+     *
+     * @param tokenType The token type to check for
+     * @param offset The offset to check at (0 = current peek position)
+     * @return true if the token matches the type, false otherwise
+     */
+    public boolean check(int tokenType, int offset) {
+        if (offset == 0) {
+            return check(tokenType);
+        }
+        LocatableToken token = peek(offset + 1);
+        return token != null && token.getType() == tokenType;
+    }
+
+    /**
+     * Checks if the next token matches any of the specified types.
+     *
+     * @param tokenTypes The token types to check for
+     * @return true if the next token matches any of the types, false otherwise
+     */
+    public boolean checkAny(int... tokenTypes) {
+        LocatableToken token = peek();
+        if (token == null) {
+            return false;
+        }
+        int type = token.getType();
+        for (int tokenType : tokenTypes) {
+            if (type == tokenType) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Consumes a token if it matches any of the expected types.
+     *
+     * @param expectedTypes The expected token types
+     * @return true if a token was consumed, false otherwise
+     */
+    public boolean matchAny(int... expectedTypes) {
+        if (checkAny(expectedTypes)) {
+            consume();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if we've reached the end of the token stream.
+     *
+     * @return true if at end of stream, false otherwise
+     */
+    public boolean isAtEnd() {
+        LocatableToken token = peek();
+        return token == null || token.getType() == JavaTokenTypes.EOF;
+    }
+
+    /**
+     * Reports a parsing error at the current position.
+     * Convenience method that uses the current token.
+     *
+     * @param message The error message
+     */
+    public void error(String message) {
+        error(message, getCurrentToken());
+    }
+
+    /**
+     * Synchronizes the parser to a stable state after an error.
      *
      * <p>This method consumes tokens until it finds a suitable synchronization
      * point, such as a semicolon, closing brace, or other statement terminator.</p>
