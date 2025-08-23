@@ -222,6 +222,12 @@ public class TestNodeFactory implements NodeFactory {
         public LocatableToken getIdentifier() {
             return identifier;
         }
+
+        @Override
+        public String toString() {
+            String identifierText = identifier != null ? identifier.getText() : "null";
+            return String.format("TestIdentifierNode:%s", identifierText);
+        }
     }
 
     @Override
