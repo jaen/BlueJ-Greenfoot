@@ -26,9 +26,17 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.SourceParser;
+import bluej.parser.pratt.parselets.ArrayAccessParselet;
 import bluej.parser.pratt.parselets.BinaryOperatorParselet;
+import bluej.parser.pratt.parselets.CallParselet;
 import bluej.parser.pratt.parselets.GroupParselet;
 import bluej.parser.pratt.parselets.LiteralParselet;
+import bluej.parser.pratt.parselets.MemberAccessParselet;
+import bluej.parser.pratt.parselets.NameParselet;
+import bluej.parser.pratt.parselets.PostfixOperatorParselet;
+import bluej.parser.pratt.parselets.PrefixOperatorParselet;
+import bluej.parser.pratt.parselets.SuperParselet;
+import bluej.parser.pratt.parselets.ThisParselet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,11 +115,14 @@ public class KotlinPrattParser {
     }
 
     /**
-     * Initializes the parselet registry with default parselets.
-     * This method will be expanded as new parselets are implemented.
+     * Initializes the parselet registry with all implemented parselets.
+     * Registers parselets for literals, operators, identifiers, calls, and access expressions.
+     *
+     * Note: Some tokens can have both prefix and infix parselets (e.g., PLUS can be unary + or binary +).
+     * The registry supports this by maintaining separate maps for prefix and infix parselets.
      */
     private void initializeRegistry() {
-        // Register literal parselets for all literal token types
+        // ===================== LITERAL PARSELETS (PREFIX) =====================
         LiteralParselet literalParselet = new LiteralParselet();
         registry.register(JavaTokenTypes.NUM_INT, literalParselet);
         registry.register(JavaTokenTypes.NUM_LONG, literalParselet);
@@ -124,14 +135,78 @@ public class KotlinPrattParser {
         registry.register(JavaTokenTypes.LITERAL_false, literalParselet);
         registry.register(JavaTokenTypes.LITERAL_null, literalParselet);
 
-        // Register group parselet for parenthesized expressions
+        // ===================== IDENTIFIER PARSELETS (PREFIX) =====================
+        NameParselet nameParselet = new NameParselet();
+        registry.register(JavaTokenTypes.IDENT, nameParselet);
+
+        // Special keyword references
+        registry.register(JavaTokenTypes.LITERAL_this, new ThisParselet());
+        registry.register(JavaTokenTypes.LITERAL_super, new SuperParselet());
+
+        // ===================== GROUPING PARSELET (PREFIX) =====================
         registry.register(JavaTokenTypes.LPAREN, new GroupParselet());
 
-        // Register binary operator parselets
-        registry.register(JavaTokenTypes.PLUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
-        registry.register(JavaTokenTypes.MINUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
+        // ===================== PREFIX OPERATOR PARSELETS =====================
+        // Arithmetic prefix operators (+, -)
+        registry.register(JavaTokenTypes.PLUS, new PrefixOperatorParselet(Precedence.PREFIX.getValue()));
+        registry.register(JavaTokenTypes.MINUS, new PrefixOperatorParselet(Precedence.PREFIX.getValue()));
+
+        // Logical not operator (!)
+        registry.register(JavaTokenTypes.LNOT, new PrefixOperatorParselet(Precedence.PREFIX.getValue()));
+
+        // Prefix increment/decrement operators (++, --)
+        registry.register(JavaTokenTypes.INC, new PrefixOperatorParselet(140));
+        registry.register(JavaTokenTypes.DEC, new PrefixOperatorParselet(140));
+
+        // ===================== BINARY OPERATOR PARSELETS (INFIX) =====================
+        // Multiplicative operators (*, /, %)
         registry.register(JavaTokenTypes.STAR, new BinaryOperatorParselet(Precedence.MULTIPLICATIVE));
         registry.register(JavaTokenTypes.DIV, new BinaryOperatorParselet(Precedence.MULTIPLICATIVE));
+        registry.register(JavaTokenTypes.MOD, new BinaryOperatorParselet(Precedence.MULTIPLICATIVE));
+
+        // Additive operators (+, -) - these can also be prefix operators
+        registry.register(JavaTokenTypes.PLUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
+        registry.register(JavaTokenTypes.MINUS, new BinaryOperatorParselet(Precedence.ADDITIVE));
+
+        // Comparison operators (<, >, <=, >=)
+        registry.register(JavaTokenTypes.LT, new BinaryOperatorParselet(Precedence.COMPARISON));
+        registry.register(JavaTokenTypes.GT, new BinaryOperatorParselet(Precedence.COMPARISON));
+        registry.register(JavaTokenTypes.LE, new BinaryOperatorParselet(Precedence.COMPARISON));
+        registry.register(JavaTokenTypes.GE, new BinaryOperatorParselet(Precedence.COMPARISON));
+
+        // Equality operators (==, !=)
+        registry.register(JavaTokenTypes.EQUAL, new BinaryOperatorParselet(Precedence.EQUALITY));
+        registry.register(JavaTokenTypes.NOT_EQUAL, new BinaryOperatorParselet(Precedence.EQUALITY));
+
+        // Logical operators (&&, ||)
+        registry.register(JavaTokenTypes.LAND, new BinaryOperatorParselet(Precedence.CONJUNCTION));
+        registry.register(JavaTokenTypes.LOR, new BinaryOperatorParselet(Precedence.DISJUNCTION));
+
+        // Assignment operators (=, +=, -=, etc.)
+        registry.register(JavaTokenTypes.ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
+        registry.register(JavaTokenTypes.PLUS_ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
+        registry.register(JavaTokenTypes.MINUS_ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
+        registry.register(JavaTokenTypes.STAR_ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
+        registry.register(JavaTokenTypes.DIV_ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
+
+        // ===================== POSTFIX OPERATOR PARSELETS (INFIX) =====================
+        // Postfix increment/decrement (++, --) - these can also be prefix operators
+        registry.register(JavaTokenTypes.INC, new PostfixOperatorParselet(Precedence.POSTFIX.getValue()));
+        registry.register(JavaTokenTypes.DEC, new PostfixOperatorParselet(Precedence.POSTFIX.getValue()));
+
+        // Note: Null assertion operator (!!) would need a specific token type
+        // For now, we don't register EXCLAM for postfix since it conflicts with logical not
+
+        // ===================== ACCESS AND CALL PARSELETS (INFIX) =====================
+        // Member access (. and potentially ?. if that token exists)
+        registry.register(JavaTokenTypes.DOT, new MemberAccessParselet());
+        // TODO: Add QUESTION_DOT when available in JavaTokenTypes
+
+        // Array access ([])
+        registry.register(JavaTokenTypes.LBRACK, new ArrayAccessParselet());
+
+        // Function calls (()) - LPAREN can be both prefix (grouping) and infix (calls)
+        registry.register(JavaTokenTypes.LPAREN, new CallParselet());
     }
 
     /**
