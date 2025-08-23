@@ -78,7 +78,7 @@ public class SourceParser extends JavaParserCallbacks {
     public SourceParser(Reader r, SourceType sourceType) {
         TokenStream lexer = getLexer(r, sourceType);
         tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
+        parser = sourceType == SourceType.Kotlin ? new KotlinParserAdapter(this) : new JavaParser(this);
         this.sourceType = sourceType;
     }
 
@@ -86,14 +86,14 @@ public class SourceParser extends JavaParserCallbacks {
     {
         TokenStream lexer = getLexer(r, sourceType, handleComments, true);
         tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
+        parser = sourceType == SourceType.Kotlin ? new KotlinParserAdapter(this) : new JavaParser(this);
         this.sourceType = sourceType;
     }
 
     public SourceParser(Reader r, SourceType sourceType, int line, int col, int pos) {
         TokenStream lexer = getLexer(r, sourceType, line, col, pos);
         tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
+        parser = sourceType == SourceType.Kotlin ? new KotlinParserAdapter(this) : new JavaParser(this);
         this.sourceType = sourceType;
     }
 

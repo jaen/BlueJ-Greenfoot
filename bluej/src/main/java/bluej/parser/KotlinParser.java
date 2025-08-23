@@ -26,8 +26,6 @@ import java.util.List;
 
 import bluej.parser.lexer.*;
 import bluej.parser.nodes.ParsedNode;
-import bluej.parser.pratt.KotlinParserAdapter;
-import bluej.parser.pratt.ParseletRegistry;
 
 import static bluej.parser.lexer.JavaTokenTypes.*;
 
@@ -48,11 +46,7 @@ public class KotlinParser implements ParserBehavior
 {
     private SourceParser parser;
 
-    /**
-     * Adapter for the new Pratt parser implementation.
-     * This will gradually take over parsing responsibilities from the current implementation.
-     */
-    private KotlinParserAdapter prattAdapter;
+
 
     public static final int TYPEDEF_CLASS = 0;
     public static final int TYPEDEF_INTERFACE = 1;
@@ -66,9 +60,6 @@ public class KotlinParser implements ParserBehavior
     public KotlinParser(SourceParser parser)
     {
         this.parser = parser;
-        // Initialize the Pratt parser adapter for gradual migration
-        // Note: The adapter handles JavaFX threading requirements internally
-        this.prattAdapter = new KotlinParserAdapter(parser.getTokenStream(), parser);
     }
 
     public final JavaTokenFilter getTokenStream()
@@ -1180,17 +1171,8 @@ public class KotlinParser implements ParserBehavior
      */
     public final void parseExpression(boolean isLambdaBody, boolean lambdaAllowed)
     {
-        // Attempt to use the new Pratt parser if it's capable of handling expressions
-        if (prattAdapter.canParseExpression()) {
-            // Delegate to the new Pratt parser via the adapter
-            // The adapter handles threading requirements and capability checking
-            ParsedNode result = prattAdapter.parseExpression();
-            if (result != null) {
-                // Successfully parsed with new parser
-                return;
-            }
-            // Fall back to old parser if new parser fails
-        }
+        // Note: Expression delegation is now handled at the KotlinParserAdapter level
+        // This method provides the fallback implementation for expressions
 
         // For now, just skip to the next semicolon or closing brace
         LocatableToken token = nextToken();
