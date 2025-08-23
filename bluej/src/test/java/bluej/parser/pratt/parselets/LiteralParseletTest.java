@@ -23,6 +23,7 @@ package bluej.parser.pratt.parselets;
 
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.TokenOperations;
@@ -71,9 +72,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.NUM_LONG, "42L", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for long literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -81,9 +82,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.NUM_FLOAT, "3.14f", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for float literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -91,9 +92,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.NUM_DOUBLE, "3.14", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for double literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -101,9 +102,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.STRING_LITERAL, "\"hello world\"", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for string literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -111,9 +112,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.STRING_LITERAL_MULTILINE, "\"\"\"hello\nworld\"\"\"", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for multiline string literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -121,9 +122,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.CHAR_LITERAL, "'c'", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for character literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -131,9 +132,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.LITERAL_true, "true", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for boolean true literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -141,9 +142,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.LITERAL_false, "false", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for boolean false literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -151,9 +152,9 @@ public class LiteralParseletTest extends TestCase {
         LocatableToken token = createToken(JavaTokenTypes.LITERAL_null, "null", 1, 1);
         ParsedNode result = parselet.parse(testParser, token);
 
-        assertNull("Foundation phase: parselet validates but doesn't create nodes yet", result);
+        assertNotNull("Should create an AST node for null literal", result);
         assertFalse("No errors should be reported for valid tokens", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
     }
 
     @Test
@@ -193,10 +194,11 @@ public class LiteralParseletTest extends TestCase {
         for (int tokenType : literalTypes) {
             TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
             LocatableToken token = createToken(tokenType, "test", 1, 1);
-            // Test that valid literal tokens parse without errors (foundation phase)
+            // Test that valid literal tokens create nodes
             ParsedNode result = parselet.parse(freshParser, token);
-            assertNull("Foundation phase: should validate but not create nodes", result);
+            assertNotNull("Should create AST nodes for valid literal tokens", result);
             assertFalse("Should not produce errors for valid literal tokens", freshParser.hasErrors());
+            assertEquals("Should be an expression node", ParsedNode.NODETYPE_EXPRESSION, result.getNodeType());
             assertNotNull("Should provide description for token type " + tokenType,
                 parselet.getHandledConstruct(tokenType));
         }
@@ -240,10 +242,11 @@ public class LiteralParseletTest extends TestCase {
         ParsedNode result1 = parselet.parse(testParser, token1);
         ParsedNode result2 = parselet.parse(testParser, token2);
 
-        assertNull("Foundation phase: first parse validates but doesn't create nodes", result1);
-        assertNull("Foundation phase: second parse validates but doesn't create nodes", result2);
+        assertNotNull("First parse should create an AST node", result1);
+        assertNotNull("Second parse should create an AST node", result2);
         assertFalse("No errors should be reported", testParser.hasErrors());
-        // canHandle method removed - parse behavior is sufficient validation
+        assertEquals("First should be expression node", ParsedNode.NODETYPE_EXPRESSION, result1.getNodeType());
+        assertEquals("Second should be expression node", ParsedNode.NODETYPE_EXPRESSION, result2.getNodeType());
     }
 
     /**
@@ -270,6 +273,14 @@ public class LiteralParseletTest extends TestCase {
         public void error(String message, LocatableToken token) {
             hasErrors = true;
             lastError = message;
+        }
+
+        @Override
+        public ParsedNode createLiteralNode(LocatableToken token) {
+            // Create a test ExpressionNode for testing
+            ExpressionNode node = new ExpressionNode(null);
+            node.setComplete(true, token.getPosition(), token.getEndPosition());
+            return node;
         }
 
         public boolean hasErrors() {

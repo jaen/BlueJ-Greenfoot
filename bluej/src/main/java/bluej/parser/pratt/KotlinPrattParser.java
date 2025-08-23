@@ -23,6 +23,7 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.JavaTokenTypes;
+import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.SourceParser;
 import bluej.parser.pratt.parselets.BinaryOperatorParselet;
@@ -814,6 +815,23 @@ public class KotlinPrattParser {
             case JavaTokenTypes.LITERAL_var -> "keyword 'var'";
             default -> "token type " + tokenType;
         };
+    }
+
+    /**
+     * Creates a literal AST node for the given token.
+     * 
+     * <p>This method creates an appropriate AST node to represent a literal value.
+     * For now, it returns null as a placeholder while we're working on threading issues.
+     * The actual node creation needs to happen on the appropriate thread.</p>
+     * 
+     * @param token The literal token to create a node for
+     * @return An ExpressionNode representing the literal (currently null for foundation)
+     */
+    public ParsedNode createLiteralNode(LocatableToken token) {
+        // TODO: Implement proper AST node creation with threading support
+        // The node creation needs to happen on the FXPlatform thread
+        // This will be implemented in the threading adapter phase
+        return null;
     }
 
     /**
