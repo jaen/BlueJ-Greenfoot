@@ -103,23 +103,15 @@ public class ThisSuperParseletTest extends TestCase {
     @Test
     public void testThisNullToken() {
         // Test error handling for null token
-        try {
-            thisParselet.parse(parser, null);
-            fail("Should throw IllegalArgumentException for null token");
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
+        ParsedNode result = thisParselet.parse(parser, null);
+        assertNull("Should return null for null token", result);
     }
 
     @Test
     public void testSuperNullToken() {
         // Test error handling for null token
-        try {
-            superParselet.parse(parser, null);
-            fail("Should throw IllegalArgumentException for null token");
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
+        ParsedNode result = superParselet.parse(parser, null);
+        assertNull("Should return null for null token", result);
     }
 
     @Test

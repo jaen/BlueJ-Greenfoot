@@ -23,6 +23,8 @@ package bluej.parser.pratt.parselets;
 
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import bluej.parser.lexer.JavaTokenTypes;
+import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.PrefixParselet;
 
@@ -70,25 +72,61 @@ public class PrefixOperatorParselet implements PrefixParselet
     @Override
     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token)
     {
+        // Validate token is not null
+        if (!ParseletErrorHandler.validateToken(parser, token, "prefix operator parselet")) {
+            return null;
+        }
+
+        // Validate that this is actually a prefix operator token
+        int[] validPrefixOperators = {
+            JavaTokenTypes.PLUS, JavaTokenTypes.MINUS, JavaTokenTypes.LNOT,
+            JavaTokenTypes.INC, JavaTokenTypes.DEC
+        };
+        if (!ParseletErrorHandler.validateTokenTypes(parser, token, validPrefixOperators, "prefix operator")) {
+            return null;
+        }
+
+        // Get and validate NodeFactory
+        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
+        if (nodeFactory == null) {
+            return null;
+        }
+
         // Parse the operand with the precedence of this prefix operator
         // This ensures that the operand is parsed correctly with respect to
         // other operators that might follow
         ParsedNode operand = parser.parseExpression(precedence);
 
-        if (operand == null) {
-            // If we couldn't parse the operand, this is a syntax error
-            // The parser should have already reported an error
+        // Validate that we successfully parsed the operand
+        String operatorDescription = "prefix " + getOperatorDescription(token);
+        if (!ParseletErrorHandler.validatePrefixOperand(parser, operand, token, operatorDescription)) {
             return null;
         }
 
-        // Use the NodeFactory to create the unary operator node
-        // This maintains thread safety and follows the established pattern
-        try {
-            return parser.getNodeFactory().createUnaryPrefixNode(token, operand);
-        } catch (Exception e) {
-            // If node creation fails, return null to indicate parse failure
-            // The NodeFactory should handle thread safety concerns
-            return null;
+        // Use the NodeFactory to create the unary operator node safely
+        return ParseletErrorHandler.safeCreateNode(
+            nodeFactory,
+            () -> nodeFactory.createUnaryPrefixNode(token, operand),
+            parser,
+            token,
+            "prefix operator node"
+        );
+    }
+
+    /**
+     * Provides a human-readable description of the operator for error messages.
+     *
+     * @param token The operator token
+     * @return A descriptive string for the operator
+     */
+    private String getOperatorDescription(LocatableToken token) {
+        switch (token.getType()) {
+            case JavaTokenTypes.PLUS: return "plus (+)";
+            case JavaTokenTypes.MINUS: return "minus (-)";
+            case JavaTokenTypes.LNOT: return "logical not (!)";
+            case JavaTokenTypes.INC: return "increment (++)";
+            case JavaTokenTypes.DEC: return "decrement (--)";
+            default: return "operator";
         }
     }
 

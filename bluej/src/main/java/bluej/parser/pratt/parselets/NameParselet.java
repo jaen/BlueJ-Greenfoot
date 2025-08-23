@@ -88,45 +88,44 @@ public class NameParselet implements PrefixParselet {
      */
     @Override
     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            throw new IllegalArgumentException("Token cannot be null");
+        // Validate token is not null
+        if (!ParseletErrorHandler.validateToken(parser, token, "name parselet")) {
+            return null;
         }
 
-        NodeFactory nodeFactory = parser.getNodeFactory();
+        // Get and validate NodeFactory
+        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
         if (nodeFactory == null) {
-            throw new IllegalStateException("Parser must have a NodeFactory to create nodes");
+            return null;
         }
 
         // Validate that this is actually an identifier token
         if (!isValidIdentifierToken(token)) {
-            nodeFactory.reportError("Expected identifier but got: " + token.getType(), token);
+            ParseletErrorHandler.reportInvalidIdentifier(parser, token);
             return null;
         }
 
         // Handle backtick identifiers by extracting the actual name
         String identifierText = extractIdentifierText(token);
         if (identifierText == null || identifierText.isEmpty()) {
-            nodeFactory.reportError("Invalid identifier format: " + token.getText(), token);
+            ParseletErrorHandler.reportSyntaxError(parser, "Invalid identifier format: " + token.getText(), token);
             return null;
         }
 
         // Validate identifier according to Kotlin rules
         if (!isValidKotlinIdentifier(identifierText)) {
-            nodeFactory.reportError("Invalid Kotlin identifier: " + identifierText, token);
+            ParseletErrorHandler.reportSyntaxError(parser, "Invalid Kotlin identifier: " + identifierText, token);
             return null;
         }
 
-        // Create the identifier node using the factory
-        try {
-            ParsedNode identifierNode = nodeFactory.createIdentifierNode(token);
-            if (identifierNode == null) {
-                nodeFactory.reportError("Failed to create identifier node", token);
-            }
-            return identifierNode;
-        } catch (Exception e) {
-            nodeFactory.reportError("Error creating identifier node: " + e.getMessage(), token);
-            return null;
-        }
+        // Create the identifier node using the factory safely
+        return ParseletErrorHandler.safeCreateNode(
+            nodeFactory,
+            () -> nodeFactory.createIdentifierNode(token),
+            parser,
+            token,
+            "identifier node"
+        );
     }
 
     /**

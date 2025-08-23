@@ -86,32 +86,30 @@ public class SuperParselet implements PrefixParselet {
      */
     @Override
     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            throw new IllegalArgumentException("Token cannot be null");
+        // Validate token is not null
+        if (!ParseletErrorHandler.validateToken(parser, token, "super parselet")) {
+            return null;
         }
 
-        NodeFactory nodeFactory = parser.getNodeFactory();
+        // Get and validate NodeFactory
+        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
         if (nodeFactory == null) {
-            throw new IllegalStateException("Parser must have a NodeFactory to create nodes");
+            return null;
         }
 
         // Validate that this is actually a 'super' token
-        if (!isSuperToken(token)) {
-            nodeFactory.reportError("Expected 'super' keyword but got: " + getTokenDescription(token), token);
+        if (!ParseletErrorHandler.validateTokenType(parser, token, JavaTokenTypes.LITERAL_super)) {
             return null;
         }
 
-        // Create the 'super' reference node using the factory
-        try {
-            ParsedNode superNode = nodeFactory.createSuperNode(token);
-            if (superNode == null) {
-                nodeFactory.reportError("Failed to create 'super' node", token);
-            }
-            return superNode;
-        } catch (Exception e) {
-            nodeFactory.reportError("Error creating 'super' node: " + e.getMessage(), token);
-            return null;
-        }
+        // Create the 'super' reference node using the factory safely
+        return ParseletErrorHandler.safeCreateNode(
+            nodeFactory,
+            () -> nodeFactory.createSuperNode(token),
+            parser,
+            token,
+            "'super' node"
+        );
     }
 
     /**

@@ -101,12 +101,8 @@ public class NameParseletTest extends TestCase {
     @Test
     public void testNullToken() {
         // Test error handling for null token
-        try {
-            parselet.parse(parser, null);
-            fail("Should throw IllegalArgumentException for null token");
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
+        ParsedNode result = parselet.parse(parser, null);
+        assertNull("Should return null for null token", result);
     }
 
     @Test

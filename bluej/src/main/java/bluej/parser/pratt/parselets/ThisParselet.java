@@ -85,32 +85,30 @@ public class ThisParselet implements PrefixParselet {
      */
     @Override
     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            throw new IllegalArgumentException("Token cannot be null");
+        // Validate token is not null
+        if (!ParseletErrorHandler.validateToken(parser, token, "this parselet")) {
+            return null;
         }
 
-        NodeFactory nodeFactory = parser.getNodeFactory();
+        // Get and validate NodeFactory
+        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
         if (nodeFactory == null) {
-            throw new IllegalStateException("Parser must have a NodeFactory to create nodes");
+            return null;
         }
 
         // Validate that this is actually a 'this' token
-        if (!isThisToken(token)) {
-            nodeFactory.reportError("Expected 'this' keyword but got: " + getTokenDescription(token), token);
+        if (!ParseletErrorHandler.validateTokenType(parser, token, JavaTokenTypes.LITERAL_this)) {
             return null;
         }
 
-        // Create the 'this' reference node using the factory
-        try {
-            ParsedNode thisNode = nodeFactory.createThisNode(token);
-            if (thisNode == null) {
-                nodeFactory.reportError("Failed to create 'this' node", token);
-            }
-            return thisNode;
-        } catch (Exception e) {
-            nodeFactory.reportError("Error creating 'this' node: " + e.getMessage(), token);
-            return null;
-        }
+        // Create the 'this' reference node using the factory safely
+        return ParseletErrorHandler.safeCreateNode(
+            nodeFactory,
+            () -> nodeFactory.createThisNode(token),
+            parser,
+            token,
+            "'this' node"
+        );
     }
 
     /**
