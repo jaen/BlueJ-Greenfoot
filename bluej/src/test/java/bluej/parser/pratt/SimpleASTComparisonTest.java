@@ -23,9 +23,17 @@ package bluej.parser.pratt;
 
 import bluej.JavaFXThreadingRule;
 import bluej.NonParallelisableTests;
+import bluej.parser.InitConfig;
 import bluej.parser.SourceParser;
+import bluej.parser.TestableDocument;
+import bluej.parser.entity.ClassLoaderResolver;
+import bluej.parser.entity.EntityResolver;
+import bluej.parser.nodes.NodeTree;
+import bluej.parser.nodes.ParsedCUNode;
 import bluej.parser.nodes.ParsedNode;
+import bluej.extensions2.SourceType;
 import junit.framework.TestCase;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -33,6 +41,7 @@ import threadchecker.OnThread;
 import threadchecker.Tag;
 
 import java.io.StringReader;
+import java.util.Iterator;
 
 /**
  * Simple AST comparison test that logs results without failing.
@@ -45,6 +54,12 @@ public class SimpleASTComparisonTest extends TestCase {
 
     @Rule
     public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
+
+    @BeforeClass
+    public static void initConfig()
+    {
+        InitConfig.init();
+    }
 
     @Test
     public void testBasicLiterals() {
@@ -155,21 +170,123 @@ public class SimpleASTComparisonTest extends TestCase {
         }
     }
 
+    @Test
+    public void testSingleExpressionComparison() {
+        System.out.println("\n=== Single Expression Comparison Test ===");
+
+        String[] expressions = {
+            "42",
+            "\"test\"",
+            "myVar",
+            "a + b",
+            "obj.method()"
+        };
+
+        int matches = 0;
+        int total = expressions.length;
+
+        for (String expr : expressions) {
+            System.out.println("\nComparing: " + expr);
+
+            try {
+                ParseResult monolithicResult = parseWithMonolithicParser(expr);
+                ParseResult prattResult = parseWithPrattParser(expr);
+
+                System.out.println("  Monolithic: " + (monolithicResult.success ? "SUCCESS" : "FAILED"));
+                System.out.println("  Pratt: " + (prattResult.success ? "SUCCESS" : "FAILED"));
+
+                if (monolithicResult.success && prattResult.success) {
+                    // Extract expression nodes for comparison
+                    ParsedNode monolithicExpr = extractExpressionNode(monolithicResult.ast);
+                    ParsedNode prattExpr = prattResult.ast;
+
+                    System.out.println("  Monolithic AST: " + ASTComparisonUtils.astToString(monolithicExpr));
+                    System.out.println("  Pratt AST: " + ASTComparisonUtils.astToString(prattExpr));
+
+                    if (monolithicExpr != null && prattExpr != null) {
+                        ASTComparisonUtils.ComparisonResult comparison =
+                            ASTComparisonUtils.compareAST(monolithicExpr, prattExpr,
+                                ASTComparisonUtils.ComparisonMode.STRUCTURAL);
+
+                        if (comparison.matches()) {
+                            System.out.println("  ✓ AST structures match!");
+                            matches++;
+                        } else {
+                            System.out.println("  ✗ AST mismatch: " + comparison.toString());
+                        }
+                    } else {
+                        System.out.println("  ⚠ One or both expression nodes not found");
+                    }
+                } else {
+                    System.out.println("  ⚠ Parsing failed for one or both parsers");
+                }
+            } catch (Exception e) {
+                System.out.println("  ✗ Exception: " + e.getMessage());
+            }
+        }
+
+        System.out.printf("\nSummary: %d/%d expressions matched structurally%n", matches, total);
+        System.out.printf("Success rate: %.1f%%%n", (double) matches / total * 100);
+
+        // This is informational only - we don't assert to avoid breaking the build
+        // The goal is to see what the current state is
+    }
+
     /**
-     * Parse with monolithic parser (via SourceParser)
+     * Helper method to extract expression nodes from the monolithic parser's AST
+     */
+    private ParsedNode extractExpressionNode(ParsedNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        // The monolithic parser wraps expressions in a class/method context
+        // We need to traverse down to find the actual expression node
+        // This is a simplified extraction - may need refinement
+        return findFirstExpressionNode(root);
+    }
+
+    private ParsedNode findFirstExpressionNode(ParsedNode node) {
+        if (node == null) {
+            return null;
+        }
+
+        // Check if this node is an expression
+        if (node.getNodeType() == ParsedNode.NODETYPE_EXPRESSION) {
+            return node;
+        }
+
+        // Recursively search children
+        Iterator<NodeTree.NodeAndPosition<ParsedNode>> children = node.getChildren(0);
+        while (children.hasNext()) {
+            NodeTree.NodeAndPosition<ParsedNode> child = children.next();
+            ParsedNode result = findFirstExpressionNode(child.getNode());
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse with monolithic parser using TestableDocument to capture AST
      */
     @OnThread(Tag.FXPlatform)
     private ParseResult parseWithMonolithicParser(String source) {
         try {
-            StringReader reader = new StringReader(source);
-            SourceParser sourceParser = new SourceParser(reader, bluej.extensions2.SourceType.Kotlin);
+            // Wrap expression in minimal class context for full parsing
+            String wrappedSource = "class TestClass {\n    void testMethod() {\n        " + source + ";\n    }\n}";
 
-            // Call parseExpression which delegates to the actual parser
-            sourceParser.parseExpression();
+            EntityResolver resolver = new ClassLoaderResolver(getClass().getClassLoader());
+            TestableDocument document = new TestableDocument(resolver, SourceType.Kotlin);
+            document.enableParser(true);
+            document.insertString(0, wrappedSource);
 
-            // For now we can't capture the actual AST from the monolithic parser easily
-            // so we just record that it completed without throwing an exception
-            return new ParseResult(true, null, "Monolithic parser completed without exception");
+            // Get the root AST node
+            ParsedCUNode rootNode = document.getParser();
+
+            return new ParseResult(true, rootNode, "Monolithic parser completed with AST");
 
         } catch (Exception e) {
             return new ParseResult(false, null, "Parse error: " + e.getMessage());
@@ -177,13 +294,13 @@ public class SimpleASTComparisonTest extends TestCase {
     }
 
     /**
-     * Parse with Pratt parser
+     * Parse with Pratt parser - parse just the expression
      */
     @OnThread(Tag.FXPlatform)
     private ParseResult parseWithPrattParser(String source) {
         try {
             StringReader reader = new StringReader(source);
-            SourceParser sourceParser = new SourceParser(reader, bluej.extensions2.SourceType.Kotlin);
+            SourceParser sourceParser = new SourceParser(reader, SourceType.Kotlin);
 
             TestTokenOperations tokenOps = new TestTokenOperations(sourceParser.getTokenStream());
             TestNodeFactory nodeFactory = new TestNodeFactory();
