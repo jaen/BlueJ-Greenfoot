@@ -22,9 +22,11 @@
 package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.nodes.NodeTree;
 import bluej.parser.nodes.ParsedNode;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -159,12 +161,14 @@ public final class ASTComparisonUtils {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(node.getClass().getSimpleName());
+        sb.append(nodeContentToString(node));
 
         // Add position information if available
-        LocatableToken token = getNodeToken(node);
-        if (token != null) {
-            sb.append(String.format("@%d:%d", token.getLine(), token.getColumn()));
+        try {
+            int pos = node.getAbsoluteEditorPosition();
+            sb.append("@").append(pos);
+        } catch (Exception e) {
+            // Position not available, continue without it
         }
 
         // Add child nodes
@@ -257,32 +261,24 @@ public final class ASTComparisonUtils {
     }
 
     private static boolean comparePositions(ParsedNode expected, ParsedNode actual, ComparisonContext context, String path) {
-        LocatableToken expectedToken = getNodeToken(expected);
-        LocatableToken actualToken = getNodeToken(actual);
+        // Since ParsedNode doesn't expose token information directly,
+        // we compare absolute editor positions instead
+        try {
+            int expectedPos = expected.getAbsoluteEditorPosition();
+            int actualPos = actual.getAbsoluteEditorPosition();
 
-        if (expectedToken == null && actualToken == null) {
+            if (expectedPos != actualPos) {
+                context.addDifference(path, String.format("Position mismatch - expected: %d, actual: %d",
+                        expectedPos, actualPos));
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            // If position comparison fails, we'll skip position validation
+            // This allows structural comparison to continue
             return true;
         }
-
-        if (expectedToken == null || actualToken == null) {
-            context.addDifference(path, "Position token availability mismatch");
-            return false;
-        }
-
-        boolean matches = true;
-        if (expectedToken.getLine() != actualToken.getLine()) {
-            context.addDifference(path, String.format("Line mismatch - expected: %d, actual: %d",
-                    expectedToken.getLine(), actualToken.getLine()));
-            matches = false;
-        }
-
-        if (expectedToken.getColumn() != actualToken.getColumn()) {
-            context.addDifference(path, String.format("Column mismatch - expected: %d, actual: %d",
-                    expectedToken.getColumn(), actualToken.getColumn()));
-            matches = false;
-        }
-
-        return matches;
     }
 
     private static boolean compareNodeContent(ParsedNode expected, ParsedNode actual, ComparisonContext context, String path) {
@@ -324,26 +320,66 @@ public final class ASTComparisonUtils {
     }
 
     private static LocatableToken getNodeToken(ParsedNode node) {
-        // This would need to be implemented based on the actual ParsedNode interface
-        // For now, return null as a placeholder
-        // TODO: Implement based on actual BlueJ AST node structure
-        return null;
+        // ParsedNode doesn't directly expose token information
+        // For position comparison, we can use absolute position information
+        // This is a simplified implementation - in practice, token information
+        // would need to be extracted from the specific node types
+        return null; // Position comparison will be handled differently
     }
 
     private static List<ParsedNode> getChildNodes(ParsedNode node) {
-        // This would need to be implemented based on the actual ParsedNode interface
-        // For now, return empty list as a placeholder
-        // TODO: Implement based on actual BlueJ AST node structure
-        return new ArrayList<>();
+        if (node == null) {
+            return new ArrayList<>();
+        }
+
+        List<ParsedNode> children = new ArrayList<>();
+        Iterator<NodeTree.NodeAndPosition<ParsedNode>> iterator = node.getChildren(0);
+
+        while (iterator.hasNext()) {
+            NodeTree.NodeAndPosition<ParsedNode> childWithPos = iterator.next();
+            children.add(childWithPos.getNode());
+        }
+
+        return children;
     }
 
     private static String nodeContentToString(ParsedNode node) {
         if (node == null) {
             return "null";
         }
-        // This would extract the meaningful content from the node
-        // For now, use the simple class name
-        return node.getClass().getSimpleName();
+
+        StringBuilder content = new StringBuilder();
+        content.append(node.getClass().getSimpleName());
+
+        // Add node type information
+        int nodeType = node.getNodeType();
+        switch (nodeType) {
+            case ParsedNode.NODETYPE_EXPRESSION:
+                content.append("[EXPR]");
+                break;
+            case ParsedNode.NODETYPE_TYPEDEF:
+                content.append("[TYPE]");
+                break;
+            case ParsedNode.NODETYPE_METHODDEF:
+                content.append("[METHOD]");
+                break;
+            case ParsedNode.NODETYPE_FIELD:
+                content.append("[FIELD]");
+                break;
+            case ParsedNode.NODETYPE_ITERATION:
+                content.append("[ITER]");
+                break;
+            case ParsedNode.NODETYPE_SELECTION:
+                content.append("[SELECT]");
+                break;
+            case ParsedNode.NODETYPE_COMMENT:
+                content.append("[COMMENT]");
+                break;
+            default:
+                content.append("[").append(nodeType).append("]");
+        }
+
+        return content.toString();
     }
 
     /**
