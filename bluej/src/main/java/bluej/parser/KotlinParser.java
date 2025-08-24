@@ -1172,22 +1172,243 @@ public class KotlinParser implements ParserBehavior
     public final void parseExpression(boolean isLambdaBody, boolean lambdaAllowed)
     {
         // Note: Expression delegation is now handled at the KotlinParserAdapter level
-        // This method provides the fallback implementation for expressions
+        // This method provides the fallback implementation for expressions with error checking
 
-        // For now, just skip to the next semicolon or closing brace
-        LocatableToken token = nextToken();
+        LocatableToken firstToken = nextToken();
+        LocatableToken lastToken = null;
+        int parenBalance = 0; // Track parentheses balance
+
+        // Check for completely empty expressions or expressions starting with invalid binary operators
+        // Note: PLUS and MINUS can be unary operators at the start, so they're valid
+        if (isBinaryOperator(firstToken) && !canBeUnaryOperator(firstToken)) {
+            error("Expression cannot start with binary operator '" + firstToken.getText() + "'", firstToken);
+        }
+
+        // Check for valid expression start
+        if (!isValidExpressionStart(firstToken)) {
+            error("Invalid start of expression: '" + firstToken.getText() + "'", firstToken);
+        }
+
+        LocatableToken token = firstToken;
         while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.RCURLY &&
                token.getType() != JavaTokenTypes.RPAREN &&
                token.getType() != JavaTokenTypes.EOF &&
-                token.getType() != JavaTokenTypes.LITERAL_in
-                ) {
+               token.getType() != JavaTokenTypes.LITERAL_in) {
+
+            // Track parentheses balance
+            if (token.getType() == JavaTokenTypes.LPAREN) {
+                parenBalance++;
+            } else if (token.getType() == JavaTokenTypes.RPAREN) {
+                parenBalance--;
+            }
+
+            if (lastToken != null) {
+                // Check for invalid token sequences, but be more careful about valid constructs
+                if (isOperand(lastToken) && isOperand(token) &&
+                    !isValidOperandSequence(lastToken, token)) {
+                    error("Invalid syntax: two operands without operator between '" +
+                          lastToken.getText() + "' and '" + token.getText() + "'", token);
+                }
+
+                if (isBinaryOperator(lastToken) && !canBeUnaryOperator(lastToken)) {
+                    if (isBinaryOperator(token) && !canBeUnaryOperator(token)) {
+                        error("Invalid syntax: two operators in sequence '" +
+                              lastToken.getText() + "' '" + token.getText() + "'", token);
+                    } else if (!isValidAfterOperator(token)) {
+                        error("Invalid token after operator '" + lastToken.getText() + "': '" + token.getText() + "'", token);
+                    }
+                } else if (isOperand(lastToken) && !isBinaryOperator(token) &&
+                          !isValidExpressionTerminator(token) && !isValidAfterOperand(token)) {
+                    // Two operands in a row without valid connecting token
+                    error("Missing operator between '" + lastToken.getText() +
+                          "' and '" + token.getText() + "'", token);
+                }
+            }
+
+            lastToken = token;
             token = nextToken();
         }
 
-        if (token.getType() == JavaTokenTypes.RCURLY || token.getType() == JavaTokenTypes.RPAREN || token.getType() == JavaTokenTypes.LITERAL_in) {
+        // If we exited the loop due to finding an RPAREN, account for it in balance
+        if (token.getType() == JavaTokenTypes.RPAREN) {
+            parenBalance--;
+        }
+
+        // Check for expression ending with operator
+        if (lastToken != null && isBinaryOperator(lastToken)) {
+            error("Expression cannot end with operator '" + lastToken.getText() + "'", lastToken);
+        }
+
+        // Check for unbalanced parentheses
+        if (parenBalance > 0) {
+            error("Unbalanced parentheses: missing '" + parenBalance + "' closing parenthesis", firstToken);
+        } else if (parenBalance < 0) {
+            error("Unbalanced parentheses: extra closing parenthesis", firstToken);
+        }
+
+        // Push back the terminating token
+        if (token.getType() == JavaTokenTypes.RCURLY || token.getType() == JavaTokenTypes.RPAREN ||
+            token.getType() == JavaTokenTypes.LITERAL_in) {
             getTokenStream().pushBack(token);
         }
+    }
+
+    /**
+     * Check if a token is a valid start of an expression.
+     */
+    private boolean isValidExpressionStart(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.IDENT ||
+               type == JavaTokenTypes.NUM_INT ||
+               type == JavaTokenTypes.NUM_FLOAT ||
+               type == JavaTokenTypes.NUM_LONG ||
+               type == JavaTokenTypes.NUM_DOUBLE ||
+               type == JavaTokenTypes.STRING_LITERAL ||
+               type == JavaTokenTypes.CHAR_LITERAL ||
+               type == JavaTokenTypes.LITERAL_true ||
+               type == JavaTokenTypes.LITERAL_false ||
+               type == JavaTokenTypes.LITERAL_null ||
+               type == JavaTokenTypes.LITERAL_this ||
+               type == JavaTokenTypes.LITERAL_super ||
+               type == JavaTokenTypes.LPAREN ||
+               type == JavaTokenTypes.LBRACK ||
+               type == JavaTokenTypes.LCURLY ||
+               // Unary operators
+               type == JavaTokenTypes.PLUS ||
+               type == JavaTokenTypes.MINUS ||
+               type == JavaTokenTypes.LNOT ||
+               type == JavaTokenTypes.BNOT ||
+               // Prefix increment/decrement
+               type == JavaTokenTypes.INC ||
+               type == JavaTokenTypes.DEC;
+    }
+
+    /**
+     * Check if a token represents an operand (value).
+     */
+    private boolean isOperand(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.IDENT ||
+               type == JavaTokenTypes.NUM_INT ||
+               type == JavaTokenTypes.NUM_FLOAT ||
+               type == JavaTokenTypes.NUM_LONG ||
+               type == JavaTokenTypes.NUM_DOUBLE ||
+               type == JavaTokenTypes.STRING_LITERAL ||
+               type == JavaTokenTypes.CHAR_LITERAL ||
+               type == JavaTokenTypes.LITERAL_true ||
+               type == JavaTokenTypes.LITERAL_false ||
+               type == JavaTokenTypes.LITERAL_null ||
+               type == JavaTokenTypes.LITERAL_this ||
+               type == JavaTokenTypes.LITERAL_super ||
+               type == JavaTokenTypes.RPAREN ||  // end of grouped expression
+               type == JavaTokenTypes.RBRACK ||  // end of array access
+               type == JavaTokenTypes.RCURLY;    // end of object literal
+    }
+
+    /**
+     * Check if a token represents a binary operator.
+     */
+    private boolean isBinaryOperator(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.PLUS ||
+               type == JavaTokenTypes.MINUS ||
+               type == JavaTokenTypes.STAR ||
+               type == JavaTokenTypes.DIV ||
+               type == JavaTokenTypes.MOD ||
+               type == JavaTokenTypes.EQUAL ||
+               type == JavaTokenTypes.NOT_EQUAL ||
+               type == JavaTokenTypes.LT ||
+               type == JavaTokenTypes.LE ||
+               type == JavaTokenTypes.GT ||
+               type == JavaTokenTypes.GE ||
+               type == JavaTokenTypes.LAND ||
+               type == JavaTokenTypes.LOR ||
+               type == JavaTokenTypes.BAND ||
+               type == JavaTokenTypes.BOR ||
+               type == JavaTokenTypes.BXOR ||
+               type == JavaTokenTypes.SL ||
+               type == JavaTokenTypes.SR ||
+               type == JavaTokenTypes.BSR ||
+               type == JavaTokenTypes.ASSIGN ||
+               type == JavaTokenTypes.PLUS_ASSIGN ||
+               type == JavaTokenTypes.MINUS_ASSIGN ||
+               type == JavaTokenTypes.STAR_ASSIGN ||
+               type == JavaTokenTypes.DIV_ASSIGN ||
+               type == JavaTokenTypes.MOD_ASSIGN;
+    }
+
+    /**
+     * Check if a token is a valid expression terminator.
+     */
+    private boolean isValidExpressionTerminator(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.SEMI ||
+               type == JavaTokenTypes.RCURLY ||
+               type == JavaTokenTypes.RPAREN ||
+               type == JavaTokenTypes.RBRACK ||
+               type == JavaTokenTypes.COMMA ||
+               type == JavaTokenTypes.EOF ||
+               type == JavaTokenTypes.LITERAL_in ||
+               type == JavaTokenTypes.LITERAL_else;
+    }
+
+    /**
+     * Check if a token can be a unary operator.
+     */
+    private boolean canBeUnaryOperator(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.PLUS ||
+               type == JavaTokenTypes.MINUS ||
+               type == JavaTokenTypes.LNOT ||
+               type == JavaTokenTypes.BNOT ||
+               type == JavaTokenTypes.INC ||
+               type == JavaTokenTypes.DEC;
+    }
+
+    /**
+     * Check if a token is valid after an operand (e.g., for member access, function calls).
+     */
+    private boolean isValidAfterOperand(LocatableToken token) {
+        if (token == null) return false;
+
+        int type = token.getType();
+        return type == JavaTokenTypes.DOT ||        // member access
+               type == JavaTokenTypes.LPAREN ||     // function call
+               type == JavaTokenTypes.LBRACK ||     // array access
+               type == JavaTokenTypes.INC ||        // postfix increment
+               type == JavaTokenTypes.DEC;          // postfix decrement
+    }
+
+    /**
+     * Check if a token is valid after an operator.
+     */
+    private boolean isValidAfterOperator(LocatableToken token) {
+        if (token == null) return false;
+
+        // After an operator, we expect an operand or another unary operator
+        return isValidExpressionStart(token);
+    }
+
+    /**
+     * Check if two operands in sequence form a valid construct.
+     */
+    private boolean isValidOperandSequence(LocatableToken first, LocatableToken second) {
+        if (first == null || second == null) return false;
+
+        // Generally, two operands without an operator between them is invalid
+        // But there might be special cases in the future
+        return false;
     }
 
 
