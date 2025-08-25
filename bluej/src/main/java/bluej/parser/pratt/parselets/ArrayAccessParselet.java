@@ -27,6 +27,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.Precedence;
+import bluej.parser.pratt.ParseResult;
 
 /**
  * Parselet for array and collection access expressions in Kotlin.
@@ -78,47 +79,46 @@ public class ArrayAccessParselet implements InfixParselet
      * @return ParsedNode representing the array access, or null on error
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
     {
         if (left == null) {
-            parser.error("Missing array expression for indexing", token);
-            return null;
+            return ParseResult.failure("Missing array expression for indexing", token);
         }
 
         if (token == null || token.getType() != JavaTokenTypes.LBRACK) {
-            parser.error("Expected '[' for array access", token);
-            return null;
+            return ParseResult.failure("Expected '[' for array access", token);
         }
 
         // Parse the index expression
-        ParsedNode index = parser.parseExpression();
-        if (index == null) {
-            parser.error("Expected index expression in array access", parser.peek());
-            return null;
-        }
+        return parser.parseExpressionResult(0)
+            .mapFailure(error -> new ParseResult.ParseError(
+                "Expected index expression in array access", token))
+            .flatMap(index -> {
+                // Expect closing bracket
+                LocatableToken closingBracket = parser.peek();
+                if (closingBracket == null) {
+                    return ParseResult.failure("Unexpected end of input in array access", token);
+                }
 
-        // Expect closing bracket
-        LocatableToken closingBracket = parser.peek();
-        if (closingBracket == null) {
-            parser.error("Unexpected end of input in array access", null);
-            return null;
-        }
+                if (closingBracket.getType() != JavaTokenTypes.RBRACK) {
+                    return ParseResult.failure(
+                        "Expected ']' after index expression, found: " + closingBracket.getText(),
+                        closingBracket);
+                }
 
-        if (closingBracket.getType() != JavaTokenTypes.RBRACK) {
-            parser.error("Expected ']' after index expression, found: " + closingBracket.getText(), closingBracket);
-            return null;
-        }
+                // Consume the closing bracket
+                parser.consume();
 
-        // Consume the closing bracket
-        parser.consume();
-
-        // Create the array access node using NodeFactory
-        try {
-            return parser.getNodeFactory().createArrayAccessNode(left, index);
-        } catch (Exception e) {
-            // If node creation fails, return null to indicate parse failure
-            return null;
-        }
+                // Create the array access node using NodeFactory
+                try {
+                    ParsedNode node = parser.getNodeFactory().createArrayAccessNode(left, index);
+                    return ParseResult.success(node);
+                } catch (Exception e) {
+                    // If node creation fails, return failure with appropriate error
+                    return ParseResult.failure(
+                        "Failed to create array access node: " + e.getMessage(), token);
+                }
+            });
     }
 
     /**

@@ -26,6 +26,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
 
 /**
@@ -87,45 +88,62 @@ public class NameParselet implements PrefixParselet {
      * @throws IllegalArgumentException if token is null
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
         // Validate token is not null
-        if (!ParseletErrorHandler.validateToken(parser, token, "name parselet")) {
-            return null;
+        if (token == null) {
+            return ParseResult.failure("Null token in name parselet", null);
         }
 
-        // Get and validate NodeFactory
-        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
+        // Validate that this is indeed an identifier token
+        if (token.getType() != JavaTokenTypes.IDENT) {
+            return ParseResult.failure("Expected identifier token, got: " + getTokenTypeName(token.getType()), token);
+        }
+
+        // Create the identifier node using the NodeFactory
+        NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            return null;
+            return ParseResult.failure("NodeFactory not available for AST node creation", token);
         }
 
-        // Validate that this is actually an identifier token
-        if (!isValidIdentifierToken(token)) {
-            ParseletErrorHandler.reportInvalidIdentifier(parser, token);
+        // Create and return the identifier node
+        ParsedNode identifierNode = nodeFactory.createIdentifierNode(token);
+        return ParseResult.success(identifierNode);
+    }
+
+    /**
+     * Gets a human-readable name for a token type.
+     */
+    private String getTokenTypeName(int tokenType) {
+        return switch (tokenType) {
+            case JavaTokenTypes.IDENT -> "identifier";
+            case JavaTokenTypes.NUM_INT -> "integer literal";
+            case JavaTokenTypes.NUM_LONG -> "long literal";
+            case JavaTokenTypes.NUM_FLOAT -> "float literal";
+            case JavaTokenTypes.NUM_DOUBLE -> "double literal";
+            case JavaTokenTypes.STRING_LITERAL -> "string literal";
+            case JavaTokenTypes.CHAR_LITERAL -> "character literal";
+            case JavaTokenTypes.LITERAL_true -> "true literal";
+            case JavaTokenTypes.LITERAL_false -> "false literal";
+            case JavaTokenTypes.LITERAL_null -> "null literal";
+            default -> "token type " + tokenType;
+        };
+    }
+
+    /**
+     * Validates and parses an identifier token (legacy method for compatibility).
+     */
+    private ParsedNode parseIdentifierLegacy(KotlinPrattParser parser, LocatableToken token) {
+        // This method provides backward compatibility during transition
+        ParseResult<ParsedNode> result = parse(parser, token);
+        if (result.isSuccess()) {
+            return result.getValue();
+        } else {
+            // Report errors through traditional mechanism
+            for (ParseResult.ParseError error : result.getErrors()) {
+                parser.error(error.message(), error.token());
+            }
             return null;
         }
-
-        // Handle backtick identifiers by extracting the actual name
-        String identifierText = extractIdentifierText(token);
-        if (identifierText == null || identifierText.isEmpty()) {
-            ParseletErrorHandler.reportSyntaxError(parser, "Invalid identifier format: " + token.getText(), token);
-            return null;
-        }
-
-        // Validate identifier according to Kotlin rules
-        if (!isValidKotlinIdentifier(identifierText)) {
-            ParseletErrorHandler.reportSyntaxError(parser, "Invalid Kotlin identifier: " + identifierText, token);
-            return null;
-        }
-
-        // Create the identifier node using the factory safely
-        return ParseletErrorHandler.safeCreateNode(
-            nodeFactory,
-            () -> nodeFactory.createIdentifierNode(token),
-            parser,
-            token,
-            "identifier node"
-        );
     }
 
     /**

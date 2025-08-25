@@ -53,13 +53,8 @@ import static bluej.utility.ResourceFileReader.getResourceFile;
  * <li>Parsing a more complex Kotlin file with various language constructs (kotlin_basic.dat)</li>
  * </ul>
  */
-@Category(NonParallelisableTests.class)
 public class KotlinBasicParseTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
-
     /**
      * Test that the KotlinInfoParser class exists and can be instantiated.
      * This is a basic test to verify that the Kotlin parser functionality is available.

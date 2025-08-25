@@ -25,12 +25,14 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
-import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +51,12 @@ import java.util.List;
  *
  * @author BlueJ Team
  */
-public class MemberAccessParseletTest extends TestCase
+public class MemberAccessParseletTest
 {
     private MemberAccessParselet memberAccessParselet;
     private TestKotlinPrattParser testParser;
 
-    @Override
+    @Before
     public void setUp() {
         memberAccessParselet = new MemberAccessParselet();
         testParser = new TestKotlinPrattParser();
@@ -75,11 +77,14 @@ public class MemberAccessParseletTest extends TestCase
         // Setup parser to return the property token when peeked/consumed
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNotNull("Regular member access should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("MemberAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("MemberAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -92,11 +97,14 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, safeAccess);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, safeAccess);
 
-        assertNotNull("Safe member access should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("MemberAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("MemberAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -110,7 +118,10 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(prop1);
 
-        ParsedNode firstAccess = memberAccessParselet.parse(testParser, object, dot1);
+        ParseResult<ParsedNode> firstAccessResult = memberAccessParselet.parse(testParser, object, dot1);
+        assertNotNull("Should return a result", firstAccessResult);
+        assertTrue("Should be successful", firstAccessResult.isSuccess());
+        ParsedNode firstAccess = firstAccessResult.getValue();
         assertNotNull("First member access should succeed", firstAccess);
 
         // Second access: .prop2
@@ -119,7 +130,10 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(prop2);
 
-        ParsedNode secondAccess = memberAccessParselet.parse(testParser, firstAccess, dot2);
+        ParseResult<ParsedNode> secondAccessResult = memberAccessParselet.parse(testParser, firstAccess, dot2);
+        assertNotNull("Should return a result", secondAccessResult);
+        assertTrue("Should be successful", secondAccessResult.isSuccess());
+        ParsedNode secondAccess = secondAccessResult.getValue();
         assertNotNull("Chained member access should succeed", secondAccess);
         assertTrue("Should be a TestNode", secondAccess instanceof TestNodeFactory.TestNode);
         assertEquals("MemberAccess", ((TestNodeFactory.TestNode) secondAccess).getTestNodeType());
@@ -134,7 +148,10 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(regular);
 
-        ParsedNode regularAccess = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> regularAccessResult = memberAccessParselet.parse(testParser, object, dot);
+        assertNotNull("Should return a result", regularAccessResult);
+        assertTrue("Should be successful", regularAccessResult.isSuccess());
+        ParsedNode regularAccess = regularAccessResult.getValue();
         assertNotNull("Regular access should succeed", regularAccess);
 
         // Now safe access
@@ -143,7 +160,10 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(safeProp);
 
-        ParsedNode mixedAccess = memberAccessParselet.parse(testParser, regularAccess, safeAccess);
+        ParseResult<ParsedNode> mixedAccessResult = memberAccessParselet.parse(testParser, regularAccess, safeAccess);
+        assertNotNull("Should return a result", mixedAccessResult);
+        assertTrue("Should be successful", mixedAccessResult.isSuccess());
+        ParsedNode mixedAccess = mixedAccessResult.getValue();
         assertNotNull("Mixed access should succeed", mixedAccess);
         assertTrue("Should be a TestNode", mixedAccess instanceof TestNodeFactory.TestNode);
         assertEquals("MemberAccess", ((TestNodeFactory.TestNode) mixedAccess).getTestNodeType());
@@ -154,12 +174,14 @@ public class MemberAccessParseletTest extends TestCase
         // Test error case: null object
         LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 1);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, null, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, null, dot);
 
-        assertNull("Member access without object should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention missing object",
-                   testParser.getLastError().contains("Missing object"));
+                   result.getErrors().get(0).message().contains("Missing object"));
     }
 
     @Test
@@ -171,12 +193,14 @@ public class MemberAccessParseletTest extends TestCase
         // No token available after dot
         testParser.setEndOfInput(true);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNull("Member access without member name should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected member name",
-                   testParser.getLastError().contains("Expected member name"));
+                   result.getErrors().get(0).message().contains("Expected member name"));
     }
 
     @Test
@@ -188,12 +212,14 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(invalidMember);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNull("Member access with invalid member name should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected identifier",
-                   testParser.getLastError().contains("Expected identifier"));
+                   result.getErrors().get(0).message().contains("Expected identifier"));
     }
 
     @Test
@@ -202,12 +228,14 @@ public class MemberAccessParseletTest extends TestCase
         ParsedNode object = createIdentifierNode("obj");
         LocatableToken wrongToken = createToken(JavaTokenTypes.COMMA, ",", 1, 1);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, wrongToken);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, wrongToken);
 
-        assertNull("Member access with wrong token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected '.' or '?.'",
-                   testParser.getLastError().contains("Expected '.' or '?.'"));
+                   result.getErrors().get(0).message().contains("Expected '.' or '?.'"));
     }
 
     @Test
@@ -215,12 +243,14 @@ public class MemberAccessParseletTest extends TestCase
         // Test error case: null token
         ParsedNode object = createIdentifierNode("obj");
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, null);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, null);
 
-        assertNull("Member access with null token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention missing access operator",
-                   testParser.getLastError().contains("Missing access operator"));
+                   result.getErrors().get(0).message().contains("Missing access operator"));
     }
 
     @Test
@@ -244,9 +274,12 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNotNull("NodeFactory should create member access node", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("NodeFactory should create member access node", node);
 
         // Verify the factory was called with correct parameters
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
@@ -267,9 +300,10 @@ public class MemberAccessParseletTest extends TestCase
 
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNull("Should return null when NodeFactory fails", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when NodeFactory fails", result.isFailure());
     }
 
     @Test
@@ -282,9 +316,12 @@ public class MemberAccessParseletTest extends TestCase
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, safeAccess);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, safeAccess);
 
-        assertNotNull("Safe access should succeed", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Safe access should succeed", node);
         assertTrue("Factory should have recorded safe call",
                    factory.getLastSafeCallValue());
     }
@@ -299,9 +336,12 @@ public class MemberAccessParseletTest extends TestCase
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
         testParser.setNextToken(property);
 
-        ParsedNode result = memberAccessParselet.parse(testParser, object, dot);
+        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
 
-        assertNotNull("Regular access should succeed", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Regular access should succeed", node);
         assertFalse("Factory should have recorded regular call (not safe)",
                     factory.getLastSafeCallValue());
     }

@@ -27,6 +27,7 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.PrefixParselet;
+import bluej.parser.pratt.ParseResult;
 
 /**
  * Parselet for prefix unary operators in Kotlin.
@@ -70,47 +71,27 @@ public class PrefixOperatorParselet implements PrefixParselet
      * @return ParsedNode representing the unary operator expression, or null on error
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, LocatableToken token)
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token)
     {
         // Validate token is not null
-        if (!ParseletErrorHandler.validateToken(parser, token, "prefix operator parselet")) {
-            return null;
+        if (token == null) {
+            return ParseResult.failure("Null token in prefix operator parselet", null);
         }
 
-        // Validate that this is actually a prefix operator token
-        int[] validPrefixOperators = {
-            JavaTokenTypes.PLUS, JavaTokenTypes.MINUS, JavaTokenTypes.LNOT,
-            JavaTokenTypes.INC, JavaTokenTypes.DEC
-        };
-        if (!ParseletErrorHandler.validateTokenTypes(parser, token, validPrefixOperators, "prefix operator")) {
-            return null;
-        }
-
-        // Get and validate NodeFactory
-        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
+        // Get NodeFactory
+        NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            return null;
+            return ParseResult.failure("NodeFactory not available", token);
         }
 
         // Parse the operand with the precedence of this prefix operator
         // This ensures that the operand is parsed correctly with respect to
         // other operators that might follow
-        ParsedNode operand = parser.parseExpression(precedence);
-
-        // Validate that we successfully parsed the operand
-        String operatorDescription = "prefix " + getOperatorDescription(token);
-        if (!ParseletErrorHandler.validatePrefixOperand(parser, operand, token, operatorDescription)) {
-            return null;
-        }
-
-        // Use the NodeFactory to create the unary operator node safely
-        return ParseletErrorHandler.safeCreateNode(
-            nodeFactory,
-            () -> nodeFactory.createUnaryPrefixNode(token, operand),
-            parser,
-            token,
-            "prefix operator node"
-        );
+        return parser.parseExpressionResult(precedence)
+            .mapFailure(error -> new ParseResult.ParseError(
+                "Missing operand for " + getOperatorDescription(token) + " operator",
+                token))
+            .map(operand -> nodeFactory.createUnaryPrefixNode(token, operand));
     }
 
     /**
@@ -120,14 +101,14 @@ public class PrefixOperatorParselet implements PrefixParselet
      * @return A descriptive string for the operator
      */
     private String getOperatorDescription(LocatableToken token) {
-        switch (token.getType()) {
-            case JavaTokenTypes.PLUS: return "plus (+)";
-            case JavaTokenTypes.MINUS: return "minus (-)";
-            case JavaTokenTypes.LNOT: return "logical not (!)";
-            case JavaTokenTypes.INC: return "increment (++)";
-            case JavaTokenTypes.DEC: return "decrement (--)";
-            default: return "operator";
-        }
+        return switch (token.getType()) {
+            case JavaTokenTypes.PLUS -> "unary plus (+)";
+            case JavaTokenTypes.MINUS -> "unary minus (-)";
+            case JavaTokenTypes.LNOT -> "logical not (!)";
+            case JavaTokenTypes.INC -> "prefix increment (++)";
+            case JavaTokenTypes.DEC -> "prefix decrement (--)";
+            default -> "prefix";
+        };
     }
 
     /**

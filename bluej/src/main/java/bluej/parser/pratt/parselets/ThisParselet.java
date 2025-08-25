@@ -27,6 +27,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.PrefixParselet;
+import bluej.parser.pratt.ParseResult;
 
 /**
  * Parselet for parsing 'this' keyword references in Kotlin.
@@ -84,31 +85,32 @@ public class ThisParselet implements PrefixParselet {
      * @throws IllegalArgumentException if token is null
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
         // Validate token is not null
-        if (!ParseletErrorHandler.validateToken(parser, token, "this parselet")) {
-            return null;
+        if (token == null) {
+            return ParseResult.failure("Null token in 'this' parselet", null);
         }
 
-        // Get and validate NodeFactory
-        NodeFactory nodeFactory = ParseletErrorHandler.getNodeFactory(parser, token);
+        // Get NodeFactory
+        NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            return null;
+            return ParseResult.failure("NodeFactory not available", token);
         }
 
         // Validate that this is actually a 'this' token
-        if (!ParseletErrorHandler.validateTokenType(parser, token, JavaTokenTypes.LITERAL_this)) {
-            return null;
+        if (token.getType() != JavaTokenTypes.LITERAL_this) {
+            return ParseResult.failure(
+                "Expected 'this' keyword but found: " + getTokenDescription(token), token);
         }
 
-        // Create the 'this' reference node using the factory safely
-        return ParseletErrorHandler.safeCreateNode(
-            nodeFactory,
-            () -> nodeFactory.createThisNode(token),
-            parser,
-            token,
-            "'this' node"
-        );
+        // Create the 'this' reference node using the factory
+        try {
+            ParsedNode node = nodeFactory.createThisNode(token);
+            return ParseResult.success(node);
+        } catch (Exception e) {
+            return ParseResult.failure(
+                "Failed to create 'this' node: " + e.getMessage(), token);
+        }
     }
 
     /**

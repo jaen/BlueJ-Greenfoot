@@ -35,12 +35,8 @@ import org.junit.jupiter.api.Tag;
 /**
  * Basic Java 11 parse tests.
  */
-@Category(NonParallelisableTests.class)
 public class Java11BasicParseTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     /**
      * Test that a variable can be declared using the "var" keyword(ish).
      */

@@ -250,7 +250,7 @@ public class KotlinPrattParserTest extends TestCase {
         assertTrue("Should have errors", parser.hasErrors());
         assertEquals("Should have one error", 1, parser.getErrors().size());
 
-        KotlinPrattParser.ParseError error = parser.getErrors().get(0);
+        ParseResult.ParseError error = parser.getErrors().get(0);
         assertEquals("Error message should match", "Expected 'var' but found identifier", error.message());
     }
 
@@ -270,7 +270,7 @@ public class KotlinPrattParserTest extends TestCase {
         assertTrue("Should have errors", parser.hasErrors());
         assertEquals("Should have one error", 1, parser.getErrors().size());
 
-        KotlinPrattParser.ParseError error = parser.getErrors().get(0);
+        ParseResult.ParseError error = parser.getErrors().get(0);
         assertEquals("Error message should match", "Unexpected number in identifier position", error.message());
         assertEquals("Error line should match token", numberToken.getLine(), error.getLine());
         assertEquals("Error column should match token", numberToken.getColumn(), error.getColumn());
@@ -287,7 +287,7 @@ public class KotlinPrattParserTest extends TestCase {
         assertTrue("Should have errors", parser.hasErrors());
         assertEquals("Should have one error", 1, parser.getErrors().size());
 
-        KotlinPrattParser.ParseError error = parser.getErrors().get(0);
+        ParseResult.ParseError error = parser.getErrors().get(0);
         assertEquals("Error message should match", "Unexpected end of input", error.message());
         assertEquals("Error line should be -1 for null token", -1, error.getLine());
         assertEquals("Error column should be -1 for null token", -1, error.getColumn());
@@ -320,7 +320,7 @@ public class KotlinPrattParserTest extends TestCase {
 
         parser.error("Test error", token);
 
-        KotlinPrattParser.ParseError error = parser.getErrors().get(0);
+        ParseResult.ParseError error = parser.getErrors().get(0);
         String formatted = error.getFormattedMessage();
 
         assertTrue("Formatted message should contain error text", formatted.contains("Test error"));

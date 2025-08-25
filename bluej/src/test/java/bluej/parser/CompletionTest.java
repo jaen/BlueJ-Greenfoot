@@ -57,12 +57,8 @@ import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.*;
 
-@Category(NonParallelisableTests.class)
 public class CompletionTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-    
     @BeforeClass
     public static void initConfig()
     {

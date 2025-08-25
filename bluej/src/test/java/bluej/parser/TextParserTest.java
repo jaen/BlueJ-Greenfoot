@@ -48,12 +48,8 @@ import static org.junit.Assert.*;
  * 
  * @author Davin McCall
  */
-@Category(NonParallelisableTests.class)
 public class TextParserTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

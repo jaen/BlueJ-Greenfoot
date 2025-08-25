@@ -403,6 +403,18 @@ public final class JavaLexer implements TokenStream
             }
         }
 
+        // TODO: has to be a better way to handle that xD
+        if (rval == '.' && isKotlinLexer) {
+            if (peekNextChar() == '.') {
+                fpValid = false;
+                try {
+                    reader.pushBack(".", reader.getLineColPos().offsetSameLineBy(-1));
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
+        }
+
         if (rval == '.' && fpValid) {
             // A decimal.
             textBuffer.append((char) rval);
@@ -978,6 +990,26 @@ public final class JavaLexer implements TokenStream
         }
 
         return rChar;
+    }
+
+    private int peekNextChar() {
+        LineColPos position = reader.getLineColPos();
+        int peekChar;
+
+        try{
+            peekChar = reader.read();
+        } catch(IOException e) {
+            peekChar = -1;
+        }
+
+        try {
+            reader.pushBack(String.valueOf((char) peekChar), position);
+        } catch (IOException e) {
+            // TODO: there has to be a better way to handle this.
+            throw new RuntimeException(e);
+        }
+
+        return peekChar;
     }
 
     private int getWordType()

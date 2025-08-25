@@ -47,12 +47,8 @@ import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(NonParallelisableTests.class)
 public class EditorParserTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

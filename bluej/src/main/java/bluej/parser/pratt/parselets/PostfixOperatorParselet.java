@@ -25,6 +25,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 
 /**
  * Parselet for postfix unary operators in Kotlin.
@@ -71,28 +72,26 @@ public class PostfixOperatorParselet implements InfixParselet
      * @return ParsedNode representing the postfix operator expression, or null on error
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
     {
         if (left == null) {
-            // This should not happen in normal parsing, but handle gracefully
-            parser.error("Missing left operand for postfix operator: " + token.getText(), token);
-            return null;
+            return ParseResult.failure(
+                "Missing left operand for postfix operator" +
+                (token != null ? ": " + token.getText() : ""), token);
         }
 
         if (token == null) {
-            // This should not happen either, but be defensive
-            parser.error("Null token in postfix operator parselet", null);
-            return null;
+            return ParseResult.failure("Null token in postfix operator parselet", null);
         }
 
         // Use the NodeFactory to create the postfix operator node
-        // This maintains thread safety and follows the established pattern
         try {
-            return parser.getNodeFactory().createUnaryPostfixNode(left, token);
+            ParsedNode node = parser.getNodeFactory().createUnaryPostfixNode(left, token);
+            return ParseResult.success(node);
         } catch (Exception e) {
-            // If node creation fails, return null to indicate parse failure
-            // The NodeFactory should handle thread safety concerns
-            return null;
+            // If node creation fails, return failure with appropriate error
+            return ParseResult.failure(
+                "Failed to create postfix operator node: " + e.getMessage(), token);
         }
     }
 

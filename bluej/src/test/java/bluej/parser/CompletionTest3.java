@@ -53,12 +53,8 @@ import static org.junit.Assert.*;
 /**
  * Test for code completion, especially around local variables.
  */
-@Category(NonParallelisableTests.class)
 public class CompletionTest3
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

@@ -24,12 +24,15 @@ package bluej.parser.pratt.parselets;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Test cases for PostfixOperatorParselet.
@@ -42,14 +45,14 @@ import org.junit.Test;
  *
  * @author BlueJ Team
  */
-public class PostfixOperatorParseletTest extends TestCase
+public class PostfixOperatorParseletTest
 {
     private PostfixOperatorParselet postfixIncrementParselet;
     private PostfixOperatorParselet postfixDecrementParselet;
     private PostfixOperatorParselet nullAssertionParselet;
     private TestKotlinPrattParser testParser;
 
-    @Override
+    @Before
     public void setUp() {
         // Create parselets with appropriate precedence levels
         // Postfix operators have higher precedence than prefix (15 vs 13-14)
@@ -67,12 +70,15 @@ public class PostfixOperatorParseletTest extends TestCase
         LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 3);
         ParsedNode leftOperand = createLiteralNode(JavaTokenTypes.NUM_INT, "42", 1, 1);
 
-        ParsedNode result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
+        ParseResult<ParsedNode> result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
 
-        assertNotNull("Should parse postfix increment expression", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse postfix increment expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) result;
+        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) node;
         assertEquals("Should be UnaryPostfix node", "UnaryPostfix", postfixNode.getTestNodeType());
         assertNotNull("Should have children", postfixNode.getChildren());
         assertEquals("Should have one child (operand)", 1, postfixNode.getChildren().size());
@@ -87,12 +93,15 @@ public class PostfixOperatorParseletTest extends TestCase
         LocatableToken decToken = createToken(JavaTokenTypes.DEC, "--", 1, 3);
         ParsedNode leftOperand = createLiteralNode(JavaTokenTypes.NUM_INT, "42", 1, 1);
 
-        ParsedNode result = postfixDecrementParselet.parse(testParser, leftOperand, decToken);
+        ParseResult<ParsedNode> result = postfixDecrementParselet.parse(testParser, leftOperand, decToken);
 
-        assertNotNull("Should parse postfix decrement expression", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse postfix decrement expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) result;
+        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) node;
         assertEquals("Should be UnaryPostfix node", "UnaryPostfix", postfixNode.getTestNodeType());
         assertNotNull("Should have children", postfixNode.getChildren());
         assertEquals("Should have one child (operand)", 1, postfixNode.getChildren().size());
@@ -107,12 +116,15 @@ public class PostfixOperatorParseletTest extends TestCase
         LocatableToken nullAssertToken = createToken(JavaTokenTypes.NOT_EQUAL, "!!", 1, 3); // Using NOT_EQUAL as closest token
         ParsedNode leftOperand = createLiteralNode(JavaTokenTypes.LITERAL_null, "null", 1, 1);
 
-        ParsedNode result = nullAssertionParselet.parse(testParser, leftOperand, nullAssertToken);
+        ParseResult<ParsedNode> result = nullAssertionParselet.parse(testParser, leftOperand, nullAssertToken);
 
-        assertNotNull("Should parse null assertion expression", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse null assertion expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) result;
+        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) node;
         assertEquals("Should be UnaryPostfix node", "UnaryPostfix", postfixNode.getTestNodeType());
         assertNotNull("Should have children", postfixNode.getChildren());
         assertEquals("Should have one child (operand)", 1, postfixNode.getChildren().size());
@@ -126,11 +138,13 @@ public class PostfixOperatorParseletTest extends TestCase
     public void testMissingLeftOperand() {
         LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 1);
 
-        ParsedNode result = postfixIncrementParselet.parse(testParser, null, incToken);
+        ParseResult<ParsedNode> result = postfixIncrementParselet.parse(testParser, null, incToken);
 
-        assertNull("Should return null when left operand missing", result);
-        assertTrue("Should report error for missing left operand", testParser.hasErrors());
-        assertTrue("Error should mention missing operand", testParser.getLastError().contains("Missing left operand"));
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when left operand missing", result.isFailure());
+        assertFalse("Should not report error in parser", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
+        assertTrue("Error should mention missing operand", result.getErrors().get(0).message().contains("Missing left operand"));
     }
 
     /**
@@ -140,11 +154,13 @@ public class PostfixOperatorParseletTest extends TestCase
     public void testNullToken() {
         ParsedNode leftOperand = createLiteralNode(JavaTokenTypes.NUM_INT, "42", 1, 1);
 
-        ParsedNode result = postfixIncrementParselet.parse(testParser, leftOperand, null);
+        ParseResult<ParsedNode> result = postfixIncrementParselet.parse(testParser, leftOperand, null);
 
-        assertNull("Should return null when token is null", result);
-        assertTrue("Should report error for null token", testParser.hasErrors());
-        assertTrue("Error should mention null token", testParser.getLastError().contains("Null token"));
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when token is null", result.isFailure());
+        assertFalse("Should not report error in parser", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
+        assertTrue("Error should mention null token", result.getErrors().get(0).message().contains("Null token"));
     }
 
     /**
@@ -171,20 +187,26 @@ public class PostfixOperatorParseletTest extends TestCase
         ParsedNode stringOperand = createLiteralNode(JavaTokenTypes.STRING_LITERAL, "\"test\"", 1, 1);
         LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 7);
 
-        ParsedNode result1 = postfixIncrementParselet.parse(testParser, stringOperand, incToken);
-        assertNotNull("Should parse with string operand", result1);
-        assertTrue("Should be postfix node", result1 instanceof TestNodeFactory.TestNode);
-        assertEquals("Should be UnaryPostfix node", "UnaryPostfix", ((TestNodeFactory.TestNode)result1).getTestNodeType());
+        ParseResult<ParsedNode> result1 = postfixIncrementParselet.parse(testParser, stringOperand, incToken);
+        assertNotNull("Should return a result", result1);
+        assertTrue("Should be successful", result1.isSuccess());
+        ParsedNode node1 = result1.getValue();
+        assertNotNull("Should parse with string operand", node1);
+        assertTrue("Should be postfix node", node1 instanceof TestNodeFactory.TestNode);
+        assertEquals("Should be UnaryPostfix node", "UnaryPostfix", ((TestNodeFactory.TestNode)node1).getTestNodeType());
 
         // Test with boolean literal
         ParsedNode boolOperand = createLiteralNode(JavaTokenTypes.LITERAL_true, "true", 2, 1);
         LocatableToken decToken = createToken(JavaTokenTypes.DEC, "--", 2, 5);
 
         testParser.clearErrors(); // Clear any previous errors
-        ParsedNode result2 = postfixDecrementParselet.parse(testParser, boolOperand, decToken);
-        assertNotNull("Should parse with boolean operand", result2);
-        assertTrue("Should be postfix node", result2 instanceof TestNodeFactory.TestNode);
-        assertEquals("Should be UnaryPostfix node", "UnaryPostfix", ((TestNodeFactory.TestNode)result2).getTestNodeType());
+        ParseResult<ParsedNode> result2 = postfixDecrementParselet.parse(testParser, boolOperand, decToken);
+        assertNotNull("Should return a result", result2);
+        assertTrue("Should be successful", result2.isSuccess());
+        ParsedNode node2 = result2.getValue();
+        assertNotNull("Should parse with boolean operand", node2);
+        assertTrue("Should be postfix node", node2 instanceof TestNodeFactory.TestNode);
+        assertEquals("Should be UnaryPostfix node", "UnaryPostfix", ((TestNodeFactory.TestNode)node2).getTestNodeType());
     }
 
     /**
@@ -195,13 +217,16 @@ public class PostfixOperatorParseletTest extends TestCase
         LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 3);
         ParsedNode leftOperand = createLiteralNode(JavaTokenTypes.NUM_INT, "42", 1, 1);
 
-        ParsedNode result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
+        ParseResult<ParsedNode> result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
 
-        assertNotNull("Should create node via factory", result);
-        assertTrue("Should be TestNodeFactory node", result instanceof TestNodeFactory.TestNode);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create node via factory", node);
+        assertTrue("Should be TestNodeFactory node", node instanceof TestNodeFactory.TestNode);
 
         // Verify factory was used by checking node type and structure
-        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) result;
+        TestNodeFactory.TestNode postfixNode = (TestNodeFactory.TestNode) node;
         assertEquals("Should be UnaryPostfix node", "UnaryPostfix", postfixNode.getTestNodeType());
         assertNotNull("Should have children", postfixNode.getChildren());
         assertEquals("Should have one child (operand)", 1, postfixNode.getChildren().size());
@@ -218,9 +243,10 @@ public class PostfixOperatorParseletTest extends TestCase
 
         testParser.setNodeFactoryFailure(true);  // Make NodeFactory return null
 
-        ParsedNode result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
+        ParseResult<ParsedNode> result = postfixIncrementParselet.parse(testParser, leftOperand, incToken);
 
-        assertNull("Should return null when NodeFactory fails", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when NodeFactory fails", result.isFailure());
     }
 
     /**
@@ -233,16 +259,22 @@ public class PostfixOperatorParseletTest extends TestCase
 
         // Apply first postfix operator (++)
         LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 2);
-        ParsedNode firstResult = postfixIncrementParselet.parse(testParser, baseOperand, incToken);
+        ParseResult<ParsedNode> firstResult = postfixIncrementParselet.parse(testParser, baseOperand, incToken);
+        assertNotNull("Should return first result", firstResult);
+        assertTrue("First result should be successful", firstResult.isSuccess());
+        ParsedNode firstNode = firstResult.getValue();
 
         // Apply second postfix operator (--) to the result
         LocatableToken decToken = createToken(JavaTokenTypes.DEC, "--", 1, 4);
-        ParsedNode finalResult = postfixDecrementParselet.parse(testParser, firstResult, decToken);
+        ParseResult<ParsedNode> finalResult = postfixDecrementParselet.parse(testParser, firstNode, decToken);
 
-        assertNotNull("Should parse chained postfix operators", finalResult);
-        assertTrue("Final result should be postfix node", finalResult instanceof TestNodeFactory.TestNode);
+        assertNotNull("Should return final result", finalResult);
+        assertTrue("Final result should be successful", finalResult.isSuccess());
+        ParsedNode finalNode = finalResult.getValue();
+        assertNotNull("Should parse chained postfix operators", finalNode);
+        assertTrue("Final result should be postfix node", finalNode instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestNode outerPostfix = (TestNodeFactory.TestNode) finalResult;
+        TestNodeFactory.TestNode outerPostfix = (TestNodeFactory.TestNode) finalNode;
         assertEquals("Should be UnaryPostfix node", "UnaryPostfix", outerPostfix.getTestNodeType());
         assertEquals("Should have one child", 1, outerPostfix.getChildren().size());
 
@@ -285,7 +317,8 @@ public class PostfixOperatorParseletTest extends TestCase
     private ParsedNode createLiteralNode(int tokenType, String text, int line, int column) {
         LocatableToken token = createToken(tokenType, text, line, column);
         LiteralParselet literalParselet = new LiteralParselet();
-        return literalParselet.parse(testParser, token);
+        ParseResult<ParsedNode> result = literalParselet.parse(testParser, token);
+        return result != null && result.isSuccess() ? result.getValue() : null;
     }
 
     /**

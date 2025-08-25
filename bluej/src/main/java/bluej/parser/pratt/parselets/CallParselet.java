@@ -26,6 +26,8 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 
 import java.util.ArrayList;
@@ -78,31 +80,39 @@ public class CallParselet implements InfixParselet
      * @return ParsedNode representing the function call, or null on error
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
     {
         if (left == null) {
-            parser.error("Missing function expression for call", token);
-            return null;
+            return ParseResult.failure("Missing function expression for call", token);
         }
 
         if (token == null || token.getType() != JavaTokenTypes.LPAREN) {
-            parser.error("Expected '(' for function call", token);
-            return null;
+            return ParseResult.failure("Expected '(' for function call", token);
         }
 
         // Parse the argument list
-        ParsedNode[] arguments = parseArgumentList(parser);
-        if (arguments == null) {
-            // Error already reported by parseArgumentList
-            return null;
+        List<ParseResult<ParsedNode>> argumentResults = parseArgumentList(parser);
+
+        // Use sequence to combine all argument results and accumulate any errors
+        ParseResult<List<ParsedNode>> argumentsResult = ParseResult.sequence(argumentResults);
+        if (argumentsResult.isFailure()) {
+            return ParseResult.failure(argumentsResult.getErrors());
         }
 
+        List<ParsedNode> argumentsList = argumentsResult.getValue();
+        ParsedNode[] arguments = argumentsList.toArray(new ParsedNode[0]);
+
         // Create the call node using NodeFactory
+        NodeFactory nodeFactory = parser.getNodeFactory();
+        if (nodeFactory == null) {
+            return ParseResult.failure("NodeFactory not available for AST node creation", token);
+        }
+
         try {
-            return parser.getNodeFactory().createCallNode(left, arguments);
+            ParsedNode result = nodeFactory.createCallNode(left, arguments);
+            return ParseResult.success(result);
         } catch (Exception e) {
-            // If node creation fails, return null to indicate parse failure
-            return null;
+            return ParseResult.failure("Failed to create call node: " + e.getMessage(), token);
         }
     }
 
@@ -115,36 +125,31 @@ public class CallParselet implements InfixParselet
      * - Terminated by RPAREN
      *
      * @param parser The parser instance
-     * @return Array of argument expressions, or null if parsing failed
+     * @return List of ParseResults for each argument expression
      */
-    private ParsedNode[] parseArgumentList(KotlinPrattParser parser)
+    private List<ParseResult<ParsedNode>> parseArgumentList(KotlinPrattParser parser)
     {
-        List<ParsedNode> arguments = new ArrayList<>();
+        List<ParseResult<ParsedNode>> argumentResults = new ArrayList<>();
 
         // Check if we have an empty argument list
         LocatableToken nextToken = parser.peek();
         if (nextToken != null && nextToken.getType() == JavaTokenTypes.RPAREN) {
-            // Empty argument list - consume the closing paren and return empty array
+            // Empty argument list - consume the closing paren and return empty list
             parser.consume();
-            return new ParsedNode[0];
+            return new ArrayList<>();
         }
 
         // Parse arguments separated by commas
         while (true) {
-            // Parse the next argument expression
-            ParsedNode argument = parser.parseExpression();
-            if (argument == null) {
-                parser.error("Expected expression in argument list", parser.peek());
-                return null;
-            }
-
-            arguments.add(argument);
+            // Parse the next argument expression using ParseResult
+            ParseResult<ParsedNode> argumentResult = parser.parseExpressionResult(0);
+            argumentResults.add(argumentResult);
 
             // Check what comes next
             LocatableToken token = parser.peek();
             if (token == null) {
-                parser.error("Unexpected end of input in argument list", null);
-                return null;
+                argumentResults.add(ParseResult.failure("Unexpected end of input in argument list", null));
+                break;
             }
 
             if (token.getType() == JavaTokenTypes.RPAREN) {
@@ -163,12 +168,12 @@ public class CallParselet implements InfixParselet
                     break;
                 }
             } else {
-                parser.error("Expected ',' or ')' in argument list, found: " + token.getText(), token);
-                return null;
+                argumentResults.add(ParseResult.failure("Expected ',' or ')' in argument list, found: " + token.getText(), token));
+                break;
             }
         }
 
-        return arguments.toArray(new ParsedNode[0]);
+        return argumentResults;
     }
 
     /**

@@ -27,6 +27,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.Precedence;
+import bluej.parser.pratt.ParseResult;
 
 /**
  * Parselet for member access expressions in Kotlin.
@@ -78,16 +79,14 @@ public class MemberAccessParselet implements InfixParselet
      * @return ParsedNode representing the member access, or null on error
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
     {
         if (left == null) {
-            parser.error("Missing object expression for member access", token);
-            return null;
+            return ParseResult.failure("Missing object expression for member access", token);
         }
 
         if (token == null) {
-            parser.error("Missing access operator", null);
-            return null;
+            return ParseResult.failure("Missing access operator", null);
         }
 
         // Determine if this is a safe call
@@ -97,20 +96,19 @@ public class MemberAccessParselet implements InfixParselet
         } else if (token.getType() == JavaTokenTypes.SAFE_ACCESS) {
             isSafeCall = true;
         } else {
-            parser.error("Expected '.' or '?.' for member access, found: " + token.getText(), token);
-            return null;
+            return ParseResult.failure(
+                "Expected '.' or '?.' for member access, found: " + token.getText(), token);
         }
 
         // Parse the member name (should be an identifier)
         LocatableToken memberToken = parser.peek();
         if (memberToken == null) {
-            parser.error("Expected member name after " + token.getText(), token);
-            return null;
+            return ParseResult.failure("Expected member name after " + token.getText(), token);
         }
 
         if (memberToken.getType() != JavaTokenTypes.IDENT) {
-            parser.error("Expected identifier for member name, found: " + memberToken.getText(), memberToken);
-            return null;
+            return ParseResult.failure(
+                "Expected identifier for member name, found: " + memberToken.getText(), memberToken);
         }
 
         // Consume the member name token
@@ -118,10 +116,12 @@ public class MemberAccessParselet implements InfixParselet
 
         // Create the member access node using NodeFactory
         try {
-            return parser.getNodeFactory().createMemberAccessNode(left, memberToken, isSafeCall);
+            ParsedNode node = parser.getNodeFactory().createMemberAccessNode(left, memberToken, isSafeCall);
+            return ParseResult.success(node);
         } catch (Exception e) {
-            // If node creation fails, return null to indicate parse failure
-            return null;
+            // If node creation fails, return failure with appropriate error
+            return ParseResult.failure(
+                "Failed to create member access node: " + e.getMessage(), token);
         }
     }
 

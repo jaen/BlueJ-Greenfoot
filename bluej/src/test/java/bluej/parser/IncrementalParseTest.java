@@ -46,12 +46,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Category(NonParallelisableTests.class)
 public class IncrementalParseTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

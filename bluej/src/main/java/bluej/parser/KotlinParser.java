@@ -1230,10 +1230,10 @@ public class KotlinParser implements ParserBehavior
             token = nextToken();
         }
 
-        // If we exited the loop due to finding an RPAREN, account for it in balance
-        if (token.getType() == JavaTokenTypes.RPAREN) {
-            parenBalance--;
-        }
+//        // If we exited the loop due to finding an RPAREN, account for it in balance
+//        if (token.getType() == JavaTokenTypes.RPAREN) {
+//            parenBalance--;
+//        }
 
         // Check for expression ending with operator
         if (lastToken != null && isBinaryOperator(lastToken)) {
@@ -1341,7 +1341,8 @@ public class KotlinParser implements ParserBehavior
                type == JavaTokenTypes.MINUS_ASSIGN ||
                type == JavaTokenTypes.STAR_ASSIGN ||
                type == JavaTokenTypes.DIV_ASSIGN ||
-               type == JavaTokenTypes.MOD_ASSIGN;
+               type == JavaTokenTypes.MOD_ASSIGN ||
+               type == JavaTokenTypes.RANGE;
     }
 
     /**

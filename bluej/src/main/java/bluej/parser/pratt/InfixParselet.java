@@ -76,12 +76,12 @@ import bluej.parser.nodes.ParsedNode;
  *     }
  *
  *     @Override
- *     public ParsedNode parse(KotlinPrattParser parser, ParsedNode left,
+ *     public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left,
  *                           LocatableToken operator) {
  *         // Adjust precedence for associativity
  *         int rightPrec = rightAssociative ? precedence - 1 : precedence;
- *         ParsedNode right = parser.parseExpression(rightPrec);
- *         return new BinaryExpressionNode(left, operator, right);
+ *         return parser.parseExpressionResult(rightPrec)
+ *             .map(right -> new BinaryExpressionNode(left, operator, right));
  *     }
  * }
  * }</pre>
@@ -139,19 +139,18 @@ public non-sealed interface InfixParselet extends Parselet {
      * <h3>Error Handling</h3>
      * <p>If the parselet encounters a syntax error, it should:</p>
      * <ol>
-     *   <li>Report the error using {@code parser.error()}</li>
+     *   <li>Return a ParseResult.failure() with appropriate error information</li>
      *   <li>Attempt recovery if {@link #supportsErrorRecovery()} returns true</li>
-     *   <li>Return the left expression or a partial AST node as appropriate</li>
+     *   <li>Return a ParseResult.partial() with recoverable errors when appropriate</li>
      * </ol>
      *
      * @param parser The parser instance providing access to tokens and parsing methods
      * @param left The already-parsed left-hand expression
      * @param token The operator/infix token that triggered this parselet
-     * @return The complete parsed expression combining left and right parts,
-     *         or the left expression if parsing the right side failed
+     * @return A ParseResult containing the complete parsed expression or accumulated errors
      * @throws NullPointerException if any parameter is null
      */
-    ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token);
+    ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token);
 
     /**
      * Indicates whether this infix operator is right-associative.

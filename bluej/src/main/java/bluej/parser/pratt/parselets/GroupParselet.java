@@ -26,7 +26,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
-import bluej.parser.pratt.Precedence;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
 
 /**
@@ -71,53 +71,53 @@ public final class GroupParselet implements PrefixParselet {
      *
      * @param parser The parser instance for parsing the inner expression
      * @param token The opening parenthesis token
-     * @return A ParsedNode representing the inner expression, or null during foundation phase
+     * @return A ParseResult containing the inner expression or accumulated errors
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
         if (token == null) {
-            parser.error("Null token in group parselet", null);
-            return null;
+            return ParseResult.failure("Null token in group parselet", null);
         }
 
         // Validate that this is indeed a left parenthesis
         if (token.getType() != JavaTokenTypes.LPAREN) {
-            parser.error("Expected '(' for grouped expression, got: " + getTokenTypeName(token.getType()), token);
-            return null;
+            return ParseResult.failure("Expected '(' for grouped expression, got: " + getTokenTypeName(token.getType()), token);
         }
 
         // Parse the inner expression with the lowest precedence
         // This allows any expression type to be parsed inside the parentheses
-        ParsedNode innerExpression = parser.parseExpression(0);
+        ParseResult<ParsedNode> innerResult = parser.parseExpressionResult(0);
+        if (innerResult.isFailure()) {
+            return ParseResult.failure("Error parsing expression in parentheses", token);
+        }
 
-        // In foundation phase, parseExpression returns null for successful validation
-        // Only treat null as an error if no tokens were consumed (indicating parse failure)
-        // If tokens were consumed, the parsing succeeded even if AST node is null
+        ParsedNode innerExpression = innerResult.getValue();
 
         // Expect closing parenthesis
         LocatableToken closingParen = parser.consume();
         if (closingParen == null) {
-            parser.error("Expected ')' after expression in parentheses", parser.peek());
-            return null;
+            return ParseResult.failure(
+                "Unbalanced parentheses: expected ')' to match '(' at line " + token.getLine(),
+                token);
         }
 
         if (closingParen.getType() != JavaTokenTypes.RPAREN) {
-            parser.error("Expected ')' after expression, got: " + getTokenTypeName(closingParen.getType()), closingParen);
-            return null;
+            return ParseResult.failure(
+                "Unbalanced parentheses: expected ')' but found " + getTokenTypeName(closingParen.getType()),
+                closingParen);
         }
 
         // Create the grouped expression node using the NodeFactory
-        // This ensures thread-safe AST node creation
         NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            parser.error("NodeFactory not available for AST node creation", token);
-            return null;
+            return ParseResult.failure("NodeFactory not available for AST node creation", token);
         }
 
         // Return the grouped expression
         // The factory may return the inner expression directly since
         // parentheses are often purely syntactic and don't create separate AST nodes
-        return nodeFactory.createGroupNode(innerExpression);
+        ParsedNode result = nodeFactory.createGroupNode(innerExpression);
+        return ParseResult.success(result);
     }
 
     /**
@@ -178,8 +178,8 @@ public final class GroupParselet implements PrefixParselet {
 
         try {
             // Try to parse the grouped expression
-            ParsedNode result = parse(parser, token);
-            return result != null || !parser.hasErrors(); // During foundation phase, null is expected
+            ParseResult<ParsedNode> result = parse(parser, token);
+            return result.isSuccess(); // Success means parsing worked correctly
         } catch (Exception e) {
             return false;
         }

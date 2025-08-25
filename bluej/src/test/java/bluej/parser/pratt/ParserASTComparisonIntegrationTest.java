@@ -58,11 +58,8 @@ import java.io.StringReader;
  *
  * @author BlueJ Team
  */
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class ParserASTComparisonIntegrationTest extends TestCase {
-
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
 
     @BeforeClass
     public static void initConfig() {

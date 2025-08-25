@@ -26,11 +26,14 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +52,12 @@ import java.util.List;
  *
  * @author BlueJ Team
  */
-public class CallParseletTest extends TestCase
+public class CallParseletTest
 {
     private CallParselet callParselet;
     private TestKotlinPrattParser testParser;
 
-    @Override
+    @Before
     public void setUp() {
         callParselet = new CallParselet();
         testParser = new TestKotlinPrattParser();
@@ -75,11 +78,14 @@ public class CallParseletTest extends TestCase
         // Setup parser to expect closing paren
         testParser.setNextToken(rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNotNull("Call with empty arguments should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("Call", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("Call", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -95,11 +101,14 @@ public class CallParseletTest extends TestCase
 
         testParser.setTokenSequence(arg, rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNotNull("Call with single argument should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("Call", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("Call", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -119,11 +128,14 @@ public class CallParseletTest extends TestCase
 
         testParser.setTokenSequence(arg1, comma1, arg2, comma2, arg3, rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNotNull("Call with multiple arguments should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("Call", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("Call", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -141,11 +153,14 @@ public class CallParseletTest extends TestCase
 
         testParser.setTokenSequence(arg1, comma1, arg2, comma2, rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNotNull("Call with trailing comma should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("Call", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("Call", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -154,12 +169,14 @@ public class CallParseletTest extends TestCase
         // Test error case: null function
         LocatableToken lparen = createToken(JavaTokenTypes.LPAREN, "(", 1, 1);
 
-        ParsedNode result = callParselet.parse(testParser, null, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, null, lparen);
 
-        assertNull("Call without function should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention missing function",
-                   testParser.getLastError().contains("Missing function"));
+                   result.getErrors().get(0).message().contains("Missing function"));
     }
 
     @Test
@@ -168,12 +185,14 @@ public class CallParseletTest extends TestCase
         ParsedNode function = createIdentifierNode("func");
         LocatableToken wrongToken = createToken(JavaTokenTypes.COMMA, ",", 1, 1);
 
-        ParsedNode result = callParselet.parse(testParser, function, wrongToken);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, wrongToken);
 
-        assertNull("Call with wrong token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected '('",
-                   testParser.getLastError().contains("Expected '('"));
+                   result.getErrors().get(0).message().contains("Expected '('"));
     }
 
     @Test
@@ -188,12 +207,14 @@ public class CallParseletTest extends TestCase
         testParser.setTokenSequence(arg);
         testParser.setEndOfInput(true);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNull("Call without closing paren should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention end of input",
-                   testParser.getLastError().toLowerCase().contains("end of input"));
+                   result.getErrors().get(0).message().toLowerCase().contains("end of input"));
     }
 
     @Test
@@ -207,12 +228,14 @@ public class CallParseletTest extends TestCase
 
         testParser.setTokenSequence(arg1, arg2);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNull("Malformed argument list should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected comma or closing paren",
-                   testParser.getLastError().contains("Expected"));
+                   result.getErrors().get(0).message().contains("Expected"));
     }
 
     @Test
@@ -220,10 +243,12 @@ public class CallParseletTest extends TestCase
         // Test error case: null token
         ParsedNode function = createIdentifierNode("func");
 
-        ParsedNode result = callParselet.parse(testParser, function, null);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, null);
 
-        assertNull("Call with null token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
@@ -247,9 +272,12 @@ public class CallParseletTest extends TestCase
 
         testParser.setNextToken(rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNotNull("NodeFactory should create call node", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("NodeFactory should create call node", node);
 
         // Verify the factory was called with correct parameters
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
@@ -270,9 +298,10 @@ public class CallParseletTest extends TestCase
 
         testParser.setNextToken(rparen);
 
-        ParsedNode result = callParselet.parse(testParser, function, lparen);
+        ParseResult<ParsedNode> result = callParselet.parse(testParser, function, lparen);
 
-        assertNull("Should return null when NodeFactory fails", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when NodeFactory fails", result.isFailure());
     }
 
     @Test
@@ -285,7 +314,10 @@ public class CallParseletTest extends TestCase
 
         testParser.setNextToken(rparen1);
 
-        ParsedNode firstCall = callParselet.parse(testParser, function, lparen1);
+        ParseResult<ParsedNode> firstCallResult = callParselet.parse(testParser, function, lparen1);
+        assertNotNull("Should return a result", firstCallResult);
+        assertTrue("Should be successful", firstCallResult.isSuccess());
+        ParsedNode firstCall = firstCallResult.getValue();
         assertNotNull("First call should succeed", firstCall);
 
         // Now chain another call
@@ -294,7 +326,10 @@ public class CallParseletTest extends TestCase
 
         testParser.setNextToken(rparen2);
 
-        ParsedNode secondCall = callParselet.parse(testParser, firstCall, lparen2);
+        ParseResult<ParsedNode> secondCallResult = callParselet.parse(testParser, firstCall, lparen2);
+        assertNotNull("Should return a result", secondCallResult);
+        assertTrue("Should be successful", secondCallResult.isSuccess());
+        ParsedNode secondCall = secondCallResult.getValue();
         assertNotNull("Chained call should succeed", secondCall);
         assertTrue("Should be a TestNode", secondCall instanceof TestNodeFactory.TestNode);
         assertEquals("Call", ((TestNodeFactory.TestNode) secondCall).getTestNodeType());

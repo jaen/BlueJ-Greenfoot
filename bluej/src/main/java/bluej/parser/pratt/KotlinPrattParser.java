@@ -73,7 +73,7 @@ public class KotlinPrattParser {
     private LocatableToken currentToken;
 
     /** List of errors encountered during parsing */
-    private final List<ParseError> errors;
+    private final List<ParseResult.ParseError> errors;
 
     /** Factory for creating AST nodes with proper threading */
     private final NodeFactory nodeFactory;
@@ -215,35 +215,36 @@ public class KotlinPrattParser {
     }
 
     /**
-     * Parses an expression with a minimum precedence level.
+     * Parses an expression with a minimum precedence level using monadic ParseResult.
      *
-     * <p>This is the core of the Pratt parsing algorithm. It first parses a prefix
-     * expression, then continues parsing infix expressions as long as their precedence
-     * is higher than the specified minimum precedence.</p>
+     * <p>This is the core of the Pratt parsing algorithm using the enhanced error handling
+     * approach. It first parses a prefix expression, then continues parsing infix expressions
+     * while accumulating errors in a monadic fashion.</p>
      *
      * @param minPrecedence The minimum precedence level to parse
-     * @return The parsed AST node, or null if parsing failed
+     * @return A ParseResult containing the parsed AST node or accumulated errors
      */
-    public ParsedNode parseExpression(int minPrecedence) {
+    public ParseResult<ParsedNode> parseExpressionResult(int minPrecedence) {
         LocatableToken token = consume();
 
         if (token == null || token.getType() == JavaTokenTypes.EOF) {
-            error("Unexpected end of input", token);
-            return null;
+            return ParseResult.failure("Unexpected end of input", token);
         }
 
         // Look up the prefix parselet for this token type
         PrefixParselet prefix = registry.getPrefix(token.getType());
         if (prefix == null) {
-            error("Unexpected token: " + getTokenDescription(token), token);
-            return null;
+            return ParseResult.failure("Unexpected token: " + getTokenDescription(token), token);
         }
 
-        // Parse the prefix expression
-        ParsedNode left = prefix.parse(this, token);
-        if (left == null) {
-            return null;
+        // Parse the prefix expression using the new ParseResult approach
+        ParseResult<ParsedNode> leftResult = prefix.parse(this, token);
+        if (leftResult.isFailure()) {
+            return leftResult;
         }
+
+        ParsedNode left = leftResult.getValue();
+        List<ParseResult.ParseError> accumulatedErrors = new java.util.ArrayList<>(leftResult.getErrors());
 
         // Continue parsing infix expressions while precedence allows
         while (minPrecedence < getCurrentPrecedence()) {
@@ -256,13 +257,52 @@ public class KotlinPrattParser {
                 break;
             }
 
-            left = infix.parse(this, left, token);
-            if (left == null) {
-                return null;
+            ParseResult<ParsedNode> result = infix.parse(this, left, token);
+            accumulatedErrors.addAll(result.getErrors());
+
+            if (result.hasValue()) {
+                left = result.getValue();
+            } else {
+                // Can't continue without a value
+                return ParseResult.failure(accumulatedErrors);
             }
         }
 
-        return left;
+        // Return result with accumulated errors
+        if (accumulatedErrors.isEmpty()) {
+            return ParseResult.success(left);
+        } else {
+            return ParseResult.failure(accumulatedErrors);
+        }
+    }
+
+    /**
+     * Parses an expression with a minimum precedence level.
+     *
+     * <p>This method provides backward compatibility by delegating to parseExpressionResult
+     * and extracting the value while reporting any errors through the traditional error mechanism.</p>
+     *
+     * @param minPrecedence The minimum precedence level to parse
+     * @return The parsed AST node, or null if parsing failed
+     */
+    public ParsedNode parseExpression(int minPrecedence) {
+        ParseResult<ParsedNode> result = parseExpressionResult(minPrecedence);
+
+        // Report any errors through the traditional mechanism
+        for (ParseResult.ParseError error : result.getErrors()) {
+            error(error.message(), error.token());
+        }
+
+        return result.getValueOrNull();
+    }
+
+    /**
+     * Parses a primary expression (with precedence 0) using ParseResult.
+     *
+     * @return A ParseResult containing the parsed AST node or errors
+     */
+    public ParseResult<ParsedNode> parseExpressionResult() {
+        return parseExpressionResult(0);
     }
 
     /**
@@ -378,7 +418,7 @@ public class KotlinPrattParser {
      * @param token The token where the error occurred (may be null)
      */
     public void error(String message, LocatableToken token) {
-        ParseError error = new ParseError(message, token);
+        ParseResult.ParseError error = new ParseResult.ParseError(message, token);
         errors.add(error);
 
         // Note: We cannot directly report to sourceParser as the error method is protected.
@@ -456,11 +496,11 @@ public class KotlinPrattParser {
     }
 
     /**
-     * Gets the list of errors encountered during parsing.
+     * Gets the list of parse errors encountered during parsing.
      *
-     * @return An unmodifiable view of the error list
+     * @return An unmodifiable list of parse errors
      */
-    public List<ParseError> getErrors() {
+    public List<ParseResult.ParseError> getErrors() {
         return List.copyOf(errors);
     }
 
@@ -1056,41 +1096,5 @@ public class KotlinPrattParser {
         };
     }
 
-    /**
-     * Record for representing parse errors with location information.
-     * Uses Java 21 records for immutable error data.
-     */
-    public record ParseError(String message, LocatableToken token) {
-        /**
-         * Gets the line number where the error occurred.
-         *
-         * @return The line number, or -1 if no token
-         */
-        public int getLine() {
-            return token != null ? token.getLine() : -1;
-        }
 
-        /**
-         * Gets the column number where the error occurred.
-         *
-         * @return The column number, or -1 if no token
-         */
-        public int getColumn() {
-            return token != null ? token.getColumn() : -1;
-        }
-
-        /**
-         * Creates a formatted error message with location information.
-         *
-         * @return The formatted error message
-         */
-        public String getFormattedMessage() {
-            if (token != null) {
-                return String.format("Error at line %d, column %d: %s",
-                    getLine(), getColumn(), message);
-            } else {
-                return "Error: " + message;
-            }
-        }
-    }
 }

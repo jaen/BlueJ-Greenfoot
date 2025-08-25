@@ -27,6 +27,7 @@ import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
 
 /**
@@ -69,29 +70,27 @@ public final class LiteralParselet implements PrefixParselet {
      * @return An ExpressionNode representing the literal, or null if parsing failed
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
         if (token == null) {
-            parser.error("Null token in literal parselet", null);
-            return null;
+            return ParseResult.failure("Null token in literal parselet", null);
         }
 
         // Validate that this is indeed a literal token type
         if (!isLiteralToken(token.getType())) {
-            parser.error("Expected literal token, got: " + getTokenTypeName(token.getType()), token);
-            return null;
+            return ParseResult.failure("Expected literal token, got: " + getTokenTypeName(token.getType()), token);
         }
 
         // Create the literal node using the NodeFactory
         // This ensures thread-safe AST node creation
         NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            parser.error("NodeFactory not available for AST node creation", token);
-            return null;
+            return ParseResult.failure("NodeFactory not available for AST node creation", token);
         }
 
         // Create and return the literal node
         // The factory handles all threading requirements
-        return nodeFactory.createLiteralNode(token);
+        ParsedNode literalNode = nodeFactory.createLiteralNode(token);
+        return ParseResult.success(literalNode);
     }
 
     /**

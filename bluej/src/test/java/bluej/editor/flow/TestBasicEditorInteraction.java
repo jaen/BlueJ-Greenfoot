@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitQuickcheck.class)
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class TestBasicEditorInteraction extends FXTest
 {
     private Stage stage;

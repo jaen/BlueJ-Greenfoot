@@ -25,9 +25,12 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -49,13 +52,13 @@ import java.util.ArrayList;
  *
  * @author BlueJ Team
  */
-public class GroupParseletTest extends TestCase {
+public class GroupParseletTest {
 
     private GroupParselet parselet;
     private TestTokenOperations tokenOps;
     private TestKotlinPrattParser parser;
 
-    @Override
+    @Before
     public void setUp() {
         parselet = new GroupParselet();
         tokenOps = new TestTokenOperations();
@@ -72,12 +75,15 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(literal, rparen));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
 
 
         // Assert - With NodeFactory, parselets now create nodes
-        assertNotNull("Should create a node for parenthesized expression", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create a node for parenthesized expression", node);
 
         assertTrue("All tokens should be consumed", tokenOps.getAllTokens().isEmpty());
         assertFalse("Should not have parsing errors", parser.hasErrors());
@@ -95,10 +101,13 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(lparen2, literal, rparen1, rparen2));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen1);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen1);
 
         // Assert - With NodeFactory, parselets now create nodes for nested structure
-        assertNotNull("Should create a node for nested parentheses", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create a node for nested parentheses", node);
         assertTrue("All tokens should be consumed", tokenOps.getAllTokens().isEmpty());
         assertFalse("Should not have parsing errors for nested parentheses", parser.hasErrors());
     }
@@ -113,10 +122,13 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(stringLit, rparen));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert - With NodeFactory, parselets now create nodes
-        assertNotNull("Should create a node for parenthesized string literal", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create a node for parenthesized string literal", node);
         assertFalse("Should not have parsing errors for string literal", parser.hasErrors());
     }
 
@@ -130,21 +142,24 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(boolLit, rparen));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert - With NodeFactory, parselets now create nodes
-        assertNotNull("Should create a node for parenthesized boolean literal", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create a node for parenthesized boolean literal", node);
         assertFalse("Should not have parsing errors for boolean literal", parser.hasErrors());
     }
 
     @Test
     public void testNullToken() {
         // Act
-        ParsedNode result = parselet.parse(parser, null);
+        ParseResult<ParsedNode> result = parselet.parse(parser, null);
 
         // Assert
-        assertNull(result);
-        assertTrue("Should report error for null token", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -152,11 +167,11 @@ public class GroupParseletTest extends TestCase {
         LocatableToken wrongToken = createToken(JavaTokenTypes.RCURLY, "}", 1, 1);
 
         // Act
-        ParsedNode result = parselet.parse(parser, wrongToken);
+        ParseResult<ParsedNode> result = parselet.parse(parser, wrongToken);
 
         // Assert
-        assertNull(result);
-        assertTrue("Should report error for wrong token type", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -169,11 +184,11 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(literal, eof));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert
-        assertNull(result);
-        assertTrue("Should report error for missing closing parenthesis", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -185,11 +200,11 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(rparen));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert - Empty parentheses should fail because parseExpression finds RPAREN
-        assertNull(result);
-        assertTrue("Should report error for empty parentheses", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -202,11 +217,11 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(literal, rbracket));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert
-        assertNull(result);
-        assertTrue("Should report error for wrong closing token", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -215,10 +230,10 @@ public class GroupParseletTest extends TestCase {
         LocatableToken invalidToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
         TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
 
-        ParsedNode result = parselet.parse(freshParser, invalidToken);
+        ParseResult<ParsedNode> result = parselet.parse(freshParser, invalidToken);
 
-        assertNull("Should return null for invalid token type", result);
-        assertTrue("Should report error for non-parenthesis token", freshParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for invalid token type", result.isFailure());
         assertTrue("Error message should mention expected token",
                    freshParser.getLastError().contains("Expected"));
     }
@@ -229,10 +244,10 @@ public class GroupParseletTest extends TestCase {
         LocatableToken rparen = createToken(JavaTokenTypes.RPAREN, ")", 1, 1);
 
         // Test that right paren produces error when used as prefix token
-        ParsedNode result = parselet.parse(freshParser, rparen);
+        ParseResult<ParsedNode> result = parselet.parse(freshParser, rparen);
 
-        assertNull("Should return null for right paren as prefix", result);
-        assertTrue("Should report error for right parenthesis as prefix token", freshParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for right paren as prefix", result.isFailure());
     }
 
     @Test
@@ -251,9 +266,9 @@ public class GroupParseletTest extends TestCase {
             LocatableToken token = createToken(tokenType, "token", 1, 1);
 
             // Test that unsupported tokens produce appropriate errors
-            ParsedNode result = parselet.parse(freshParser, token);
-            assertNull("Should return null for unsupported token type: " + tokenType, result);
-            assertTrue("Should report error for unsupported token type: " + tokenType, freshParser.hasErrors());
+            ParseResult<ParsedNode> result = parselet.parse(freshParser, token);
+            assertNotNull("Should return a result for unsupported token type: " + tokenType, result);
+            assertTrue("Should be a failure for unsupported token type: " + tokenType, result.isFailure());
         }
     }
 
@@ -262,10 +277,12 @@ public class GroupParseletTest extends TestCase {
         TestKotlinPrattParser freshParser = new TestKotlinPrattParser(new TestTokenOperations());
 
         // Test that null token produces appropriate error
-        ParsedNode result = parselet.parse(freshParser, null);
+        ParseResult<ParsedNode> result = parselet.parse(freshParser, null);
 
-        assertNull("Should return null for null token", result);
-        assertTrue("Should report error for null token", freshParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for null token", result.isFailure());
+        assertFalse("Should not report error for null token", freshParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
@@ -288,10 +305,13 @@ public class GroupParseletTest extends TestCase {
         tokenOps.setTokens(List.of(literal, rparen));
 
         // Act
-        ParsedNode result = parselet.parse(parser, lparen);
+        ParseResult<ParsedNode> result = parselet.parse(parser, lparen);
 
         // Assert - With NodeFactory, parselets now create nodes
-        assertNotNull("Should create a node for integrated parsing", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create a node for integrated parsing", node);
         assertFalse("Should integrate without errors", parser.hasErrors());
     }
 

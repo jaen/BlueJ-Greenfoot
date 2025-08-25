@@ -25,10 +25,13 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link NameParselet}.
@@ -40,12 +43,12 @@ import org.junit.Test;
  * @author BlueJ Team
  * @since BlueJ 5.4.0
  */
-public class NameParseletTest extends TestCase {
+public class NameParseletTest {
 
     private NameParselet parselet;
     private TestKotlinPrattParser parser;
 
-    @Override
+    @Before
     public void setUp() {
         parselet = new NameParselet();
         parser = new TestKotlinPrattParser();
@@ -56,10 +59,13 @@ public class NameParseletTest extends TestCase {
         // Test parsing a simple identifier
         LocatableToken token = createIdentifierToken("myVariable");
 
-        ParsedNode result = parselet.parse(parser, token);
+        ParseResult<ParsedNode> result = parselet.parse(parser, token);
 
-        assertNotNull("Should create node for simple identifier", result);
-        assertEquals("TestIdentifierNode:myVariable", result.toString());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertEquals("TestIdentifierNode:myVariable", node.toString());
         assertFalse("Should not have errors for valid identifier", parser.hasErrors());
     }
 
@@ -68,10 +74,13 @@ public class NameParseletTest extends TestCase {
         // Test parsing identifier starting with underscore
         LocatableToken token = createIdentifierToken("_privateField");
 
-        ParsedNode result = parselet.parse(parser, token);
+        ParseResult<ParsedNode> result = parselet.parse(parser, token);
 
-        assertNotNull("Should create node for underscore identifier", result);
-        assertEquals("TestIdentifierNode:_privateField", result.toString());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertEquals("TestIdentifierNode:_privateField", node.toString());
         assertFalse("Should not have errors for underscore identifier", parser.hasErrors());
     }
 
@@ -80,10 +89,13 @@ public class NameParseletTest extends TestCase {
         // Test parsing backtick-wrapped identifier (keyword as identifier)
         LocatableToken token = createIdentifierToken("`class`");
 
-        ParsedNode result = parselet.parse(parser, token);
+        ParseResult<ParsedNode> result = parselet.parse(parser, token);
 
-        assertNotNull("Should create node for backtick identifier", result);
-        assertEquals("TestIdentifierNode:`class`", result.toString());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should have a node value", node);
+        assertEquals("TestIdentifierNode:`class`", node.toString());
         assertFalse("Should not have errors for backtick identifier", parser.hasErrors());
     }
 
@@ -92,17 +104,20 @@ public class NameParseletTest extends TestCase {
         // Test error handling for non-identifier token
         LocatableToken token = createToken("123", JavaTokenTypes.NUM_INT);
 
-        ParsedNode result = parselet.parse(parser, token);
+        ParseResult<ParsedNode> result = parselet.parse(parser, token);
 
-        assertNull("Should return null for non-identifier token", result);
-        assertTrue("Should report error for invalid token type", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Should not have errors in parser", parser.hasErrors());
+        assertTrue("Should have error in result", !result.getErrors().isEmpty());
     }
 
     @Test
     public void testNullToken() {
         // Test error handling for null token
-        ParsedNode result = parselet.parse(parser, null);
-        assertNull("Should return null for null token", result);
+        ParseResult<ParsedNode> result = parselet.parse(parser, null);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
     }
 
     @Test
@@ -110,10 +125,12 @@ public class NameParseletTest extends TestCase {
         // Test error handling for empty identifier
         LocatableToken token = createToken("", JavaTokenTypes.IDENT);
 
-        ParsedNode result = parselet.parse(parser, token);
+        ParseResult<ParsedNode> result = parselet.parse(parser, token);
 
-        assertNull("Should return null for empty identifier", result);
-        assertTrue("Should report error for empty identifier", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Should not have errors in parser", parser.hasErrors());
+        assertTrue("Should have error in result", !result.getErrors().isEmpty());
     }
 
     @Test

@@ -218,46 +218,52 @@ def testJvmArgs = // Headless is the default because headed GUI tests are quite 
                 '-Dprism.text=t2k',
         ])
 
-//// TODO: I'm fairly sure I needed that split on Linux, but it doesn't seem to matter on Darwin?
-task testParallelisable(type: Test) {
-    dependsOn tasks.copyLibToTestBuild
-    dependsOn tasks.compileTestJava
-
-    // Those tests can run in parallel without any issues
-    maxParallelForks = Runtime.runtime.availableProcessors()
-
-    group = 'verification'
-    description = "Runs the tests that can be run in parallel."
-
-    useJUnit {
-        excludeCategories("bluej.NonParallelisableTests")
-    }
-
-    jvmArgs += testJvmArgs
-}
-
-task testNonParallelisable(type: Test) {
-    dependsOn tasks.copyLibToTestBuild
-    dependsOn tasks.compileTestJava
-
-    // Those tests can run in parallel without any issues
-    maxParallelForks = 1
-
-    group = 'verification'
-    description = "Runs the tests that can not be run in parallel."
-
-    useJUnit {
-        includeCategories("bluej.NonParallelisableTests")
-    }
-
-    jvmArgs += testJvmArgs
-}
+////// TODO: I'm fairly sure I needed that split on Linux, but it doesn't seem to matter on Darwin?
+//task testParallelisable(type: Test) {
+//    dependsOn tasks.copyLibToTestBuild
+//    dependsOn tasks.compileTestJava
+//
+//    // Those tests can run in parallel without any issues
+//    maxParallelForks = Runtime.runtime.availableProcessors()
+//
+//    group = 'verification'
+//    description = "Runs the tests that can be run in parallel."
+//
+//    useJUnit {
+//        excludeCategories("bluej.NonParallelisableTests")
+//    }
+//
+//    jvmArgs += testJvmArgs
+//}
+//
+//task testNonParallelisable(type: Test) {
+//    dependsOn tasks.copyLibToTestBuild
+//    dependsOn tasks.compileTestJava
+//
+//    // Those tests can run in parallel without any issues
+//    maxParallelForks = 1
+//
+//    group = 'verification'
+//    description = "Runs the tests that can not be run in parallel."
+//
+//    useJUnit {
+//        includeCategories("bluej.NonParallelisableTests")
+//    }
+//
+//    jvmArgs += testJvmArgs
+//}
 
 test {
-    dependsOn testParallelisable
-    dependsOn testNonParallelisable
+//    dependsOn testParallelisable
+//    dependsOn testNonParallelisable
+//
+//    testClassesDirs = project.files()
 
-    testClassesDirs = project.files()
+    maxParallelForks = Runtime.runtime.availableProcessors()
+
+    useJUnit {}
+
+    jvmArgs += testJvmArgs
 }
 
 repositories {

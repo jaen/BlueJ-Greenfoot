@@ -54,8 +54,8 @@ import bluej.parser.nodes.ParsedNode;
  * <pre>{@code
  * public class LiteralParselet implements PrefixParselet {
  *     @Override
- *     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
- *         return new LiteralNode(token);
+ *     public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+ *         return ParseResult.success(new LiteralNode(token));
  *     }
  * }
  * }</pre>
@@ -66,10 +66,10 @@ import bluej.parser.nodes.ParsedNode;
  *     private final int precedence;
  *
  *     @Override
- *     public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+ *     public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
  *         // Parse the operand with appropriate precedence
- *         ParsedNode operand = parser.parseExpression(precedence);
- *         return new UnaryExpressionNode(token, operand);
+ *         return parser.parseExpressionResult(precedence)
+ *             .map(operand -> new UnaryExpressionNode(token, operand));
  *     }
  * }
  * }</pre>
@@ -98,9 +98,9 @@ public non-sealed interface PrefixParselet extends Parselet {
      * <h3>Error Handling</h3>
      * <p>If the parselet encounters a syntax error, it should:</p>
      * <ol>
-     *   <li>Report the error using {@code parser.error()}</li>
+     *   <li>Return a ParseResult.failure() with appropriate error information</li>
      *   <li>Attempt recovery if {@link #supportsErrorRecovery()} returns true</li>
-     *   <li>Return null or a partial AST node as appropriate</li>
+     *   <li>Return a ParseResult.partial() with recoverable errors when appropriate</li>
      * </ol>
      *
      * <h3>Recursive Parsing</h3>
@@ -115,10 +115,10 @@ public non-sealed interface PrefixParselet extends Parselet {
      *
      * @param parser The parser instance providing access to tokens and parsing methods
      * @param token The token that triggered this parselet
-     * @return The parsed AST node, or null if parsing failed
+     * @return A ParseResult containing the parsed AST node or accumulated errors
      * @throws NullPointerException if parser or token is null
      */
-    ParsedNode parse(KotlinPrattParser parser, LocatableToken token);
+    ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token);
 
 
 }

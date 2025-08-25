@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 
 @RunWith(JUnitQuickcheck.class)
-@Category(NonParallelisableTests.class) // TODO: this is is just slow, should get it's own category
+//@Category(NonParallelisableTests.class) // TODO: this is is just slow, should get it's own category
 public class TestDocument
 {
     private static class Pos

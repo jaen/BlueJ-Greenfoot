@@ -56,8 +56,8 @@ public class ParseletRegistryTest extends TestCase {
         }
 
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-            return null; // Mock implementation
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+            return ParseResult.success(null); // Mock implementation
         }
 
         @Override
@@ -84,8 +84,8 @@ public class ParseletRegistryTest extends TestCase {
         }
 
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
-            return null; // Mock implementation
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
+            return ParseResult.success(null); // Mock implementation
         }
 
         @Override

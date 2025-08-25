@@ -24,7 +24,7 @@ import static bluej.stride.framedjava.slots.Operator.Precedence.MEDIUM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class TestTypeSlot
 {
     // Need to run tests on FX thread:

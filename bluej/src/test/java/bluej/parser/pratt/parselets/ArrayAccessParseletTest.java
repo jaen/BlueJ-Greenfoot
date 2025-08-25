@@ -26,11 +26,14 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +53,12 @@ import java.util.List;
  *
  * @author BlueJ Team
  */
-public class ArrayAccessParseletTest extends TestCase
+public class ArrayAccessParseletTest
 {
     private ArrayAccessParselet arrayAccessParselet;
     private TestKotlinPrattParser testParser;
 
-    @Override
+    @Before
     public void setUp() {
         arrayAccessParselet = new ArrayAccessParselet();
         testParser = new TestKotlinPrattParser();
@@ -77,11 +80,14 @@ public class ArrayAccessParseletTest extends TestCase
         // Setup parser to return index and closing bracket
         testParser.setTokenSequence(index, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNotNull("Array access with integer index should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Array access with integer index should succeed", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -95,11 +101,14 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, map, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, map, lbrack);
 
-        assertNotNull("Array access with string index should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Array access with string index should succeed", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -113,11 +122,14 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNotNull("Array access with identifier index should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Array access with identifier index should succeed", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Parser should not have errors", testParser.hasErrors());
     }
 
@@ -132,7 +144,10 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index1, rbrack1);
 
-        ParsedNode firstAccess = arrayAccessParselet.parse(testParser, array, lbrack1);
+        ParseResult<ParsedNode> firstAccessResult = arrayAccessParselet.parse(testParser, array, lbrack1);
+        assertNotNull("Should return a result", firstAccessResult);
+        assertTrue("Should be successful", firstAccessResult.isSuccess());
+        ParsedNode firstAccess = firstAccessResult.getValue();
         assertNotNull("First array access should succeed", firstAccess);
 
         // Second access: [j]
@@ -142,7 +157,10 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index2, rbrack2);
 
-        ParsedNode secondAccess = arrayAccessParselet.parse(testParser, firstAccess, lbrack2);
+        ParseResult<ParsedNode> secondAccessResult = arrayAccessParselet.parse(testParser, firstAccess, lbrack2);
+        assertNotNull("Should return a result", secondAccessResult);
+        assertTrue("Should be successful", secondAccessResult.isSuccess());
+        ParsedNode secondAccess = secondAccessResult.getValue();
         assertNotNull("Chained array access should succeed", secondAccess);
         assertTrue("Should be a TestNode", secondAccess instanceof TestNodeFactory.TestNode);
         assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) secondAccess).getTestNodeType());
@@ -153,12 +171,14 @@ public class ArrayAccessParseletTest extends TestCase
         // Test error case: null array
         LocatableToken lbrack = createToken(JavaTokenTypes.LBRACK, "[", 1, 1);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, null, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, null, lbrack);
 
-        assertNull("Array access without array should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention missing array expression",
-                   testParser.getLastError().contains("Missing array expression"));
+                   result.getErrors().get(0).message().contains("Missing array expression"));
     }
 
     @Test
@@ -170,12 +190,14 @@ public class ArrayAccessParseletTest extends TestCase
         // No tokens available - end of input
         testParser.setEndOfInput(true);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNull("Array access without index should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected index expression",
-                   testParser.getLastError().contains("Expected index expression"));
+                   result.getErrors().get(0).message().contains("Expected index expression"));
     }
 
     @Test
@@ -189,12 +211,14 @@ public class ArrayAccessParseletTest extends TestCase
         testParser.setTokenSequence(index);
         testParser.setEndOfInput(true);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNull("Array access without closing bracket should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention end of input",
-                   testParser.getLastError().toLowerCase().contains("end of input"));
+                   result.getErrors().get(0).message().toLowerCase().contains("end of input"));
     }
 
     @Test
@@ -207,12 +231,14 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index, wrongClosing);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNull("Array access with wrong closing token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected ']'",
-                   testParser.getLastError().contains("Expected ']'"));
+                   result.getErrors().get(0).message().contains("Expected ']'"));
     }
 
     @Test
@@ -221,12 +247,14 @@ public class ArrayAccessParseletTest extends TestCase
         ParsedNode array = createIdentifierNode("arr");
         LocatableToken wrongToken = createToken(JavaTokenTypes.COMMA, ",", 1, 1);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, wrongToken);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, wrongToken);
 
-        assertNull("Array access with wrong token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected '['",
-                   testParser.getLastError().contains("Expected '['"));
+                   result.getErrors().get(0).message().contains("Expected '['"));
     }
 
     @Test
@@ -234,20 +262,21 @@ public class ArrayAccessParseletTest extends TestCase
         // Test error case: null token
         ParsedNode array = createIdentifierNode("arr");
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, null);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, null);
 
-        assertNull("Array access with null token should fail", result);
-        assertTrue("Parser should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure", result.isFailure());
+        assertFalse("Parser should not report error", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error should mention expected '['",
-                   testParser.getLastError().contains("Expected '['"));
+                   result.getErrors().get(0).message().contains("Expected '['"));
     }
 
     @Test
     public void testPrecedenceLevel() {
         // Verify that ArrayAccessParselet has POSTFIX precedence
         int precedence = arrayAccessParselet.getPrecedence();
-        assertEquals("ArrayAccessParselet should have POSTFIX precedence",
-                     Precedence.POSTFIX.getValue(), precedence);
+        assertEquals("ArrayAccessParselet should have POSTFIX precedence", Precedence.POSTFIX.getValue(), precedence);
         assertTrue("Array access precedence should be higher than binary operators",
                    precedence > Precedence.ADDITIVE.getValue());
         assertTrue("Array access precedence should be higher than prefix operators",
@@ -264,9 +293,12 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNotNull("NodeFactory should create array access node", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("NodeFactory should create array access node", node);
 
         // Verify the factory was called with correct parameters
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
@@ -288,9 +320,10 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(index, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNull("Should return null when NodeFactory fails", result);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when NodeFactory fails", result.isFailure());
     }
 
     @Test
@@ -304,11 +337,14 @@ public class ArrayAccessParseletTest extends TestCase
 
         testParser.setTokenSequence(complexIndex, rbrack);
 
-        ParsedNode result = arrayAccessParselet.parse(testParser, array, lbrack);
+        ParseResult<ParsedNode> result = arrayAccessParselet.parse(testParser, array, lbrack);
 
-        assertNotNull("Array access with complex index should succeed", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Array access with complex index should succeed", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) node).getTestNodeType());
     }
 
     @Test
@@ -322,7 +358,10 @@ public class ArrayAccessParseletTest extends TestCase
         LocatableToken rbrack1 = createToken(JavaTokenTypes.RBRACK, "]", 1, 6);
 
         testParser.setTokenSequence(index1, rbrack1);
-        ParsedNode firstDim = arrayAccessParselet.parse(testParser, array, lbrack1);
+        ParseResult<ParsedNode> firstDimResult = arrayAccessParselet.parse(testParser, array, lbrack1);
+        assertNotNull("Should return a result", firstDimResult);
+        assertTrue("Should be successful", firstDimResult.isSuccess());
+        ParsedNode firstDim = firstDimResult.getValue();
         assertNotNull("First dimension access should succeed", firstDim);
 
         // Second dimension: [y]
@@ -331,7 +370,10 @@ public class ArrayAccessParseletTest extends TestCase
         LocatableToken rbrack2 = createToken(JavaTokenTypes.RBRACK, "]", 1, 9);
 
         testParser.setTokenSequence(index2, rbrack2);
-        ParsedNode secondDim = arrayAccessParselet.parse(testParser, firstDim, lbrack2);
+        ParseResult<ParsedNode> secondDimResult = arrayAccessParselet.parse(testParser, firstDim, lbrack2);
+        assertNotNull("Should return a result", secondDimResult);
+        assertTrue("Should be successful", secondDimResult.isSuccess());
+        ParsedNode secondDim = secondDimResult.getValue();
         assertNotNull("Second dimension access should succeed", secondDim);
 
         // Third dimension: [z]
@@ -340,7 +382,10 @@ public class ArrayAccessParseletTest extends TestCase
         LocatableToken rbrack3 = createToken(JavaTokenTypes.RBRACK, "]", 1, 12);
 
         testParser.setTokenSequence(index3, rbrack3);
-        ParsedNode thirdDim = arrayAccessParselet.parse(testParser, secondDim, lbrack3);
+        ParseResult<ParsedNode> thirdDimResult = arrayAccessParselet.parse(testParser, secondDim, lbrack3);
+        assertNotNull("Should return a result", thirdDimResult);
+        assertTrue("Should be successful", thirdDimResult.isSuccess());
+        ParsedNode thirdDim = thirdDimResult.getValue();
         assertNotNull("Third dimension access should succeed", thirdDim);
         assertEquals("ArrayAccess", ((TestNodeFactory.TestNode) thirdDim).getTestNodeType());
     }

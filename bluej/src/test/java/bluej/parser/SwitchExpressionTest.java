@@ -48,12 +48,8 @@ import static org.junit.Assert.assertEquals;
  * Test switch expressions.  Many tests are borrowed from
  * https://docs.oracle.com/en/java/javase/13/language/switch-expressions.html
  */
-@Category(NonParallelisableTests.class)
 public class SwitchExpressionTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

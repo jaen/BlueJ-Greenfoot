@@ -46,12 +46,8 @@ import static org.junit.Assert.assertNull;
  * Test for code completion, especially around lambdas and
  * features from Java 11-17 inclusive.
  */
-@Category(NonParallelisableTests.class)
 public class CompletionTest2
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

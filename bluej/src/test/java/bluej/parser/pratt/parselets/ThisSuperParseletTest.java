@@ -25,10 +25,13 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link ThisParselet} and {@link SuperParselet}.
@@ -39,13 +42,13 @@ import org.junit.Test;
  * @author BlueJ Team
  * @since BlueJ 5.4.0
  */
-public class ThisSuperParseletTest extends TestCase {
+public class ThisSuperParseletTest {
 
     private ThisParselet thisParselet;
     private SuperParselet superParselet;
     private TestKotlinPrattParser parser;
 
-    @Override
+    @Before
     public void setUp() {
         thisParselet = new ThisParselet();
         superParselet = new SuperParselet();
@@ -57,11 +60,14 @@ public class ThisSuperParseletTest extends TestCase {
         // Test parsing 'this' keyword
         LocatableToken token = createToken("this", JavaTokenTypes.LITERAL_this);
 
-        ParsedNode result = thisParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = thisParselet.parse(parser, token);
 
-        assertNotNull("Should create node for 'this' keyword", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("This", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create node for 'this' keyword", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("This", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Should not have errors for valid 'this'", parser.hasErrors());
     }
 
@@ -70,11 +76,14 @@ public class ThisSuperParseletTest extends TestCase {
         // Test parsing 'super' keyword
         LocatableToken token = createToken("super", JavaTokenTypes.LITERAL_super);
 
-        ParsedNode result = superParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = superParselet.parse(parser, token);
 
-        assertNotNull("Should create node for 'super' keyword", result);
-        assertTrue("Should be a TestNode", result instanceof TestNodeFactory.TestNode);
-        assertEquals("Super", ((TestNodeFactory.TestNode) result).getTestNodeType());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should create node for 'super' keyword", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+        assertEquals("Super", ((TestNodeFactory.TestNode) node).getTestNodeType());
         assertFalse("Should not have errors for valid 'super'", parser.hasErrors());
     }
 
@@ -83,10 +92,12 @@ public class ThisSuperParseletTest extends TestCase {
         // Test error handling for non-'this' token
         LocatableToken token = createToken("that", JavaTokenTypes.IDENT);
 
-        ParsedNode result = thisParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = thisParselet.parse(parser, token);
 
-        assertNull("Should return null for invalid token", result);
-        assertTrue("Should report error for invalid token", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for invalid token", result.isFailure());
+        assertFalse("Should not report error in parser", parser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
@@ -94,24 +105,28 @@ public class ThisSuperParseletTest extends TestCase {
         // Test error handling for non-'super' token
         LocatableToken token = createToken("parent", JavaTokenTypes.IDENT);
 
-        ParsedNode result = superParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = superParselet.parse(parser, token);
 
-        assertNull("Should return null for invalid token", result);
-        assertTrue("Should report error for invalid token", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for invalid token", result.isFailure());
+        assertFalse("Should not report error in parser", parser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
     public void testThisNullToken() {
         // Test error handling for null token
-        ParsedNode result = thisParselet.parse(parser, null);
-        assertNull("Should return null for null token", result);
+        ParseResult<ParsedNode> result = thisParselet.parse(parser, null);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for null token", result.isFailure());
     }
 
     @Test
     public void testSuperNullToken() {
         // Test error handling for null token
-        ParsedNode result = superParselet.parse(parser, null);
-        assertNull("Should return null for null token", result);
+        ParseResult<ParsedNode> result = superParselet.parse(parser, null);
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for null token", result.isFailure());
     }
 
     @Test
@@ -119,10 +134,12 @@ public class ThisSuperParseletTest extends TestCase {
         // Test 'this' parselet with wrong literal token
         LocatableToken token = createToken("true", JavaTokenTypes.LITERAL_true);
 
-        ParsedNode result = thisParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = thisParselet.parse(parser, token);
 
-        assertNull("Should return null for wrong literal token", result);
-        assertTrue("Should report error for wrong token type", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for wrong literal token", result.isFailure());
+        assertFalse("Should not report error in parser", parser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
@@ -130,10 +147,12 @@ public class ThisSuperParseletTest extends TestCase {
         // Test 'super' parselet with wrong literal token
         LocatableToken token = createToken("false", JavaTokenTypes.LITERAL_false);
 
-        ParsedNode result = superParselet.parse(parser, token);
+        ParseResult<ParsedNode> result = superParselet.parse(parser, token);
 
-        assertNull("Should return null for wrong literal token", result);
-        assertTrue("Should report error for wrong token type", parser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for wrong literal token", result.isFailure());
+        assertFalse("Should not report error in parser", parser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
     }
 
     @Test
@@ -154,15 +173,23 @@ public class ThisSuperParseletTest extends TestCase {
         LocatableToken thisToken = createToken("this", JavaTokenTypes.LITERAL_this);
         LocatableToken superToken = createToken("super", JavaTokenTypes.LITERAL_super);
 
-        ParsedNode thisResult = thisParselet.parse(parser, thisToken);
-        ParsedNode superResult = superParselet.parse(parser, superToken);
+        ParseResult<ParsedNode> thisResult = thisParselet.parse(parser, thisToken);
+        ParseResult<ParsedNode> superResult = superParselet.parse(parser, superToken);
 
-        assertNotNull("ThisParselet should create node via factory", thisResult);
-        assertNotNull("SuperParselet should create node via factory", superResult);
+        assertNotNull("Should return a result for this", thisResult);
+        assertNotNull("Should return a result for super", superResult);
+        assertTrue("This result should be successful", thisResult.isSuccess());
+        assertTrue("Super result should be successful", superResult.isSuccess());
+
+        ParsedNode thisNode = thisResult.getValue();
+        ParsedNode superNode = superResult.getValue();
+
+        assertNotNull("ThisParselet should create node via factory", thisNode);
+        assertNotNull("SuperParselet should create node via factory", superNode);
         assertFalse("Should not have errors with valid factory", parser.hasErrors());
 
         // Verify nodes are different instances
-        assertNotSame("Should create different node instances", thisResult, superResult);
+        assertNotSame("Should create different node instances", thisNode, superNode);
     }
 
     // Helper methods for creating test tokens

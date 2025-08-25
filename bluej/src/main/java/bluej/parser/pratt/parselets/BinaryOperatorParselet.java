@@ -27,6 +27,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 
 /**
@@ -99,20 +100,18 @@ public final class BinaryOperatorParselet implements InfixParselet {
      * @return A ParsedNode representing the binary expression, or null during foundation phase
      */
     @Override
-    public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken operator) {
+    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken operator) {
+        // Validate left operand
         if (left == null) {
-            parser.error("Missing left operand for binary operator", operator);
-            return null;
+            return ParseResult.failure("Missing left operand for binary operator", operator);
         }
 
         if (operator == null) {
-            parser.error("Null operator token in binary operator parselet", null);
-            return null;
+            return ParseResult.failure("Null operator token in binary operator parselet", null);
         }
 
         if (!isBinaryOperator(operator.getType())) {
-            parser.error("Expected binary operator, got: " + getTokenTypeName(operator.getType()), operator);
-            return null;
+            return ParseResult.failure("Expected binary operator, got: " + getTokenTypeName(operator.getType()), operator);
         }
 
         // Determine the precedence for parsing the right operand
@@ -121,23 +120,22 @@ public final class BinaryOperatorParselet implements InfixParselet {
         int rightPrecedence = rightAssociative ? precedence.getValue() - 1 : precedence.getValue();
 
         // Parse the right operand
-        ParsedNode right = parser.parseExpression(rightPrecedence);
-        if (right == null) {
-            parser.error("Missing right operand for binary operator '" + operator.getText() + "'", operator);
-            return null;
+        ParseResult<ParsedNode> rightResult = parser.parseExpressionResult(rightPrecedence);
+        if (rightResult.isFailure()) {
+            return ParseResult.failure("Missing right operand for binary operator '" + operator.getText() + "'", operator);
         }
 
+        ParsedNode right = rightResult.getValue();
+
         // Create the binary operator node using the NodeFactory
-        // This ensures thread-safe AST node creation
         NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {
-            parser.error("NodeFactory not available for AST node creation", operator);
-            return null;
+            return ParseResult.failure("NodeFactory not available for AST node creation", operator);
         }
 
         // Create and return the binary operator node
-        // The factory handles all threading requirements
-        return nodeFactory.createBinaryOperatorNode(left, operator, right);
+        ParsedNode result = nodeFactory.createBinaryOperatorNode(left, operator, right);
+        return ParseResult.success(result);
     }
 
     /**

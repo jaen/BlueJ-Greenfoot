@@ -75,10 +75,10 @@ public class ParserErrorRecoveryTest {
 
         // Verify error was recorded
         assertTrue(parser.hasErrors());
-        List<KotlinPrattParser.ParseError> errors = parser.getErrors();
+        List<ParseResult.ParseError> errors = parser.getErrors();
         assertEquals(1, errors.size());
 
-        KotlinPrattParser.ParseError error = errors.get(0);
+        ParseResult.ParseError error = errors.get(0);
         assertEquals("Expected identifier", error.message());
         assertEquals(errorToken, error.token());
         assertEquals(1, error.getLine());
@@ -101,7 +101,7 @@ public class ParserErrorRecoveryTest {
         parser.error("Second error", token2);
 
         assertTrue(parser.hasErrors());
-        List<KotlinPrattParser.ParseError> errors = parser.getErrors();
+        List<ParseResult.ParseError> errors = parser.getErrors();
         assertEquals(2, errors.size());
 
         assertEquals("First error", errors.get(0).message());
@@ -202,7 +202,7 @@ public class ParserErrorRecoveryTest {
         parser.error("Unexpected token: *", unexpectedToken);
         parser.error("Expected ';' following import statement", unexpectedToken);
 
-        List<KotlinPrattParser.ParseError> errors = parser.getErrors();
+        List<ParseResult.ParseError> errors = parser.getErrors();
         assertEquals(4, errors.size());
 
         // Verify messages follow expected patterns
@@ -212,7 +212,7 @@ public class ParserErrorRecoveryTest {
         assertTrue(errors.get(3).message().contains("Expected"));
 
         // Verify formatted messages include location
-        for (KotlinPrattParser.ParseError error : errors) {
+        for (ParseResult.ParseError error : errors) {
             String formatted = error.getFormattedMessage();
             assertTrue(formatted.contains("line 1"));
             assertTrue(formatted.contains("column 5"));
@@ -251,7 +251,7 @@ public class ParserErrorRecoveryTest {
         assertNull(result);
         assertTrue(parser.hasErrors());
 
-        List<KotlinPrattParser.ParseError> errors = parser.getErrors();
+        List<ParseResult.ParseError> errors = parser.getErrors();
         assertEquals(1, errors.size());
         assertEquals("Expected semicolon", errors.get(0).message());
     }
@@ -294,7 +294,7 @@ public class ParserErrorRecoveryTest {
         parser.error("Unexpected end of input", null);
 
         assertTrue(parser.hasErrors());
-        KotlinPrattParser.ParseError error = parser.getErrors().get(0);
+        ParseResult.ParseError error = parser.getErrors().get(0);
 
         assertEquals("Unexpected end of input", error.message());
         assertNull(error.token());
@@ -320,7 +320,7 @@ public class ParserErrorRecoveryTest {
         assertEquals(3, parser.getErrors().size());
 
         // All should have the same message but different tokens
-        for (KotlinPrattParser.ParseError error : parser.getErrors()) {
+        for (ParseResult.ParseError error : parser.getErrors()) {
             assertEquals("Test error", error.message());
             assertNotNull(error.token());
         }
@@ -337,9 +337,9 @@ public class ParserErrorRecoveryTest {
     // Simple test parselets for testing error recovery
     private static class TestLiteralParselet implements PrefixParselet {
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-            // Foundation phase returns null for successful validation
-            return null;
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+            // Return success with null node for testing
+            return ParseResult.success(null);
         }
 
         @Override
@@ -350,9 +350,9 @@ public class ParserErrorRecoveryTest {
 
     private static class TestIdentifierParselet implements PrefixParselet {
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
-            // Foundation phase returns null for successful validation
-            return null;
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+            // Return success with null node for testing
+            return ParseResult.success(null);
         }
 
         @Override
@@ -363,10 +363,10 @@ public class ParserErrorRecoveryTest {
 
     private static class TestBinaryOperatorParselet implements InfixParselet {
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
             ParsedNode right = parser.parseExpression(getPrecedence());
-            // Foundation phase returns null for successful validation
-            return null;
+            // Return success with null node for testing
+            return ParseResult.success(null);
         }
 
         @Override
@@ -382,11 +382,11 @@ public class ParserErrorRecoveryTest {
 
     private static class TestGroupParselet implements PrefixParselet {
         @Override
-        public ParsedNode parse(KotlinPrattParser parser, LocatableToken token) {
+        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
             ParsedNode expression = parser.parseExpression();
             parser.expect(JavaTokenTypes.RPAREN, "Expected ')' after expression");
-            // Foundation phase returns null for successful validation
-            return null;
+            // Return success with null node for testing
+            return ParseResult.success(null);
         }
 
         @Override

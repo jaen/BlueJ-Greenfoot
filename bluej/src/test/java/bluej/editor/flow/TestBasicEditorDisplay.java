@@ -84,7 +84,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnitQuickcheck.class)
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class TestBasicEditorDisplay extends FXTest
 {
     private Stage stage;

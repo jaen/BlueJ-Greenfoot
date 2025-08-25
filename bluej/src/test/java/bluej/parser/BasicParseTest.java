@@ -51,13 +51,8 @@ import static bluej.utility.ResourceFileReader.getResourceFile;
  *
  * @author  Andrew Patterson
  */
-@Category(NonParallelisableTests.class)
 public class BasicParseTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
-
     /**
      * Find a target method/class in the comments and return its index (or -1 if not found).
      */

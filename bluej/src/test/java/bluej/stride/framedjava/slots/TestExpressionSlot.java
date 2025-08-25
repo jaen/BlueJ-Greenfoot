@@ -23,7 +23,7 @@ import org.junit.runners.model.Statement;
 
 import bluej.stride.framedjava.slots.Operator.Precedence;
 
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class TestExpressionSlot
 {
     // Need to run tests on FX thread:

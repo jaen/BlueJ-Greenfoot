@@ -26,10 +26,12 @@ import bluej.NonParallelisableTests;
 import bluej.extensions2.SourceType;
 import bluej.parser.SourceParser;
 import bluej.parser.nodes.ParsedNode;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import static org.junit.Assert.*;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -47,12 +49,8 @@ import java.util.List;
  *
  * @author BlueJ Team
  */
-@Category(NonParallelisableTests.class)
-public class MinimalASTValidationTest extends TestCase {
-
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
+//@Category(NonParallelisableTests.class)
+public class MinimalASTValidationTest {
     /**
      * Test that the Pratt parser can be instantiated and parse basic expressions.
      */

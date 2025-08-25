@@ -48,12 +48,8 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@Category(NonParallelisableTests.class)
 public class KotlinEditorParserTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

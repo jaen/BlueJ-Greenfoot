@@ -25,10 +25,13 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TokenOperations;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link BinaryOperatorParselet}.
@@ -45,13 +48,13 @@ import org.junit.Test;
  *
  * @author BlueJ Team
  */
-public class BinaryOperatorParseletTest extends TestCase {
+public class BinaryOperatorParseletTest {
 
     private BinaryOperatorParselet additionParselet;
     private BinaryOperatorParselet assignmentParselet;
     private TestKotlinPrattParser testParser;
 
-    @Override
+    @Before
     public void setUp() {
         additionParselet = new BinaryOperatorParselet(Precedence.ADDITIVE);
         assignmentParselet = new BinaryOperatorParselet(Precedence.ASSIGNMENT, true); // right-associative
@@ -62,34 +65,40 @@ public class BinaryOperatorParseletTest extends TestCase {
     public void testHandleNullLeftOperand() {
         LocatableToken operator = createToken(JavaTokenTypes.PLUS, "+", 1, 5);
 
-        ParsedNode result = additionParselet.parse(testParser, null, operator);
+        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, operator);
 
-        assertNull("Should return null for missing left operand", result);
-        assertTrue("Should report error for missing left operand", testParser.hasErrors());
-        assertTrue("Error should mention missing left operand", testParser.getLastError().contains("Missing left operand"));
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for missing left operand", result.isFailure());
+        assertFalse("Should not report error in parser", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
+        assertTrue("Error should mention missing left operand", result.getErrors().get(0).message().contains("Missing left operand"));
     }
 
     @Test
     public void testHandleNullOperator() {
         // Foundation phase limitation: Can't easily create non-null ParsedNode to test null operator case
         // The parselet checks for null left operand first, so with both null, it reports missing left operand
-        ParsedNode result = additionParselet.parse(testParser, null, null);
+        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, null);
 
-        assertNull("Should return null when inputs are invalid", result);
-        assertTrue("Should report error", testParser.hasErrors());
-        assertTrue("Should report missing left operand error", testParser.getLastError().contains("Missing left operand"));
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure when inputs are invalid", result.isFailure());
+        assertFalse("Should not report error in parser", testParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
+        assertTrue("Should report missing left operand error", result.getErrors().get(0).message().contains("Missing left operand"));
     }
 
     @Test
     public void testHandleInvalidOperator() {
         LocatableToken invalidOperator = createToken(JavaTokenTypes.IDENT, "identifier", 1, 5);
 
-        ParsedNode result = additionParselet.parse(testParser, null, invalidOperator);
+        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, invalidOperator);
 
-        assertNull("Should return null for invalid operator", result);
-        assertTrue("Should report error", testParser.hasErrors());
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be a failure for invalid operator", result.isFailure());
+        assertFalse("Should not report error in parser", testParser.hasErrors());
         // Will report missing left operand first, which is correct behavior
-        assertTrue("Should report missing left operand", testParser.getLastError().contains("Missing left operand"));
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
+        assertTrue("Should report missing left operand", result.getErrors().get(0).message().contains("Missing left operand"));
     }
 
     @Test
@@ -125,8 +134,9 @@ public class BinaryOperatorParseletTest extends TestCase {
             // Test that valid binary operators can be parsed (canHandle method removed)
             // Create a dummy left operand for infix parsing
             ParsedNode dummyLeft = null; // Foundation phase uses null nodes
-            ParsedNode result = additionParselet.parse(testParser, dummyLeft, token);
+            ParseResult<ParsedNode> result = additionParselet.parse(testParser, dummyLeft, token);
             // In foundation phase, should validate without creating nodes
+            assertNotNull("Should return a result for operator type " + tokenType, result);
             assertNotNull("Should provide description for operator type " + tokenType,
                 additionParselet.getHandledOperator(tokenType));
         }
@@ -145,9 +155,9 @@ public class BinaryOperatorParseletTest extends TestCase {
             LocatableToken token = createToken(tokenType, "test", 1, 1);
             // Test that invalid tokens produce errors when parsed (canHandle method removed)
             ParsedNode dummyLeft = null; // Foundation phase uses null nodes
-            ParsedNode result = additionParselet.parse(freshParser, dummyLeft, token);
-            assertNull("Should return null for invalid operator tokens", result);
-            assertTrue("Should report error for non-binary operator tokens", freshParser.hasErrors());
+            ParseResult<ParsedNode> result = additionParselet.parse(freshParser, dummyLeft, token);
+            assertNotNull("Should return a result for invalid operator tokens", result);
+            assertTrue("Should be a failure for non-binary operator tokens", result.isFailure());
             assertEquals("Should indicate unsupported operator type",
                 "unsupported operator type", additionParselet.getHandledOperator(tokenType));
         }

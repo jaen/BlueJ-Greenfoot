@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Tests the HangingFlowPane class, specifically its layout algorithm.
  */
-@Category(NonParallelisableTests.class)
+//@Category(NonParallelisableTests.class)
 public class TestHangingFlowPane
 {
 

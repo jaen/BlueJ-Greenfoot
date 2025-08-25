@@ -23,8 +23,9 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
-import junit.framework.TestCase;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ import java.util.List;
  *
  * @author BlueJ Team
  */
-public class ASTComparisonUtilsTest extends TestCase {
+public class ASTComparisonUtilsTest {
 
     @Test
     public void testComparisonResultSuccess() {

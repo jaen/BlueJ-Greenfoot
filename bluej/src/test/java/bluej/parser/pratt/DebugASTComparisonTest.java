@@ -27,7 +27,9 @@ import bluej.extensions2.SourceType;
 import bluej.parser.SourceParser;
 import bluej.parser.nodes.NodeTree;
 import bluej.parser.nodes.ParsedNode;
-import junit.framework.TestCase;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -42,11 +44,8 @@ import java.util.Iterator;
 /**
  * Debug test that writes detailed output to a file to analyze AST comparison issues.
  */
-@Category(NonParallelisableTests.class)
-public class DebugASTComparisonTest extends TestCase {
-
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
+//@Category(NonParallelisableTests.class)
+public class DebugASTComparisonTest {
 
     private static final String OUTPUT_FILE = "/tmp/ast_debug_output.txt";
 
