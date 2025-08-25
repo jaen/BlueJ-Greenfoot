@@ -27,7 +27,8 @@ import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.nodes.ParsedNode;
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.StringReader;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.List;
  * @author BlueJ Development Team
  * @since BlueJ 5.4.0
  */
-public class KotlinPrattParserTest extends TestCase {
+public class KotlinPrattParserTest {
 
     /**
      * Creates a KotlinPrattParser for the given source string.
@@ -81,6 +82,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test that the parser can be created with default registry.
      */
+    @Test
     public void testParserCreation() {
         KotlinPrattParser parser = createParser("val x = 42");
         assertNotNull("Parser should be created", parser);
@@ -93,6 +95,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test that the parser can be created with custom registry.
      */
+    @Test
     public void testParserCreationWithCustomRegistry() {
         ParseletRegistry customRegistry = new ParseletRegistry();
         KotlinPrattParser parser = createParserWithRegistry("val x = 42", customRegistry);
@@ -105,6 +108,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test basic token consumption.
      */
+    @Test
     public void testTokenConsumption() {
         KotlinPrattParser parser = createParser("val x = 42");
 
@@ -122,6 +126,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test token lookahead without consumption.
      */
+    @Test
     public void testTokenLookahead() {
         KotlinPrattParser parser = createParser("fun test() { }");
 
@@ -141,6 +146,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test multi-token lookahead.
      */
+    @Test
     public void testMultiTokenLookahead() {
         KotlinPrattParser parser = createParser("class Test : Base");
 
@@ -160,6 +166,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test invalid lookahead distance.
      */
+    @Test
     public void testInvalidLookaheadDistance() {
         KotlinPrattParser parser = createParser("test");
 
@@ -183,6 +190,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test token push back functionality.
      */
+    @Test
     public void testTokenPushBack() {
         KotlinPrattParser parser = createParser("a b c");
 
@@ -204,6 +212,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test token matching.
      */
+    @Test
     public void testTokenMatching() {
         KotlinPrattParser parser = createParser("if (true)");
 
@@ -219,6 +228,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test conditional token consumption.
      */
+    @Test
     public void testConsumeIf() {
         KotlinPrattParser parser = createParser("var x : Int");
 
@@ -237,6 +247,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test expect token with error reporting.
      */
+    @Test
     public void testExpectToken() {
         KotlinPrattParser parser = createParser("val x = 42");
 
@@ -259,6 +270,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test error recording with location information.
      */
+    @Test
     public void testErrorRecording() {
         KotlinPrattParser parser = createParser("val 123 = x");
 
@@ -279,6 +291,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test error recording with null token.
      */
+    @Test
     public void testErrorRecordingWithNullToken() {
         KotlinPrattParser parser = createParser("");
 
@@ -296,6 +309,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test clearing errors.
      */
+    @Test
     public void testClearErrors() {
         KotlinPrattParser parser = createParser("test");
 
@@ -314,6 +328,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test error formatting.
      */
+    @Test
     public void testErrorFormatting() {
         KotlinPrattParser parser = createParser("val x");
         LocatableToken token = parser.consume();
@@ -333,6 +348,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test synchronization to recovery points.
      */
+    @Test
     public void testSynchronization() {
         KotlinPrattParser parser = createParser("error error ; valid code");
 
@@ -354,6 +370,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test synchronization with multiple sync tokens.
      */
+    @Test
     public void testSynchronizationMultipleTokens() {
         KotlinPrattParser parser = createParser("error error } more");
 
@@ -368,6 +385,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test synchronization when EOF is reached.
      */
+    @Test
     public void testSynchronizationToEOF() {
         KotlinPrattParser parser = createParser("error error");
 
@@ -383,6 +401,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test expression parsing with no registered parselets.
      */
+    @Test
     public void testExpressionParsingNoParselets() {
         KotlinPrattParser parser = createParserWithRegistry("42", new ParseletRegistry());
 
@@ -397,6 +416,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test expression parsing with EOF.
      */
+    @Test
     public void testExpressionParsingEOF() {
         KotlinPrattParser parser = createParser("");
 
@@ -411,6 +431,7 @@ public class KotlinPrattParserTest extends TestCase {
     /**
      * Test getCurrentToken tracking.
      */
+    @Test
     public void testGetCurrentToken() {
         KotlinPrattParser parser = createParser("a b c");
 

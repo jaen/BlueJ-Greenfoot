@@ -23,8 +23,8 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
-import junit.framework.TestCase;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Comprehensive test suite for {@link TokenUtils}.
@@ -44,7 +44,7 @@ import org.junit.Test;
  *
  * @author BlueJ Team
  */
-public class TokenUtilsTest extends TestCase {
+public class TokenUtilsTest {
 
     @Test
     public void testGetTokenTypeNameLiterals() {

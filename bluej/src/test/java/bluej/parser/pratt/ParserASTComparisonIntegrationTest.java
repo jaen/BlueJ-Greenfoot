@@ -29,11 +29,13 @@ import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.pratt.ASTComparisonUtils;
 import bluej.parser.InitConfig;
 import bluej.extensions2.SourceType;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.junit.experimental.categories.Category;
 import threadchecker.OnThread;
 import threadchecker.Tag;
@@ -59,7 +61,7 @@ import java.io.StringReader;
  * @author BlueJ Team
  */
 //@Category(NonParallelisableTests.class)
-public class ParserASTComparisonIntegrationTest extends TestCase {
+public class ParserASTComparisonIntegrationTest {
 
     @BeforeClass
     public static void initConfig() {
@@ -71,22 +73,20 @@ public class ParserASTComparisonIntegrationTest extends TestCase {
     // Store original config value to restore after tests
     private String originalPrattConfig;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         // Store original configuration
         originalPrattConfig = System.getProperty(PRATT_CONFIG_KEY);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         // Restore original configuration
         if (originalPrattConfig != null) {
             System.setProperty(PRATT_CONFIG_KEY, originalPrattConfig);
         } else {
             System.clearProperty(PRATT_CONFIG_KEY);
         }
-        super.tearDown();
     }
 
     /**
@@ -134,10 +134,10 @@ public class ParserASTComparisonIntegrationTest extends TestCase {
     }
 
     /**
-     * Test unary expressions.
+     * Test cast expressions.
      */
     @Test
-    public void testUnaryExpressions() {
+    public void testCastExpressions() {
         assertParserBehaviorMatches("+a", true, "Unary plus should parse in both parsers");
         assertParserBehaviorMatches("-a", true, "Unary minus should parse in both parsers");
         assertParserBehaviorMatches("!a", true, "Logical negation should parse in both parsers");

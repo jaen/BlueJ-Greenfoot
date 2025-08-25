@@ -21,11 +21,18 @@
  */
 package bluej.parser.pratt;
 
+import bluej.extensions2.SourceType;
+import bluej.parser.SourceParser;
+import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
-import junit.framework.TestCase;
+import bluej.parser.pratt.InfixParselet;
+import bluej.parser.pratt.PrefixParselet;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
+import java.io.StringReader;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -43,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author BlueJ Development Team
  * @since BlueJ 5.4.0
  */
-public class ParseletRegistryTest extends TestCase {
+public class ParseletRegistryTest {
 
     /**
      * Mock prefix parselet for testing.
@@ -99,6 +106,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test basic prefix parselet registration.
      */
+    @Test
     public void testPrefixRegistration() {
         ParseletRegistry registry = new ParseletRegistry();
         PrefixParselet parselet = new MockPrefixParselet("test");
@@ -116,6 +124,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test basic infix parselet registration.
      */
+    @Test
     public void testInfixRegistration() {
         ParseletRegistry registry = new ParseletRegistry();
         InfixParselet parselet = new MockInfixParselet("plus", 10);
@@ -133,6 +142,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test replacing existing parselets.
      */
+    @Test
     public void testParseletReplacement() {
         ParseletRegistry registry = new ParseletRegistry();
         PrefixParselet parselet1 = new MockPrefixParselet("first");
@@ -149,6 +159,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test null parselet rejection.
      */
+    @Test
     public void testNullParseletRejection() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -174,6 +185,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test precedence retrieval for infix parselets.
      */
+    @Test
     public void testPrecedenceRetrieval() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -198,6 +210,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test hasPrefix method.
      */
+    @Test
     public void testHasPrefix() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -215,6 +228,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test hasInfix method.
      */
+    @Test
     public void testHasInfix() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -232,6 +246,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test count methods.
      */
+    @Test
     public void testCounts() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -255,6 +270,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test token type retrieval.
      */
+    @Test
     public void testTokenTypeRetrieval() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -279,6 +295,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test parselet unregistration.
      */
+    @Test
     public void testUnregistration() {
         ParseletRegistry registry = new ParseletRegistry();
         PrefixParselet prefixParselet = new MockPrefixParselet("test");
@@ -304,6 +321,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test clearing registry.
      */
+    @Test
     public void testClear() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -330,6 +348,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test parent registry delegation for prefix parselets.
      */
+    @Test
     public void testParentDelegationPrefix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -355,6 +374,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test parent registry delegation for infix parselets.
      */
+    @Test
     public void testParentDelegationInfix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -383,6 +403,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test registry copying.
      */
+    @Test
     public void testCopy() {
         ParseletRegistry original = new ParseletRegistry();
         PrefixParselet prefixParselet = new MockPrefixParselet("test");
@@ -408,6 +429,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test registry copying with parent.
      */
+    @Test
     public void testCopyWithParent() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry original = new ParseletRegistry(parent);
@@ -426,6 +448,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test registry merging.
      */
+    @Test
     public void testMerge() {
         ParseletRegistry registry1 = new ParseletRegistry();
         ParseletRegistry registry2 = new ParseletRegistry();
@@ -451,6 +474,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test merging with overwrites.
      */
+    @Test
     public void testMergeWithOverwrites() {
         ParseletRegistry registry1 = new ParseletRegistry();
         ParseletRegistry registry2 = new ParseletRegistry();
@@ -470,6 +494,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test null merge rejection.
      */
+    @Test
     public void testNullMergeRejection() {
         ParseletRegistry registry = new ParseletRegistry();
 
@@ -487,6 +512,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test concurrent registration from multiple threads.
      */
+    @Test
     public void testConcurrentRegistration() throws InterruptedException {
         final ParseletRegistry registry = new ParseletRegistry();
         final int threadCount = 10;
@@ -529,6 +555,7 @@ public class ParseletRegistryTest extends TestCase {
     /**
      * Test concurrent reads while writing.
      */
+    @Test
     public void testConcurrentReadWrite() throws InterruptedException {
         final ParseletRegistry registry = new ParseletRegistry();
         final int iterations = 1000;

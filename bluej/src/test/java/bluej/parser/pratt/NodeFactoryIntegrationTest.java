@@ -30,7 +30,8 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.parselets.BinaryOperatorParselet;
 import bluej.parser.pratt.parselets.GroupParselet;
 import bluej.parser.pratt.parselets.LiteralParselet;
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.StringReader;
 
@@ -44,7 +45,7 @@ import java.io.StringReader;
  * @author BlueJ Team
  * @since BlueJ 5.4.0
  */
-public class NodeFactoryIntegrationTest extends TestCase {
+public class NodeFactoryIntegrationTest {
 
     /**
      * Creates a parser with the given source and a test node factory.
@@ -98,6 +99,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that LiteralParselet uses NodeFactory to create nodes.
      */
+    @Test
     public void testLiteralParseletCreatesNode() {
         KotlinPrattParser parser = createTestParser("42");
         ParsedNode node = parser.parseExpression(0);
@@ -120,6 +122,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that LiteralParselet handles different literal types.
      */
+    @Test
     public void testLiteralParseletHandlesAllTypes() {
         // Test integer literal
         KotlinPrattParser intParser = createTestParser("123");
@@ -147,6 +150,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that BinaryOperatorParselet uses NodeFactory to create nodes.
      */
+    @Test
     public void testBinaryOperatorParseletCreatesNode() {
         KotlinPrattParser parser = createTestParser("1 + 2");
         ParsedNode node = parser.parseExpression(0);
@@ -170,6 +174,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that BinaryOperatorParselet handles precedence correctly.
      */
+    @Test
     public void testBinaryOperatorPrecedence() {
         // Test that multiplication binds tighter than addition
         KotlinPrattParser parser = createTestParser("1 + 2 * 3");
@@ -200,6 +205,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that GroupParselet uses NodeFactory to handle grouped expressions.
      */
+    @Test
     public void testGroupParseletCreatesNode() {
         KotlinPrattParser parser = createTestParser("(42)");
         ParsedNode node = parser.parseExpression(0);
@@ -214,6 +220,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that GroupParselet affects precedence correctly.
      */
+    @Test
     public void testGroupParseletAffectsPrecedence() {
         // Parentheses should override normal precedence
         KotlinPrattParser parser = createTestParser("(1 + 2) * 3");
@@ -244,6 +251,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that NodeFactory properly reports errors.
      */
+    @Test
     public void testNodeFactoryErrorReporting() {
         KotlinPrattParser parser = createTestParser("42");
         TestNodeFactory factory = getTestNodeFactory(parser);
@@ -262,6 +270,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that parselets handle null NodeFactory gracefully.
      */
+    @Test
     public void testParseletWithoutNodeFactory() {
         // Create parser without node factory (simulate error condition)
         SourceParser sourceParser = new SourceParser(
@@ -284,6 +293,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that complex expressions use NodeFactory correctly.
      */
+    @Test
     public void testComplexExpressionNodeCreation() {
         KotlinPrattParser parser = createTestParser("1 + 2 * (3 - 4)");
         TestNodeFactory factory = getTestNodeFactory(parser);
@@ -310,6 +320,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that node offsets are correctly set.
      */
+    @Test
     public void testNodeOffsetsAreSet() {
         KotlinPrattParser parser = createTestParser("42 + 100");
         ParsedNode node = parser.parseExpression(0);
@@ -332,6 +343,7 @@ public class NodeFactoryIntegrationTest extends TestCase {
     /**
      * Test that nested binary operations create correct tree structure.
      */
+    @Test
     public void testNestedBinaryOperations() {
         KotlinPrattParser parser = createTestParser("1 + 2 + 3 + 4");
         ParsedNode node = parser.parseExpression(0);
