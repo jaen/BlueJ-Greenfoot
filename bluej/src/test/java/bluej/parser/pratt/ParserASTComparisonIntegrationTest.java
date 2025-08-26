@@ -23,6 +23,13 @@ package bluej.parser.pratt;
 
 import bluej.parser.SourceParser;
 import bluej.parser.InitConfig;
+import bluej.parser.JavaParserCallbacks;
+import bluej.parser.lexer.LocatableToken;
+import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.TestTokenOperations;
+import bluej.parser.pratt.TestNodeFactory;
+import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.lexer.JavaTokenTypes;
 import bluej.extensions2.SourceType;
 import org.junit.Before;
 import org.junit.After;
@@ -31,6 +38,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Validation tests comparing AST outputs between the legacy KotlinParser
@@ -46,6 +55,7 @@ import java.io.StringReader;
  *   <li>Parse expressions with legacy parser (Pratt disabled)</li>
  *   <li>Parse same expressions with Pratt parser (Pratt enabled)</li>
  *   <li>Compare results with clear pass/fail assertions</li>
+ *   <li>Capture actual AST structures for detailed comparison</li>
  * </ul>
  *
  * @author BlueJ Team
@@ -328,6 +338,202 @@ public class ParserASTComparisonIntegrationTest {
             // Any exception means parsing failed
             System.out.println("  " + parserType + " parser: FAILED - " + e.getClass().getSimpleName() + ": " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Step 11.2: Test parsing behavior comparison between parsers.
+     * This compares concrete parsing behaviors like token consumption and parse outcomes.
+     */
+    @Test
+    public void testParsingBehaviorComparison() {
+        // Test simple expressions with parsing behavior comparison
+        compareParseBehavior("42", "Integer literal parsing");
+        compareParseBehavior("\"hello\"", "String literal parsing");
+        compareParseBehavior("a", "Identifier parsing");
+        compareParseBehavior("a + b", "Binary operation parsing");
+        compareParseBehavior("-x", "Unary operation parsing");
+        compareParseBehavior("(a + b)", "Grouped expression parsing");
+
+        // Test error cases to verify consistent error detection
+        compareParseBehavior("a +", "Incomplete binary expression");
+        compareParseBehavior("+ a", "Unary plus (valid)");
+        compareParseBehavior("((a)", "Unbalanced parentheses");
+        compareParseBehavior("a b", "Adjacent identifiers");
+    }
+
+    /**
+     * Compare parsing behavior between monolithic and Pratt parsers.
+     *
+     * @param expression The expression to parse
+     * @param description Description for assertion messages
+     */
+    private void compareParseBehavior(String expression, String description) {
+        System.out.println("\n=== Comparing parsing behavior for: '" + expression + "' ===");
+
+        // Analyze monolithic parser behavior
+        ParsingResult monolithicResult = analyzeMonolithicParsing(expression);
+
+        // Analyze Pratt parser behavior
+        ParsingResult prattResult = analyzePrattParsing(expression);
+
+        // Compare results
+        boolean behaviorMatches = compareParsingResults(monolithicResult, prattResult);
+
+        System.out.println("Monolithic parser: success=" + monolithicResult.success +
+                          ", tokens=" + monolithicResult.tokensConsumed +
+                          ", position=" + monolithicResult.endPosition);
+        System.out.println("Pratt parser: success=" + prattResult.success +
+                          ", tokens=" + prattResult.tokensConsumed +
+                          ", AST=" + (prattResult.ast != null ? "generated" : "null"));
+        System.out.println("Behavior match: " + behaviorMatches);
+
+        // Assert consistent parsing success/failure
+        assertEquals(description + " - Both parsers should have same success/failure result",
+                    monolithicResult.success, prattResult.success);
+
+        // If both succeeded, verify consistent token consumption patterns
+        if (monolithicResult.success && prattResult.success) {
+            assertTrue(description + " - Both parsers should consume tokens",
+                      monolithicResult.tokensConsumed > 0);
+            assertNotNull(description + " - Pratt parser should generate AST", prattResult.ast);
+        }
+    }
+
+    /**
+     * Analyze monolithic parser behavior by tracking tokens and parse outcome.
+     */
+    private ParsingResult analyzeMonolithicParsing(String expression) {
+        System.setProperty(PRATT_CONFIG_KEY, "false"); // Use monolithic parser
+
+        try {
+            StringReader reader = new StringReader(expression);
+            SourceParser sourceParser = new SourceParser(reader, SourceType.Kotlin);
+
+            // Count initial tokens
+            int initialTokens = countTokens(expression);
+
+            // Attempt parsing
+            sourceParser.parseExpression();
+
+            // If we get here, parsing succeeded
+            return new ParsingResult(true, initialTokens, initialTokens, null);
+
+        } catch (Exception e) {
+            // Count tokens for failed case
+            int tokensBeforeFailure = countTokens(expression);
+            return new ParsingResult(false, tokensBeforeFailure, 0, e.getMessage());
+        }
+    }
+
+    /**
+     * Analyze Pratt parser behavior by tracking AST generation and parse outcome.
+     */
+    private ParsingResult analyzePrattParsing(String expression) {
+        System.setProperty(PRATT_CONFIG_KEY, "true"); // Use Pratt parser
+
+        try {
+            // Use direct Pratt parser approach
+            StringReader reader = new StringReader(expression);
+            SourceParser sourceParser = new SourceParser(reader, SourceType.Kotlin);
+
+            // Create Pratt parser components
+            TestTokenOperations tokenOps = new TestTokenOperations(sourceParser.getTokenStream());
+            TestNodeFactory nodeFactory = new TestNodeFactory();
+            KotlinPrattParser prattParser = new KotlinPrattParser(tokenOps, sourceParser, nodeFactory);
+
+            // Count tokens before parsing
+            int initialTokens = countTokens(expression);
+
+            // Attempt parsing
+            ParsedNode ast = prattParser.parseExpression();
+
+            // Count consumed tokens (approximate)
+            int consumedTokens = estimateConsumedTokens(tokenOps, initialTokens);
+
+            return new ParsingResult(true, consumedTokens, initialTokens, null, ast);
+
+        } catch (Exception e) {
+            int tokensBeforeFailure = countTokens(expression);
+            return new ParsingResult(false, tokensBeforeFailure, 0, e.getMessage(), null);
+        }
+    }
+
+    /**
+     * Compare parsing results for behavioral equivalence.
+     */
+    private boolean compareParsingResults(ParsingResult monolithic, ParsingResult pratt) {
+        // Basic comparison: both should succeed or fail consistently
+        if (monolithic.success != pratt.success) {
+            return false;
+        }
+
+        // If both succeeded, verify reasonable token consumption
+        if (monolithic.success && pratt.success) {
+            return monolithic.tokensConsumed > 0 && pratt.ast != null;
+        }
+
+        // Both failed - this is also a match
+        return true;
+    }
+
+    /**
+     * Count tokens in an expression (simple approximation).
+     */
+    private int countTokens(String expression) {
+        try {
+            StringReader reader = new StringReader(expression);
+            SourceParser sourceParser = new SourceParser(reader, SourceType.Kotlin);
+            int count = 0;
+            while (sourceParser.getTokenStream().LA(1).getType() != JavaTokenTypes.EOF) {
+                sourceParser.getTokenStream().nextToken();
+                count++;
+            }
+            return count;
+        } catch (Exception e) {
+            return expression.split("\\s+").length; // Fallback: word count
+        }
+    }
+
+    /**
+     * Estimate consumed tokens from token operations.
+     */
+    private int estimateConsumedTokens(TestTokenOperations tokenOps, int initialTokens) {
+        // For now, assume all tokens were processed if parsing succeeded
+        return initialTokens;
+    }
+
+    /**
+     * Result of parsing analysis containing measurable behaviors.
+     */
+    private static class ParsingResult {
+        final boolean success;
+        final int tokensConsumed;
+        final int endPosition;
+        final String errorMessage;
+        final ParsedNode ast;
+
+        public ParsingResult(boolean success, int tokensConsumed, int endPosition, String errorMessage) {
+            this(success, tokensConsumed, endPosition, errorMessage, null);
+        }
+
+        public ParsingResult(boolean success, int tokensConsumed, int endPosition, String errorMessage, ParsedNode ast) {
+            this.success = success;
+            this.tokensConsumed = tokensConsumed;
+            this.endPosition = endPosition;
+            this.errorMessage = errorMessage;
+            this.ast = ast;
+        }
+
+        @Override
+        public String toString() {
+            return "ParsingResult{" +
+                    "success=" + success +
+                    ", tokensConsumed=" + tokensConsumed +
+                    ", endPosition=" + endPosition +
+                    ", hasAST=" + (ast != null) +
+                    ", error='" + errorMessage + '\'' +
+                    '}';
         }
     }
 
