@@ -29,6 +29,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.TestTokenOperations;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.KotlinPrattParser;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.extensions2.SourceType;
 import org.junit.Before;
@@ -448,10 +449,20 @@ public class ParserASTComparisonIntegrationTest {
             // Attempt parsing
             ParsedNode ast = prattParser.parseExpression();
 
+            // Check for parsing success - must have AST and no errors
+            boolean success = ast != null && !prattParser.hasErrors();
+            String errorMessage = null;
+            if (!success && prattParser.hasErrors()) {
+                List<ParseResult.ParseError> errors = prattParser.getErrors();
+                if (!errors.isEmpty()) {
+                    errorMessage = errors.get(0).message(); // Get first error message
+                }
+            }
+
             // Count consumed tokens (approximate)
             int consumedTokens = estimateConsumedTokens(tokenOps, initialTokens);
 
-            return new ParsingResult(true, consumedTokens, initialTokens, null, ast);
+            return new ParsingResult(success, consumedTokens, initialTokens, errorMessage, ast);
 
         } catch (Exception e) {
             int tokensBeforeFailure = countTokens(expression);
