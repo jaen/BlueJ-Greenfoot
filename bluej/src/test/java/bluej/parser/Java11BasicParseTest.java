@@ -23,14 +23,7 @@ package bluej.parser;
 
 import java.io.StringReader;
 
-import bluej.NonParallelisableTests;
-import bluej.extensions2.SourceType;
-import org.junit.Rule;
 import org.junit.Test;
-
-import bluej.JavaFXThreadingRule;
-import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.Tag;
 
 /**
  * Basic Java 11 parse tests.

@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.GenTypeClass;
 import bluej.debugger.gentype.GenTypeParameter;
 import bluej.debugger.gentype.GenTypeWildcard;
@@ -45,10 +43,7 @@ import bluej.parser.nodes.ParsedCUNode;
 import bluej.utility.JavaReflective;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

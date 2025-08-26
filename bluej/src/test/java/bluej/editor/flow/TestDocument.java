@@ -21,20 +21,17 @@
  */
 package bluej.editor.flow;
 
-import bluej.NonParallelisableTests;
 import bluej.editor.flow.Document.Bias;
 import bluej.editor.flow.gen.GenRandom;
 import bluej.editor.flow.gen.GenString;
 import bluej.utility.Debug;
 import com.pholser.junit.quickcheck.From;
 import com.pholser.junit.quickcheck.Property;
-import com.pholser.junit.quickcheck.When;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
@@ -52,7 +49,6 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 
 @RunWith(JUnitQuickcheck.class)
-//@Category(NonParallelisableTests.class) // TODO: this is is just slow, should get it's own category
 public class TestDocument
 {
     private static class Pos

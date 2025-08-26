@@ -23,8 +23,6 @@ package bluej.parser;
 
 import java.util.List;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.JavaEntity;
@@ -38,9 +36,7 @@ import bluej.parser.nodes.ParsedTypeNode;
 import bluej.parser.nodes.TypeInnerNode;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

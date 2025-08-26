@@ -22,7 +22,6 @@
 package bluej.editor.flow;
 
 import bluej.Config;
-import bluej.NonParallelisableTests;
 import bluej.collect.DiagnosticWithShown;
 import bluej.collect.StrideEditReason;
 import bluej.compiler.CompileReason;
@@ -61,7 +60,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import threadchecker.OnThread;
 import threadchecker.Tag;
@@ -84,7 +82,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnitQuickcheck.class)
-//@Category(NonParallelisableTests.class)
 public class TestBasicEditorDisplay extends FXTest
 {
     private Stage stage;

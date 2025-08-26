@@ -21,10 +21,7 @@
  */
 package bluej.parser;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.Reflective;
-import bluej.parser.ParseUtility.StartEnd;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.nodes.MethodNode;
 import bluej.pkgmgr.JavadocResolver;
@@ -33,22 +30,17 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.Tag;
 
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static bluej.parser.ParseUtility.Parsed;
 import static bluej.parser.ParseUtility.parse;
-import static org.junit.Assert.*;
 
 /**
  * Test for code completion, especially around local variables.

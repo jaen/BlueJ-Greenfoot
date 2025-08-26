@@ -21,8 +21,6 @@
  */
 package bluej.parser;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.nodes.NodeTree;
 import bluej.parser.nodes.NodeTree.NodeAndPosition;
@@ -30,10 +28,7 @@ import bluej.parser.nodes.ParsedNode;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.Tag;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

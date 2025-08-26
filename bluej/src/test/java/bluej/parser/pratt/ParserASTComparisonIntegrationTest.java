@@ -21,24 +21,14 @@
  */
 package bluej.parser.pratt;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
-import bluej.parser.KotlinParserAdapter;
 import bluej.parser.SourceParser;
-import bluej.parser.entity.ClassLoaderResolver;
-import bluej.parser.pratt.ASTComparisonUtils;
 import bluej.parser.InitConfig;
 import bluej.extensions2.SourceType;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.experimental.categories.Category;
-import threadchecker.OnThread;
-import threadchecker.Tag;
 
 import java.io.StringReader;
 
@@ -60,7 +50,6 @@ import java.io.StringReader;
  *
  * @author BlueJ Team
  */
-//@Category(NonParallelisableTests.class)
 public class ParserASTComparisonIntegrationTest {
 
     @BeforeClass

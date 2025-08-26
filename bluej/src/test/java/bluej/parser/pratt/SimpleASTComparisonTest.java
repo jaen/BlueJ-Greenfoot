@@ -21,8 +21,6 @@
  */
 package bluej.parser.pratt;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.parser.InitConfig;
 import bluej.parser.SourceParser;
 import bluej.parser.TestableDocument;
@@ -32,13 +30,9 @@ import bluej.parser.nodes.NodeTree;
 import bluej.parser.nodes.ParsedCUNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.extensions2.SourceType;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -51,7 +45,6 @@ import java.util.Iterator;
  * This test helps us understand what's happening with the parser integration
  * by logging detailed results instead of asserting on them.
  */
-//@Category(NonParallelisableTests.class)
 public class SimpleASTComparisonTest {
 
     @BeforeClass

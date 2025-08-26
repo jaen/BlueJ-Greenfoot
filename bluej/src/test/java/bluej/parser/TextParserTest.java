@@ -23,8 +23,6 @@ package bluej.parser;
 
 import java.util.List;
 
-import bluej.JavaFXThreadingRule;
-import bluej.NonParallelisableTests;
 import bluej.debugger.gentype.JavaPrimitiveType;
 import bluej.debugmgr.codepad.DeclaredVar;
 import bluej.parser.entity.ClassLoaderResolver;
@@ -36,10 +34,7 @@ import bluej.parser.nodes.ParsedCUNode;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.*;
 
