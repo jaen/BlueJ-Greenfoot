@@ -333,6 +333,20 @@ public class PrefixOperatorParseletTest
             return result != null && result.isSuccess() ? result.getValue() : null;
         }
 
+        /**
+         * Override parseExpressionResult to return a mock operand for testing.
+         */
+        @Override
+        public ParseResult<ParsedNode> parseExpressionResult(int precedence) {
+            if (nextOperand == null) {
+                return ParseResult.failure("Missing operand", null);
+            }
+
+            // Create a simple literal node as the operand using the NodeFactory
+            LiteralParselet literalParselet = new LiteralParselet();
+            return literalParselet.parse(this, nextOperand);
+        }
+
         @Override
         public NodeFactory getNodeFactory() {
             if (nodeFactoryFailure) {

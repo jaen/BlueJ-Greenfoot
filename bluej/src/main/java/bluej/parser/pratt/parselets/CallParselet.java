@@ -110,6 +110,9 @@ public class CallParselet implements InfixParselet
 
         try {
             ParsedNode result = nodeFactory.createCallNode(left, arguments);
+            if (result == null) {
+                return ParseResult.failure("NodeFactory failed to create call node", token);
+            }
             return ParseResult.success(result);
         } catch (Exception e) {
             return ParseResult.failure("Failed to create call node: " + e.getMessage(), token);

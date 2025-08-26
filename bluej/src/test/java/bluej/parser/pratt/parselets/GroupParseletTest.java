@@ -234,8 +234,10 @@ public class GroupParseletTest {
 
         assertNotNull("Should return a result", result);
         assertTrue("Should be a failure for invalid token type", result.isFailure());
+        assertFalse("Should not have errors in parser", freshParser.hasErrors());
+        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
         assertTrue("Error message should mention expected token",
-                   freshParser.getLastError().contains("Expected"));
+                   result.getErrors().get(0).message().contains("Expected"));
     }
 
     @Test

@@ -426,6 +426,28 @@ public class CallParseletTest
         }
 
         @Override
+        public ParseResult<ParsedNode> parseExpressionResult(int precedence) {
+            LocatableToken token = consume();
+            if (token == null) {
+                return ParseResult.failure("No token available for expression", null);
+            }
+
+            // Simple expression parsing for literals and identifiers
+            ParsedNode node = null;
+            if (token.getType() == JavaTokenTypes.NUM_INT) {
+                node = getNodeFactory().createLiteralNode(token);
+            } else if (token.getType() == JavaTokenTypes.IDENT) {
+                node = getNodeFactory().createIdentifierNode(token);
+            }
+
+            if (node != null) {
+                return ParseResult.success(node);
+            } else {
+                return ParseResult.failure("Cannot parse token type: " + token.getType(), token);
+            }
+        }
+
+        @Override
         public void error(String message, LocatableToken token) {
             hasErrors = true;
             lastError = message;

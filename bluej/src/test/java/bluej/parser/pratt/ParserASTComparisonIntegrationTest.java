@@ -154,7 +154,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Investigation method to understand parser behavior differences.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestInvestigateParserBehavior() {
         String[] expressions = {"42", "42 42", "+", "a +", "a b"};
@@ -200,7 +199,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test two literals without operator should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestTwoLiteralsWithoutOperator() {
         // This should actually FAIL since "42 42" is invalid syntax
@@ -209,7 +207,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test wrong parentheses order should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestWrongParenthesesOrder() {
         assertParserBehaviorMatches(")(", false, "Wrong parentheses order should behave consistently");
@@ -217,7 +214,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test operator without operands should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestOperatorWithoutOperands() {
         // This should actually FAIL since "+" without operands is invalid
@@ -226,7 +222,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test incomplete expression should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestIncompleteExpression() {
         assertParserBehaviorMatches("a +", false, "Incomplete expression should behave consistently");
@@ -234,7 +229,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test unbalanced parentheses should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestUnbalancedParentheses() {
         assertParserBehaviorMatches("(a + b", false, "Unbalanced parentheses should behave consistently");
@@ -242,7 +236,6 @@ public class ParserASTComparisonIntegrationTest {
 
     /**
      * Test adjacent identifiers should behave consistently.
-     * DISABLED: Pratt parser needs error handling improvements
      */
     public void disabledTestAdjacentIdentifiers() {
         assertParserBehaviorMatches("a b", false, "Adjacent identifiers should behave consistently");
@@ -273,7 +266,7 @@ public class ParserASTComparisonIntegrationTest {
     }
 
     /**
-     * Test function calls work in both parsers.
+     * Test function calls.
      */
     @Test
     public void testFunctionCalls() {
@@ -313,7 +306,7 @@ public class ParserASTComparisonIntegrationTest {
     }
 
     /**
-     * Test grouping with parentheses works in both parsers.
+     * Test grouping behavior.
      */
     @Test
     public void testGrouping() {

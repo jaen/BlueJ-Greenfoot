@@ -1192,18 +1192,29 @@ public class KotlinParser implements ParserBehavior
         LocatableToken token = firstToken;
         while (token.getType() != JavaTokenTypes.SEMI &&
                token.getType() != JavaTokenTypes.RCURLY &&
-               token.getType() != JavaTokenTypes.RPAREN &&
                token.getType() != JavaTokenTypes.EOF &&
                token.getType() != JavaTokenTypes.LITERAL_in) {
+
+            // Check for unmatched closing paren first, before any processing
+            if (token.getType() == JavaTokenTypes.RPAREN && parenBalance == 0) {
+                // This is an unmatched closing paren - stop parsing and leave it in the stream
+                break;
+            }
+
+            // Track whether current token is a matched closing paren
+            boolean isMatchedClosingParen = false;
 
             // Track parentheses balance
             if (token.getType() == JavaTokenTypes.LPAREN) {
                 parenBalance++;
             } else if (token.getType() == JavaTokenTypes.RPAREN) {
+                // This is a matched closing paren (we already checked for unmatched above)
                 parenBalance--;
+                isMatchedClosingParen = true;
             }
 
-            if (lastToken != null) {
+            // Validation: skip for matched closing parens as they're structural, not sequential operands
+            if (lastToken != null && !isMatchedClosingParen) {
                 // Check for invalid token sequences, but be more careful about valid constructs
                 if (isOperand(lastToken) && isOperand(token) &&
                     !isValidOperandSequence(lastToken, token)) {
@@ -1230,21 +1241,15 @@ public class KotlinParser implements ParserBehavior
             token = nextToken();
         }
 
-//        // If we exited the loop due to finding an RPAREN, account for it in balance
-//        if (token.getType() == JavaTokenTypes.RPAREN) {
-//            parenBalance--;
-//        }
-
         // Check for expression ending with operator
         if (lastToken != null && isBinaryOperator(lastToken)) {
             error("Expression cannot end with operator '" + lastToken.getText() + "'", lastToken);
         }
 
-        // Check for unbalanced parentheses
+        // Check for unbalanced parentheses (only for unclosed opening parens)
+        // We don't check for < 0 because we stop parsing when we see unmatched closing parens
         if (parenBalance > 0) {
             error("Unbalanced parentheses: missing '" + parenBalance + "' closing parenthesis", firstToken);
-        } else if (parenBalance < 0) {
-            error("Unbalanced parentheses: extra closing parenthesis", firstToken);
         }
 
         // Push back the terminating token

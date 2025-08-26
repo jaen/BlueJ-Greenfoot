@@ -87,6 +87,9 @@ public class PostfixOperatorParselet implements InfixParselet
         // Use the NodeFactory to create the postfix operator node
         try {
             ParsedNode node = parser.getNodeFactory().createUnaryPostfixNode(left, token);
+            if (node == null) {
+                return ParseResult.failure("NodeFactory failed to create postfix operator node", token);
+            }
             return ParseResult.success(node);
         } catch (Exception e) {
             // If node creation fails, return failure with appropriate error

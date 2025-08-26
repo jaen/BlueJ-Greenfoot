@@ -117,6 +117,9 @@ public class MemberAccessParselet implements InfixParselet
         // Create the member access node using NodeFactory
         try {
             ParsedNode node = parser.getNodeFactory().createMemberAccessNode(left, memberToken, isSafeCall);
+            if (node == null) {
+                return ParseResult.failure("NodeFactory failed to create member access node", token);
+            }
             return ParseResult.success(node);
         } catch (Exception e) {
             // If node creation fails, return failure with appropriate error

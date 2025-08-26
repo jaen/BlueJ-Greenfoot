@@ -99,6 +99,12 @@ public class NameParselet implements PrefixParselet {
             return ParseResult.failure("Expected identifier token, got: " + getTokenTypeName(token.getType()), token);
         }
 
+        // Validate that the identifier text is not empty
+        String text = token.getText();
+        if (text == null || text.isEmpty()) {
+            return ParseResult.failure("Identifier cannot be empty", token);
+        }
+
         // Create the identifier node using the NodeFactory
         NodeFactory nodeFactory = parser.getNodeFactory();
         if (nodeFactory == null) {

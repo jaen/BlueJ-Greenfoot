@@ -91,7 +91,13 @@ public class PrefixOperatorParselet implements PrefixParselet
             .mapFailure(error -> new ParseResult.ParseError(
                 "Missing operand for " + getOperatorDescription(token) + " operator",
                 token))
-            .map(operand -> nodeFactory.createUnaryPrefixNode(token, operand));
+            .flatMap(operand -> {
+                ParsedNode node = nodeFactory.createUnaryPrefixNode(token, operand);
+                if (node == null) {
+                    return ParseResult.failure("NodeFactory failed to create unary prefix node", token);
+                }
+                return ParseResult.success(node);
+            });
     }
 
     /**

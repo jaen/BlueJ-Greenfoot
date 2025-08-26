@@ -112,6 +112,9 @@ public class ArrayAccessParselet implements InfixParselet
                 // Create the array access node using NodeFactory
                 try {
                     ParsedNode node = parser.getNodeFactory().createArrayAccessNode(left, index);
+                    if (node == null) {
+                        return ParseResult.failure("NodeFactory failed to create array access node", token);
+                    }
                     return ParseResult.success(node);
                 } catch (Exception e) {
                     // If node creation fails, return failure with appropriate error
