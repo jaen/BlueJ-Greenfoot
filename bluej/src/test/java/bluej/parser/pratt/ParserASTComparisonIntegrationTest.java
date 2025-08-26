@@ -153,54 +153,10 @@ public class ParserASTComparisonIntegrationTest {
     }
 
     /**
-     * Investigation method to understand parser behavior differences.
-     */
-    public void disabledTestInvestigateParserBehavior() {
-        String[] expressions = {"42", "42 42", "+", "a +", "a b"};
-        StringBuilder debugInfo = new StringBuilder("\n=== PARSER INVESTIGATION RESULTS ===\n");
-
-        for (String expr : expressions) {
-            debugInfo.append("\nExpression: '").append(expr).append("'\n");
-
-            // Test legacy parser
-            String legacyResult;
-            try {
-                System.setProperty(PRATT_CONFIG_KEY, "false");
-                StringReader reader = new StringReader(expr);
-                SourceParser parser = new SourceParser(reader, SourceType.Kotlin);
-                parser.parseExpression();
-                legacyResult = "SUCCESS";
-            } catch (Exception e) {
-                legacyResult = "FAILED - " + e.getClass().getSimpleName() + ": " + e.getMessage();
-            }
-            debugInfo.append("  Legacy: ").append(legacyResult).append("\n");
-
-            // Test Pratt parser
-            String prattResult;
-            try {
-                System.setProperty(PRATT_CONFIG_KEY, "true");
-                StringReader reader = new StringReader(expr);
-                SourceParser parser = new SourceParser(reader, SourceType.Kotlin);
-                parser.parseExpression();
-                prattResult = "SUCCESS";
-            } catch (Exception e) {
-                prattResult = "FAILED - " + e.getClass().getSimpleName() + ": " + e.getMessage();
-            }
-            debugInfo.append("  Pratt:  ").append(prattResult).append("\n");
-
-            debugInfo.append("  Match: ").append(legacyResult.equals(prattResult) ? "✓" : "✗").append("\n");
-        }
-
-        debugInfo.append("\n=== END INVESTIGATION ===");
-
-        // Force failure to show debug info
-        fail("Debug info: " + debugInfo.toString());
-    }
-
-    /**
      * Test two literals without operator should behave consistently.
      */
-    public void disabledTestTwoLiteralsWithoutOperator() {
+    @Test
+    public void testTwoLiteralsWithoutOperator() {
         // This should actually FAIL since "42 42" is invalid syntax
         assertParserBehaviorMatches("42 42", false, "Two literals without operator should fail in both parsers");
     }
@@ -208,14 +164,16 @@ public class ParserASTComparisonIntegrationTest {
     /**
      * Test wrong parentheses order should behave consistently.
      */
-    public void disabledTestWrongParenthesesOrder() {
+    @Test
+    public void testWrongParenthesesOrder() {
         assertParserBehaviorMatches(")(", false, "Wrong parentheses order should behave consistently");
     }
 
     /**
      * Test operator without operands should behave consistently.
      */
-    public void disabledTestOperatorWithoutOperands() {
+    @Test
+    public void testOperatorWithoutOperands() {
         // This should actually FAIL since "+" without operands is invalid
         assertParserBehaviorMatches("+", false, "Operator without operands should fail in both parsers");
     }
@@ -223,21 +181,24 @@ public class ParserASTComparisonIntegrationTest {
     /**
      * Test incomplete expression should behave consistently.
      */
-    public void disabledTestIncompleteExpression() {
+    @Test
+    public void testIncompleteExpression() {
         assertParserBehaviorMatches("a +", false, "Incomplete expression should behave consistently");
     }
 
     /**
      * Test unbalanced parentheses should behave consistently.
      */
-    public void disabledTestUnbalancedParentheses() {
+    @Test
+    public void testUnbalancedParentheses() {
         assertParserBehaviorMatches("(a + b", false, "Unbalanced parentheses should behave consistently");
     }
 
     /**
      * Test adjacent identifiers should behave consistently.
      */
-    public void disabledTestAdjacentIdentifiers() {
+    @Test
+    public void testAdjacentIdentifiers() {
         assertParserBehaviorMatches("a b", false, "Adjacent identifiers should behave consistently");
     }
 

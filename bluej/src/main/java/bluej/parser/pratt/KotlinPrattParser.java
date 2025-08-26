@@ -268,6 +268,21 @@ public class KotlinPrattParser {
             }
         }
 
+        // Check for invalid token sequences after expression parsing
+        // This catches cases like "42 42" where two operands appear without an operator
+        LocatableToken nextToken = peek();
+        if (nextToken != null && nextToken.getType() != JavaTokenTypes.EOF) {
+            // Check if we have an operand following another operand without an operator
+            if (isOperandToken(nextToken.getType()) && left != null) {
+                // We just parsed an expression (operand) and the next token is also an operand
+                // This is invalid syntax - two operands without an operator between them
+                String errorMsg = "Invalid syntax: two operands without operator between parsed expression and '" +
+                                 nextToken.getText() + "'";
+                accumulatedErrors.add(new ParseResult.ParseError(errorMsg, nextToken));
+                return ParseResult.failure(accumulatedErrors);
+            }
+        }
+
         // Return result with accumulated errors
         if (accumulatedErrors.isEmpty()) {
             return ParseResult.success(left);
@@ -409,6 +424,36 @@ public class KotlinPrattParser {
             return null;
         }
         return token;
+    }
+
+    /**
+     * Checks if a token type represents an operand (literal, identifier, etc.).
+     * Used for validating token sequences to detect invalid syntax.
+     *
+     * @param tokenType The token type to check
+     * @return true if the token is an operand, false otherwise
+     */
+    private boolean isOperandToken(int tokenType) {
+        switch (tokenType) {
+            // Literals
+            case JavaTokenTypes.NUM_INT:
+            case JavaTokenTypes.NUM_FLOAT:
+            case JavaTokenTypes.NUM_LONG:
+            case JavaTokenTypes.NUM_DOUBLE:
+            case JavaTokenTypes.STRING_LITERAL:
+            case JavaTokenTypes.LITERAL_true:
+            case JavaTokenTypes.LITERAL_false:
+            case JavaTokenTypes.LITERAL_null:
+            // Identifiers and keywords that act as operands
+            case JavaTokenTypes.IDENT:
+            case JavaTokenTypes.LITERAL_this:
+            case JavaTokenTypes.LITERAL_super:
+            // Opening parenthesis starts a grouped operand
+            case JavaTokenTypes.LPAREN:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**

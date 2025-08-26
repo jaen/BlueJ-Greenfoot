@@ -27,6 +27,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseletRegistry;
+import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TokenOperations;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
@@ -363,9 +364,28 @@ public class KotlinParserAdapter implements ParserBehavior {
             try {
                 // Try Pratt parser for expressions
                 prattParser.parseExpression();
+
+                // Check if the Pratt parser encountered any errors
+                if (prattParser.hasErrors()) {
+                    List<ParseResult.ParseError> errors = prattParser.getErrors();
+                    if (!errors.isEmpty()) {
+                        ParseResult.ParseError firstError = errors.get(0);
+                        LocatableToken token = firstError.token();
+                        String message = firstError.message();
+
+                        // Throw ParseFailure to match legacy parser behavior
+                        if (token != null) {
+                            throw new ParseFailure("Parse error: (" + token.getLine() + ":" + token.getColumn() + ") :" + message);
+                        } else {
+                            throw new ParseFailure("Parse error: " + message);
+                        }
+                    }
+                }
+
                 return;
             } catch (Exception e) {
                 // Fall back to legacy parser on error
+                throw e; // Re-throw the exception to propagate parse failures
             }
         }
 
