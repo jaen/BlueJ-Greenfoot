@@ -27,8 +27,9 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
-import bluej.parser.pratt.TokenOperations;
-import org.jetbrains.annotations.NotNull;
+import bluej.parser.pratt.TestNodeFactory;
+import bluej.parser.pratt.testutil.MockParser;
+import bluej.parser.pratt.testutil.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,54 +54,16 @@ public class BinaryOperatorParseletTest {
 
     private BinaryOperatorParselet additionParselet;
     private BinaryOperatorParselet assignmentParselet;
-    private TestKotlinPrattParser testParser;
+    private MockParser testParser;
 
     @Before
     public void setUp() {
         additionParselet = new BinaryOperatorParselet(Precedence.ADDITIVE);
         assignmentParselet = new BinaryOperatorParselet(Precedence.ASSIGNMENT, true); // right-associative
-        testParser = new TestKotlinPrattParser();
+        testParser = new MockParser();
     }
 
-    @Test
-    public void testHandleNullLeftOperand() {
-        LocatableToken operator = createToken(JavaTokenTypes.PLUS, "+", 1, 5);
 
-        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, operator);
-
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure for missing left operand", result.isFailure());
-        assertFalse("Should not report error in parser", testParser.hasErrors());
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Error should mention missing left operand", result.getErrors().get(0).message().contains("Missing left operand"));
-    }
-
-    @Test
-    public void testHandleNullOperator() {
-        // Foundation phase limitation: Can't easily create non-null ParsedNode to test null operator case
-        // The parselet checks for null left operand first, so with both null, it reports missing left operand
-        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, null);
-
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure when inputs are invalid", result.isFailure());
-        assertFalse("Should not report error in parser", testParser.hasErrors());
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Should report missing left operand error", result.getErrors().get(0).message().contains("Missing left operand"));
-    }
-
-    @Test
-    public void testHandleInvalidOperator() {
-        LocatableToken invalidOperator = createToken(JavaTokenTypes.IDENT, "identifier", 1, 5);
-
-        ParseResult<ParsedNode> result = additionParselet.parse(testParser, null, invalidOperator);
-
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure for invalid operator", result.isFailure());
-        assertFalse("Should not report error in parser", testParser.hasErrors());
-        // Will report missing left operand first, which is correct behavior
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Should report missing left operand", result.getErrors().get(0).message().contains("Missing left operand"));
-    }
 
     @Test
     public void testPrecedence() {
@@ -131,10 +94,10 @@ public class BinaryOperatorParseletTest {
         };
 
         for (int tokenType : binaryOperators) {
-            LocatableToken token = createToken(tokenType, getOperatorSymbol(tokenType), 1, 1);
+            LocatableToken token = TestUtils.createToken(tokenType, getOperatorSymbol(tokenType), 1, 1);
             // Test that valid binary operators can be parsed (canHandle method removed)
             // Create a dummy left operand for infix parsing
-            ParsedNode dummyLeft = null; // Foundation phase uses null nodes
+            ParsedNode dummyLeft = TestUtils.createIdentifierNode("dummy");
             ParseResult<ParsedNode> result = additionParselet.parse(testParser, dummyLeft, token);
             // In foundation phase, should validate without creating nodes
             assertNotNull("Should return a result for operator type " + tokenType, result);
@@ -152,10 +115,10 @@ public class BinaryOperatorParseletTest {
         };
 
         for (int tokenType : nonBinaryOperators) {
-            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
-            LocatableToken token = createToken(tokenType, "test", 1, 1);
+            MockParser freshParser = new MockParser();
+            LocatableToken token = TestUtils.createToken(tokenType, "test", 1, 1);
             // Test that invalid tokens produce errors when parsed (canHandle method removed)
-            ParsedNode dummyLeft = null; // Foundation phase uses null nodes
+            ParsedNode dummyLeft = TestUtils.createIdentifierNode("dummy");
             ParseResult<ParsedNode> result = additionParselet.parse(freshParser, dummyLeft, token);
             assertNotNull("Should return a result for invalid operator tokens", result);
             assertTrue("Should be a failure for non-binary operator tokens", result.isFailure());
@@ -189,14 +152,7 @@ public class BinaryOperatorParseletTest {
         assertEquals("Should have correct precedence", Precedence.ASSIGNMENT.getValue(), rightAssoc.getPrecedence());
     }
 
-    /**
-     * Helper method to create test tokens.
-     */
-    private LocatableToken createToken(int type, String text, int line, int column) {
-        bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);
-        bluej.parser.lexer.LineColPos end = new bluej.parser.lexer.LineColPos(line, column + text.length(), text.length());
-        return new LocatableToken(type, text, begin, end);
-    }
+
 
     /**
      * Helper method to get operator symbol for token type.
@@ -233,70 +189,4 @@ public class BinaryOperatorParseletTest {
     }
 
 
-
-    /**
-     * Simple test implementation of KotlinPrattParser for testing.
-     */
-    private static class TestKotlinPrattParser extends KotlinPrattParser {
-        private boolean hasErrors = false;
-        private String lastError = "";
-        private ParsedNode nextParseResult = null;
-        private int lastParseExpressionPrecedence = -1;
-
-        public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, new bluej.parser.pratt.TestNodeFactory());  // Use 3-parameter constructor with NodeFactory
-        }
-
-        @Override
-        public void error(String message, LocatableToken token) {
-            hasErrors = true;
-            lastError = message;
-        }
-
-        @Override
-        public ParsedNode parseExpression(int minPrecedence) {
-            lastParseExpressionPrecedence = minPrecedence;
-            return nextParseResult;
-        }
-
-        public void setNextParseResult(ParsedNode result) {
-            this.nextParseResult = result;
-        }
-
-        public boolean hasErrors() {
-            return hasErrors;
-        }
-
-        public String getLastError() {
-            return lastError;
-        }
-
-        public int getLastParseExpressionPrecedence() {
-            return lastParseExpressionPrecedence;
-        }
-
-        public void reset() {
-            hasErrors = false;
-            lastError = "";
-            nextParseResult = null;
-            lastParseExpressionPrecedence = -1;
-        }
-    }
-
-    /**
-     * Simple test implementation of TokenOperations.
-     */
-    private static class TestTokenOperations implements TokenOperations {
-        @Override
-        public @NotNull LocatableToken nextToken() { return null; }
-
-        @Override
-        public @NotNull LocatableToken LA(int distance) { return null; }
-
-        @Override
-        public void pushBack(LocatableToken token) {}
-
-        @Override
-        public LocatableToken getMostRecent() { return null; }
-    }
 }

@@ -74,8 +74,8 @@ public class ParseletRegistry {
      * @param parent The parent registry to delegate to, or null for no delegation
      */
     public ParseletRegistry(ParseletRegistry parent) {
-        this.prefixParselets = new HashMap<>();
-        this.infixParselets = new HashMap<>();
+        this.prefixParselets = new ConcurrentHashMap<>();
+        this.infixParselets = new ConcurrentHashMap<>();
         this.parent = parent;
     }
 

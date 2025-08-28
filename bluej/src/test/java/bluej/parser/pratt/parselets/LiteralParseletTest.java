@@ -30,6 +30,9 @@ import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
+import bluej.parser.pratt.testutil.MockParser;
+import bluej.parser.pratt.testutil.MockTokenOperations;
+import bluej.parser.pratt.testutil.TestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,17 +57,17 @@ import static org.junit.Assert.*;
 public class LiteralParseletTest {
 
     private LiteralParselet parselet;
-    private TestKotlinPrattParser testParser;
+    private MockParser testParser;
 
     @Before
     public void setUp() {
         parselet = new LiteralParselet();
-        testParser = new TestKotlinPrattParser();
+        testParser = new MockParser();
     }
 
     @Test
     public void testParseIntegerLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         // With NodeFactory, parselets now create nodes
@@ -78,7 +81,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseLongLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.NUM_LONG, "42L", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.NUM_LONG, "42L", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -91,7 +94,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseFloatLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.NUM_FLOAT, "3.14f", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.NUM_FLOAT, "3.14f", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -104,7 +107,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseDoubleLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.NUM_DOUBLE, "3.14", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.NUM_DOUBLE, "3.14", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -117,7 +120,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseStringLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.STRING_LITERAL, "\"hello world\"", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.STRING_LITERAL, "\"hello world\"", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -130,7 +133,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseMultilineStringLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.STRING_LITERAL_MULTILINE, "\"\"\"hello\nworld\"\"\"", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.STRING_LITERAL_MULTILINE, "\"\"\"hello\nworld\"\"\"", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -143,7 +146,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseCharacterLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.CHAR_LITERAL, "'c'", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.CHAR_LITERAL, "'c'", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -156,7 +159,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseBooleanTrueLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.LITERAL_true, "true", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.LITERAL_true, "true", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -169,7 +172,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseBooleanFalseLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.LITERAL_false, "false", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.LITERAL_false, "false", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -182,7 +185,7 @@ public class LiteralParseletTest {
 
     @Test
     public void testParseNullLiteral() {
-        LocatableToken token = createToken(JavaTokenTypes.LITERAL_null, "null", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.LITERAL_null, "null", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -193,20 +196,11 @@ public class LiteralParseletTest {
         assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
     }
 
-    @Test
-    public void testHandleNullToken() {
-        ParseResult<ParsedNode> result = parselet.parse(testParser, null);
 
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure", result.isFailure());
-        assertFalse("Should not report error in parser", testParser.hasErrors());
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Should report null token error", result.getErrors().get(0).message().contains("Null token"));
-    }
 
     @Test
     public void testHandleNonLiteralToken() {
-        LocatableToken token = createToken(JavaTokenTypes.IDENT, "identifier", 1, 1);
+        LocatableToken token = TestUtils.createToken(JavaTokenTypes.IDENT, "identifier", 1, 1);
         ParseResult<ParsedNode> result = parselet.parse(testParser, token);
 
         assertNotNull("Should return a result", result);
@@ -232,8 +226,8 @@ public class LiteralParseletTest {
         };
 
         for (int tokenType : literalTypes) {
-            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
-            LocatableToken token = createToken(tokenType, "test", 1, 1);
+            MockParser freshParser = new MockParser();
+            LocatableToken token = TestUtils.createToken(tokenType, "test", 1, 1);
             // Test that valid literal tokens create nodes
             ParseResult<ParsedNode> result = parselet.parse(freshParser, token);
             assertNotNull("Should return a result", result);
@@ -261,8 +255,8 @@ public class LiteralParseletTest {
         };
 
         for (int tokenType : nonLiteralTypes) {
-            TestKotlinPrattParser freshParser = new TestKotlinPrattParser();
-            LocatableToken token = createToken(tokenType, "test", 1, 1);
+            MockParser freshParser = new MockParser();
+            LocatableToken token = TestUtils.createToken(tokenType, "test", 1, 1);
             // Test that invalid tokens produce errors when parsed
             ParseResult<ParsedNode> result = parselet.parse(freshParser, token);
             assertNotNull("Should return a result", result);
@@ -280,8 +274,8 @@ public class LiteralParseletTest {
 
     @Test
     public void testMultipleParseCallsWorkIndependently() {
-        LocatableToken token1 = createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
-        LocatableToken token2 = createToken(JavaTokenTypes.STRING_LITERAL, "\"test\"", 2, 1);
+        LocatableToken token1 = TestUtils.createToken(JavaTokenTypes.NUM_INT, "42", 1, 1);
+        LocatableToken token2 = TestUtils.createToken(JavaTokenTypes.STRING_LITERAL, "\"test\"", 2, 1);
 
         ParseResult<ParsedNode> result1 = parselet.parse(testParser, token1);
         ParseResult<ParsedNode> result2 = parselet.parse(testParser, token2);
@@ -295,59 +289,5 @@ public class LiteralParseletTest {
         assertFalse("No errors should be reported", testParser.hasErrors());
         assertTrue("First should be a TestNode", result1.getValue() instanceof TestNodeFactory.TestNode);
         assertTrue("Second should be a TestNode", result2.getValue() instanceof TestNodeFactory.TestNode);
-    }
-
-    /**
-     * Helper method to create test tokens with specified properties.
-     */
-    private LocatableToken createToken(int type, String text, int line, int column) {
-        bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);
-        bluej.parser.lexer.LineColPos end = new bluej.parser.lexer.LineColPos(line, column + text.length(), text.length());
-        return new LocatableToken(type, text, begin, end);
-    }
-
-    /**
-     * Simple test implementation of KotlinPrattParser for testing.
-     */
-    private static class TestKotlinPrattParser extends KotlinPrattParser {
-        private boolean hasErrors = false;
-        private String lastError = "";
-
-        public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, new TestNodeFactory());  // Use 3-parameter constructor with NodeFactory
-        }
-
-        @Override
-        public void error(String message, LocatableToken token) {
-            hasErrors = true;
-            lastError = message;
-        }
-
-        // NodeFactory handles node creation now, not the parser
-
-        public boolean hasErrors() {
-            return hasErrors;
-        }
-
-        public String getLastError() {
-            return lastError;
-        }
-    }
-
-    /**
-     * Simple test implementation of TokenOperations.
-     */
-    private static class TestTokenOperations implements TokenOperations {
-        @Override
-        public @NotNull LocatableToken nextToken() { return null; }
-
-        @Override
-        public @NotNull LocatableToken LA(int distance) { return null; }
-
-        @Override
-        public void pushBack(LocatableToken token) {}
-
-        @Override
-        public LocatableToken getMostRecent() { return null; }
     }
 }

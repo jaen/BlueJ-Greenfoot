@@ -646,7 +646,7 @@ public class KotlinPrattParser {
      */
     public LocatableToken consume(int expectedType) {
         LocatableToken token = peek();
-        if (token != null && token.getType() == expectedType) {
+        if (token.getType() == expectedType) {
             return consume();
         }
         error("Expected token type " + expectedType + " but found " + getTokenDescription(token), token);

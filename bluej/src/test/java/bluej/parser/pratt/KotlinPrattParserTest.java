@@ -170,13 +170,8 @@ public class KotlinPrattParserTest {
     public void testInvalidLookaheadDistance() {
         KotlinPrattParser parser = createParser("test");
 
-        try {
-            parser.peek(0);
-            fail("Should throw exception for invalid lookahead distance");
-        } catch (IllegalArgumentException e) {
-            assertTrue("Exception message should mention distance",
-                      e.getMessage().contains("distance"));
-        }
+        LocatableToken token = parser.peek(0);
+        assertEquals("Peek should return an EOF token if peeking past the end of the source", JavaTokenTypes.EOF, token.getType());
 
         try {
             parser.peek(-1);

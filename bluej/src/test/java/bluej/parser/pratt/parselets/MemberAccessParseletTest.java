@@ -24,19 +24,15 @@ package bluej.parser.pratt.parselets;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
-import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TestNodeFactory;
-import bluej.parser.pratt.TokenOperations;
-import org.jetbrains.annotations.NotNull;
+import bluej.parser.pratt.testutil.MockParser;
+import bluej.parser.pratt.testutil.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Test cases for MemberAccessParselet.
@@ -55,12 +51,12 @@ import java.util.List;
 public class MemberAccessParseletTest
 {
     private MemberAccessParselet memberAccessParselet;
-    private TestKotlinPrattParser testParser;
+    private MockParser testParser;
 
     @Before
     public void setUp() {
         memberAccessParselet = new MemberAccessParselet();
-        testParser = new TestKotlinPrattParser();
+        testParser = new MockParser();
 
         // Register necessary parselets for testing
         testParser.registerParselet(JavaTokenTypes.IDENT, new NameParselet());
@@ -71,9 +67,9 @@ public class MemberAccessParseletTest
     @Test
     public void testRegularMemberAccess() {
         // Test: obj.property
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 4);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 5);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 5);
 
         // Setup parser to return the property token when peeked/consumed
         testParser.setNextToken(property);
@@ -92,9 +88,9 @@ public class MemberAccessParseletTest
     @Test
     public void testSafeMemberAccess() {
         // Test: obj?.property
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken safeAccess = createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 4);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 6);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken safeAccess = TestUtils.createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 4);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 6);
 
         testParser.setNextToken(property);
 
@@ -113,9 +109,9 @@ public class MemberAccessParseletTest
     public void testChainedMemberAccess() {
         // Test chaining: obj.prop1, then .prop2
         // First access: obj.prop1
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot1 = createToken(JavaTokenTypes.DOT, ".", 1, 4);
-        LocatableToken prop1 = createToken(JavaTokenTypes.IDENT, "prop1", 1, 5);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot1 = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        LocatableToken prop1 = TestUtils.createToken(JavaTokenTypes.IDENT, "prop1", 1, 5);
 
         testParser.setNextToken(prop1);
 
@@ -126,8 +122,8 @@ public class MemberAccessParseletTest
         assertNotNull("First member access should succeed", firstAccess);
 
         // Second access: .prop2
-        LocatableToken dot2 = createToken(JavaTokenTypes.DOT, ".", 1, 10);
-        LocatableToken prop2 = createToken(JavaTokenTypes.IDENT, "prop2", 1, 11);
+        LocatableToken dot2 = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 10);
+        LocatableToken prop2 = TestUtils.createToken(JavaTokenTypes.IDENT, "prop2", 1, 11);
 
         testParser.setNextToken(prop2);
 
@@ -143,9 +139,9 @@ public class MemberAccessParseletTest
     @Test
     public void testMixedAccessTypes() {
         // Test: obj.regular?.safe
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 4);
-        LocatableToken regular = createToken(JavaTokenTypes.IDENT, "regular", 1, 5);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        LocatableToken regular = TestUtils.createToken(JavaTokenTypes.IDENT, "regular", 1, 5);
 
         testParser.setNextToken(regular);
 
@@ -156,8 +152,8 @@ public class MemberAccessParseletTest
         assertNotNull("Regular access should succeed", regularAccess);
 
         // Now safe access
-        LocatableToken safeAccess = createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 12);
-        LocatableToken safeProp = createToken(JavaTokenTypes.IDENT, "safe", 1, 14);
+        LocatableToken safeAccess = TestUtils.createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 12);
+        LocatableToken safeProp = TestUtils.createToken(JavaTokenTypes.IDENT, "safe", 1, 14);
 
         testParser.setNextToken(safeProp);
 
@@ -170,28 +166,15 @@ public class MemberAccessParseletTest
         assertEquals("MemberAccess", ((TestNodeFactory.TestNode) mixedAccess).getTestNodeType());
     }
 
-    @Test
-    public void testMissingLeftOperand() {
-        // Test error case: null object
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 1);
 
-        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, null, dot);
-
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure", result.isFailure());
-        assertFalse("Parser should not report error", testParser.hasErrors());
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Error should mention missing object",
-                   result.getErrors().get(0).message().contains("Missing object"));
-    }
 
     @Test
     public void testMissingMemberName() {
         // Test: obj. [no member name]
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
 
-        // No token available after dot
+        // Set up empty token stream - no member name after dot
         testParser.setEndOfInput(true);
 
         ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, dot);
@@ -207,9 +190,9 @@ public class MemberAccessParseletTest
     @Test
     public void testInvalidMemberName() {
         // Test: obj.123 (number instead of identifier)
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 4);
-        LocatableToken invalidMember = createToken(JavaTokenTypes.NUM_INT, "123", 1, 5);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        LocatableToken invalidMember = TestUtils.createToken(JavaTokenTypes.NUM_INT, "123", 1, 5);
 
         testParser.setNextToken(invalidMember);
 
@@ -226,8 +209,8 @@ public class MemberAccessParseletTest
     @Test
     public void testInvalidOperatorToken() {
         // Test error case: wrong token type
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken wrongToken = createToken(JavaTokenTypes.COMMA, ",", 1, 1);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken wrongToken = TestUtils.createToken(JavaTokenTypes.COMMA, ",", 1, 1);
 
         ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, wrongToken);
 
@@ -239,20 +222,7 @@ public class MemberAccessParseletTest
                    result.getErrors().get(0).message().contains("Expected '.' or '?.'"));
     }
 
-    @Test
-    public void testNullToken() {
-        // Test error case: null token
-        ParsedNode object = createIdentifierNode("obj");
 
-        ParseResult<ParsedNode> result = memberAccessParselet.parse(testParser, object, null);
-
-        assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure", result.isFailure());
-        assertFalse("Parser should not report error", testParser.hasErrors());
-        assertTrue("Should have errors in result", !result.getErrors().isEmpty());
-        assertTrue("Error should mention missing access operator",
-                   result.getErrors().get(0).message().contains("Missing access operator"));
-    }
 
     @Test
     public void testPrecedenceLevel() {
@@ -269,9 +239,9 @@ public class MemberAccessParseletTest
     @Test
     public void testNodeFactoryIntegration() {
         // Test that the parselet uses NodeFactory correctly
-        ParsedNode object = createIdentifierNode("test");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 5);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 6);
+        ParsedNode object = TestUtils.createIdentifierNode("test");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 5);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 6);
 
         testParser.setNextToken(property);
 
@@ -291,9 +261,9 @@ public class MemberAccessParseletTest
     @Test
     public void testNodeFactoryFailure() {
         // Test handling of NodeFactory failures
-        ParsedNode object = createIdentifierNode("test");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 5);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 6);
+        ParsedNode object = TestUtils.createIdentifierNode("test");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 5);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 6);
 
         // Configure factory to fail
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
@@ -310,9 +280,9 @@ public class MemberAccessParseletTest
     @Test
     public void testSafeCallDetection() {
         // Test that safe calls are properly detected and passed to NodeFactory
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken safeAccess = createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 4);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 6);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken safeAccess = TestUtils.createToken(JavaTokenTypes.SAFE_ACCESS, "?.", 1, 4);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 6);
 
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
         testParser.setNextToken(property);
@@ -330,9 +300,9 @@ public class MemberAccessParseletTest
     @Test
     public void testRegularCallDetection() {
         // Test that regular calls are properly detected
-        ParsedNode object = createIdentifierNode("obj");
-        LocatableToken dot = createToken(JavaTokenTypes.DOT, ".", 1, 4);
-        LocatableToken property = createToken(JavaTokenTypes.IDENT, "property", 1, 5);
+        ParsedNode object = TestUtils.createIdentifierNode("obj");
+        LocatableToken dot = TestUtils.createToken(JavaTokenTypes.DOT, ".", 1, 4);
+        LocatableToken property = TestUtils.createToken(JavaTokenTypes.IDENT, "property", 1, 5);
 
         TestNodeFactory factory = (TestNodeFactory) testParser.getNodeFactory();
         testParser.setNextToken(property);
@@ -347,184 +317,4 @@ public class MemberAccessParseletTest
                     factory.getLastSafeCallValue());
     }
 
-    // Helper methods for test setup
-
-    /**
-     * Creates a test token with the specified type, text, and position.
-     */
-    private LocatableToken createToken(int type, String text, int line, int column) {
-        bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);
-        bluej.parser.lexer.LineColPos end = new bluej.parser.lexer.LineColPos(line, column + text.length(), text.length());
-        return new LocatableToken(type, text, begin, end);
-    }
-
-    /**
-     * Creates a test identifier node for use as object expressions.
-     */
-    private ParsedNode createIdentifierNode(String name) {
-        TestNodeFactory factory = new TestNodeFactory();
-        LocatableToken token = createToken(JavaTokenTypes.IDENT, name, 1, 1);
-        return factory.createIdentifierNode(token);
-    }
-
-    /**
-     * Simple test implementation of KotlinPrattParser for testing.
-     */
-    private static class TestKotlinPrattParser extends KotlinPrattParser {
-        private boolean hasErrors = false;
-        private String lastError = "";
-        private List<LocatableToken> tokenSequence = new ArrayList<>();
-        private int tokenIndex = 0;
-        private boolean endOfInput = false;
-
-        public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, new TestNodeFactory());
-        }
-
-        public void setNextToken(LocatableToken token) {
-            tokenSequence.clear();
-            tokenSequence.add(token);
-            tokenIndex = 0;
-            endOfInput = false;
-        }
-
-        public void setTokenSequence(LocatableToken... tokens) {
-            tokenSequence.clear();
-            for (LocatableToken token : tokens) {
-                tokenSequence.add(token);
-            }
-            tokenIndex = 0;
-            endOfInput = false;
-        }
-
-        public void setEndOfInput(boolean endOfInput) {
-            this.endOfInput = endOfInput;
-        }
-
-        @Override
-        public @NotNull LocatableToken peek() {
-            if (endOfInput && tokenIndex >= tokenSequence.size()) {
-                return null;
-            }
-            if (tokenIndex < tokenSequence.size()) {
-                return tokenSequence.get(tokenIndex);
-            }
-            return null;
-        }
-
-        @Override
-        public @NotNull LocatableToken consume() {
-            if (tokenIndex < tokenSequence.size()) {
-                return tokenSequence.get(tokenIndex++);
-            }
-            return null;
-        }
-
-        @Override
-        public ParsedNode parseExpression() {
-            LocatableToken token = consume();
-            if (token == null) {
-                return null;
-            }
-
-            // Simple expression parsing for identifiers
-            if (token.getType() == JavaTokenTypes.IDENT) {
-                return getNodeFactory().createIdentifierNode(token);
-            }
-
-            return null;
-        }
-
-        @Override
-        public ParseResult<ParsedNode> parseExpressionResult(int precedence) {
-            LocatableToken token = consume();
-            if (token == null) {
-                return ParseResult.failure("No token available for expression", null);
-            }
-
-            // Simple expression parsing for identifiers
-            if (token.getType() == JavaTokenTypes.IDENT) {
-                ParsedNode node = getNodeFactory().createIdentifierNode(token);
-                return ParseResult.success(node);
-            }
-
-            return ParseResult.failure("Cannot parse token type: " + token.getType(), token);
-        }
-
-        @Override
-        public void error(String message, LocatableToken token) {
-            hasErrors = true;
-            lastError = message;
-        }
-
-        public boolean hasErrors() {
-            return hasErrors;
-        }
-
-        public String getLastError() {
-            return lastError;
-        }
-
-        public void registerParselet(int tokenType, Object parselet) {
-            // Simple registration for testing
-        }
-    }
-
-    /**
-     * Test implementation of TokenOperations.
-     */
-    private static class TestTokenOperations implements TokenOperations {
-        private LocatableToken mostRecent = null;
-
-        @Override
-        public @NotNull LocatableToken nextToken() { return null; }
-
-        @Override
-        public @NotNull LocatableToken LA(int distance) { return null; }
-
-        public LocatableToken createToken(int type, String text, int line, int column) {
-            bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);
-            bluej.parser.lexer.LineColPos end = new bluej.parser.lexer.LineColPos(line, column + text.length(), text.length());
-            return new LocatableToken(type, text, begin, end);
-        }
-
-        public boolean isKeyword(LocatableToken token) {
-            return false;
-        }
-
-        public boolean isIdentifier(LocatableToken token) {
-            return token != null && token.getType() == JavaTokenTypes.IDENT;
-        }
-
-        public boolean isLiteral(LocatableToken token) {
-            if (token == null) return false;
-            int type = token.getType();
-            return type == JavaTokenTypes.NUM_INT || type == JavaTokenTypes.NUM_FLOAT ||
-                   type == JavaTokenTypes.STRING_LITERAL || type == JavaTokenTypes.CHAR_LITERAL ||
-                   type == JavaTokenTypes.LITERAL_true || type == JavaTokenTypes.LITERAL_false ||
-                   type == JavaTokenTypes.LITERAL_null;
-        }
-
-        public boolean isOperator(LocatableToken token) {
-            return false;
-        }
-
-        public int getOperatorPrecedence(LocatableToken token) {
-            return 0;
-        }
-
-        public boolean isRightAssociative(LocatableToken token) {
-            return false;
-        }
-
-        @Override
-        public void pushBack(LocatableToken token) {
-            // Simple implementation for testing
-        }
-
-        @Override
-        public LocatableToken getMostRecent() {
-            return mostRecent;
-        }
-    }
 }

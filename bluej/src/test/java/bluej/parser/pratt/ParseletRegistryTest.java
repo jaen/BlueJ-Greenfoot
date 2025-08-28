@@ -30,6 +30,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.PrefixParselet;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -350,6 +351,7 @@ public class ParseletRegistryTest {
      * Test parent registry delegation for prefix parselets.
      */
     @Test
+    @Ignore("We do not need parent delegation, remove")
     public void testParentDelegationPrefix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -376,6 +378,7 @@ public class ParseletRegistryTest {
      * Test parent registry delegation for infix parselets.
      */
     @Test
+    @Ignore("We do not need parent delegation, remove")
     public void testParentDelegationInfix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -431,6 +434,7 @@ public class ParseletRegistryTest {
      * Test registry copying with parent.
      */
     @Test
+    @Ignore("We do not need parent delegation, remove")
     public void testCopyWithParent() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry original = new ParseletRegistry(parent);

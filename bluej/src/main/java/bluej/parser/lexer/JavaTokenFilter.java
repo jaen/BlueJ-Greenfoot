@@ -120,6 +120,10 @@ public final class JavaTokenFilter implements TokenStream
      */
     public @NotNull LocatableToken LA(int distance)
     {
+        if (distance < 0) {
+            throw new IllegalArgumentException("Lookahead distance must be positive");
+        }
+
         if (cachedToken != null) {
            buffer.addFirst((LocatableToken) cachedToken);
            cachedToken = null;
@@ -131,12 +135,16 @@ public final class JavaTokenFilter implements TokenStream
            numToAdd--;
         }
 
-        // Will return the last token (EOF) if no looking ahead beyond the end of the stream.
+        // Will return the last token (EOF) if looking ahead beyond the end of the stream.
         int tokens = buffer.size();
+
+        if (tokens == 0) {
+            return new LocatableToken(JavaTokenTypes.EOF, "", new LineColPos(1, 1, 0), new LineColPos(1, 1, 0));
+        }
 
         return buffer.get(Math.clamp(tokens - distance, 0 , tokens - 1));
     }
-    
+
     private @NotNull LocatableToken nextToken2()
     {
         LocatableToken t = null;

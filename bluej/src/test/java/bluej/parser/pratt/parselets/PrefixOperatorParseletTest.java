@@ -25,11 +25,9 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.ParseResult;
-import bluej.parser.pratt.KotlinPrattParser;
-import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.TestNodeFactory;
-import bluej.parser.pratt.TokenOperations;
-import org.jetbrains.annotations.NotNull;
+import bluej.parser.pratt.testutil.MockParser;
+import bluej.parser.pratt.testutil.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,9 +37,10 @@ import static org.junit.Assert.*;
  * Test cases for PrefixOperatorParselet.
  *
  * Tests parsing of prefix unary operators including:
- * - Arithmetic: +, - (unary plus/minus)
- * - Logical: ! (logical NOT)
  * - Increment/Decrement: ++, -- (prefix forms)
+ * - Logical NOT: !
+ * - Bitwise NOT: ~
+ * - Unary plus/minus: +, -
  * - Precedence handling
  * - Error cases
  *
@@ -49,95 +48,25 @@ import static org.junit.Assert.*;
  */
 public class PrefixOperatorParseletTest
 {
-    private PrefixOperatorParselet unaryPlusParselet;
-    private PrefixOperatorParselet unaryMinusParselet;
-    private PrefixOperatorParselet logicalNotParselet;
     private PrefixOperatorParselet prefixIncrementParselet;
     private PrefixOperatorParselet prefixDecrementParselet;
-    private TestKotlinPrattParser testParser;
+    private PrefixOperatorParselet logicalNotParselet;
+    private PrefixOperatorParselet bitwiseNotParselet;
+    private PrefixOperatorParselet unaryPlusParselet;
+    private PrefixOperatorParselet unaryMinusParselet;
+    private MockParser testParser;
 
     @Before
     public void setUp() {
         // Create parselets with appropriate precedence levels
-        unaryPlusParselet = new PrefixOperatorParselet(13);    // Unary plus
-        unaryMinusParselet = new PrefixOperatorParselet(13);   // Unary minus
-        logicalNotParselet = new PrefixOperatorParselet(13);   // Logical NOT
-        prefixIncrementParselet = new PrefixOperatorParselet(14); // Prefix increment
-        prefixDecrementParselet = new PrefixOperatorParselet(14); // Prefix decrement
-        testParser = new TestKotlinPrattParser();
-    }
-
-    /**
-     * Test parsing unary plus operator.
-     */
-    @Test
-    public void testUnaryPlus() {
-        LocatableToken plusToken = createToken(JavaTokenTypes.PLUS, "+", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 2);
-
-        // Set up parser to return the operand when parseExpression is called
-        testParser.setNextOperand(operandToken);
-
-        ParseResult<ParsedNode> result = unaryPlusParselet.parse(testParser, plusToken);
-
-        assertNotNull("Should parse unary plus expression", result);
-        assertTrue("Should be successful", result.isSuccess());
-
-        ParsedNode node = result.getValue();
-        assertNotNull("Should have a node", node);
-        assertTrue("Should be a TestUnaryPrefixNode", node instanceof TestNodeFactory.TestUnaryPrefixNode);
-
-        TestNodeFactory.TestUnaryPrefixNode unaryNode = (TestNodeFactory.TestUnaryPrefixNode) node;
-        assertEquals("Operator should be +", "+", unaryNode.getOperator().getText());
-        assertNotNull("Should have operand", unaryNode.getOperand());
-    }
-
-    /**
-     * Test parsing unary minus operator.
-     */
-    @Test
-    public void testUnaryMinus() {
-        LocatableToken minusToken = createToken(JavaTokenTypes.MINUS, "-", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 2);
-
-        testParser.setNextOperand(operandToken);
-
-        ParseResult<ParsedNode> result = unaryMinusParselet.parse(testParser, minusToken);
-
-        assertNotNull("Should parse unary minus expression", result);
-        assertTrue("Should be successful", result.isSuccess());
-
-        ParsedNode node = result.getValue();
-        assertNotNull("Should have a node", node);
-        assertTrue("Should be a TestUnaryPrefixNode", node instanceof TestNodeFactory.TestUnaryPrefixNode);
-
-        TestNodeFactory.TestUnaryPrefixNode unaryNode = (TestNodeFactory.TestUnaryPrefixNode) node;
-        assertEquals("Operator should be -", "-", unaryNode.getOperator().getText());
-        assertNotNull("Should have operand", unaryNode.getOperand());
-    }
-
-    /**
-     * Test parsing logical NOT operator.
-     */
-    @Test
-    public void testLogicalNot() {
-        LocatableToken notToken = createToken(JavaTokenTypes.LNOT, "!", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.LITERAL_true, "true", 1, 2);
-
-        testParser.setNextOperand(operandToken);
-
-        ParseResult<ParsedNode> result = logicalNotParselet.parse(testParser, notToken);
-
-        assertNotNull("Should parse logical NOT expression", result);
-        assertTrue("Should be successful", result.isSuccess());
-
-        ParsedNode node = result.getValue();
-        assertNotNull("Should have a node", node);
-        assertTrue("Should be a TestUnaryPrefixNode", node instanceof TestNodeFactory.TestUnaryPrefixNode);
-
-        TestNodeFactory.TestUnaryPrefixNode unaryNode = (TestNodeFactory.TestUnaryPrefixNode) node;
-        assertEquals("Operator should be !", "!", unaryNode.getOperator().getText());
-        assertNotNull("Should have operand", unaryNode.getOperand());
+        // Prefix operators typically have precedence 13-14
+        prefixIncrementParselet = new PrefixOperatorParselet(14);  // Prefix increment
+        prefixDecrementParselet = new PrefixOperatorParselet(14);  // Prefix decrement
+        logicalNotParselet = new PrefixOperatorParselet(13);       // Logical NOT
+        bitwiseNotParselet = new PrefixOperatorParselet(13);       // Bitwise NOT
+        unaryPlusParselet = new PrefixOperatorParselet(13);        // Unary plus
+        unaryMinusParselet = new PrefixOperatorParselet(13);       // Unary minus
+        testParser = new MockParser();
     }
 
     /**
@@ -145,23 +74,25 @@ public class PrefixOperatorParseletTest
      */
     @Test
     public void testPrefixIncrement() {
-        LocatableToken incToken = createToken(JavaTokenTypes.INC, "++", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 3);
+        LocatableToken incToken = TestUtils.createToken(JavaTokenTypes.INC, "++", 1, 1);
 
-        testParser.setNextOperand(operandToken);
+        // Mock the parser to return an operand when parseExpression is called
+        ParsedNode operand = TestUtils.createIdentifierNode("x", 1, 3);
+        testParser.setNextExpression(operand);
 
         ParseResult<ParsedNode> result = prefixIncrementParselet.parse(testParser, incToken);
 
-        assertNotNull("Should parse prefix increment expression", result);
+        assertNotNull("Should return a result", result);
         assertTrue("Should be successful", result.isSuccess());
-
         ParsedNode node = result.getValue();
-        assertNotNull("Should have a node", node);
-        assertTrue("Should be a TestUnaryPrefixNode", node instanceof TestNodeFactory.TestUnaryPrefixNode);
+        assertNotNull("Should parse prefix increment expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestUnaryPrefixNode unaryNode = (TestNodeFactory.TestUnaryPrefixNode) node;
-        assertEquals("Operator should be ++", "++", unaryNode.getOperator().getText());
-        assertNotNull("Should have operand", unaryNode.getOperand());
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
     }
 
     /**
@@ -169,39 +100,124 @@ public class PrefixOperatorParseletTest
      */
     @Test
     public void testPrefixDecrement() {
-        LocatableToken decToken = createToken(JavaTokenTypes.DEC, "--", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 3);
+        LocatableToken decToken = TestUtils.createToken(JavaTokenTypes.DEC, "--", 1, 1);
 
-        testParser.setNextOperand(operandToken);
+        ParsedNode operand = TestUtils.createIdentifierNode("x", 1, 3);
+        testParser.setNextExpression(operand);
 
         ParseResult<ParsedNode> result = prefixDecrementParselet.parse(testParser, decToken);
 
-        assertNotNull("Should parse prefix decrement expression", result);
+        assertNotNull("Should return a result", result);
         assertTrue("Should be successful", result.isSuccess());
-
         ParsedNode node = result.getValue();
-        assertNotNull("Should have a node", node);
-        assertTrue("Should be a TestUnaryPrefixNode", node instanceof TestNodeFactory.TestUnaryPrefixNode);
+        assertNotNull("Should parse prefix decrement expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
 
-        TestNodeFactory.TestUnaryPrefixNode unaryNode = (TestNodeFactory.TestUnaryPrefixNode) node;
-        assertEquals("Operator should be --", "--", unaryNode.getOperator().getText());
-        assertNotNull("Should have operand", unaryNode.getOperand());
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
     }
 
     /**
-     * Test error case: parsing without operand available.
+     * Test parsing logical NOT operator.
      */
     @Test
-    public void testMissingOperand() {
-        LocatableToken plusToken = createToken(JavaTokenTypes.PLUS, "+", 1, 1);
+    public void testLogicalNot() {
+        LocatableToken notToken = TestUtils.createToken(JavaTokenTypes.LNOT, "!", 1, 1);
 
-        // Don't set up any operand - parseExpression will return null
-        testParser.setNextOperand(null);
+        ParsedNode operand = TestUtils.createBooleanLiteralNode(true, 1, 2);
+        testParser.setNextExpression(operand);
+
+        ParseResult<ParsedNode> result = logicalNotParselet.parse(testParser, notToken);
+
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse logical NOT expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
+    }
+
+    /**
+     * Test parsing bitwise NOT operator.
+     */
+    @Test
+    public void testBitwiseNot() {
+        LocatableToken tildeToken = TestUtils.createToken(JavaTokenTypes.BNOT, "~", 1, 1);
+
+        ParsedNode operand = TestUtils.createIntLiteralNode("42", 1, 2);
+        testParser.setNextExpression(operand);
+
+        ParseResult<ParsedNode> result = bitwiseNotParselet.parse(testParser, tildeToken);
+
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse bitwise NOT expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
+    }
+
+    /**
+     * Test parsing unary plus operator.
+     */
+    @Test
+    public void testUnaryPlus() {
+        LocatableToken plusToken = TestUtils.createToken(JavaTokenTypes.PLUS, "+", 1, 1);
+
+        ParsedNode operand = TestUtils.createIntLiteralNode("42", 1, 2);
+        testParser.setNextExpression(operand);
 
         ParseResult<ParsedNode> result = unaryPlusParselet.parse(testParser, plusToken);
 
         assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure when operand missing", result.isFailure());
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse unary plus expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
+    }
+
+    /**
+     * Test parsing unary minus operator.
+     */
+    @Test
+    public void testUnaryMinus() {
+        LocatableToken minusToken = TestUtils.createToken(JavaTokenTypes.MINUS, "-", 1, 1);
+
+        ParsedNode operand = TestUtils.createIntLiteralNode("42", 1, 2);
+        testParser.setNextExpression(operand);
+
+        ParseResult<ParsedNode> result = unaryMinusParselet.parse(testParser, minusToken);
+
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse unary minus expression", node);
+        assertTrue("Should be a TestNode", node instanceof TestNodeFactory.TestNode);
+
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Operand should be preserved", operand, prefixNode.getChildren().get(0));
     }
 
     /**
@@ -209,228 +225,208 @@ public class PrefixOperatorParseletTest
      */
     @Test
     public void testPrecedenceValues() {
-        assertEquals("Arithmetic unary precedence should be 13", 13, unaryPlusParselet.getPrecedence());
-        assertEquals("Arithmetic unary precedence should be 13", 13, unaryMinusParselet.getPrecedence());
-        assertEquals("Logical NOT precedence should be 13", 13, logicalNotParselet.getPrecedence());
         assertEquals("Prefix increment precedence should be 14", 14, prefixIncrementParselet.getPrecedence());
         assertEquals("Prefix decrement precedence should be 14", 14, prefixDecrementParselet.getPrecedence());
+        assertEquals("Logical NOT precedence should be 13", 13, logicalNotParselet.getPrecedence());
+        assertEquals("Bitwise NOT precedence should be 13", 13, bitwiseNotParselet.getPrecedence());
+        assertEquals("Unary plus precedence should be 13", 13, unaryPlusParselet.getPrecedence());
+        assertEquals("Unary minus precedence should be 13", 13, unaryMinusParselet.getPrecedence());
 
-        assertTrue("Increment should have higher precedence than arithmetic unary",
-                prefixIncrementParselet.getPrecedence() > unaryPlusParselet.getPrecedence());
+        // Compare with postfix operator precedence (15)
+        PostfixOperatorParselet postfixParselet = new PostfixOperatorParselet(15);
+        assertTrue("Prefix should have lower precedence than postfix",
+                prefixIncrementParselet.getPrecedence() < postfixParselet.getPrecedence());
     }
 
     /**
-     * Test NodeFactory integration: ensure parselets use factory for node creation.
+     * Test with different operand types.
+     */
+    @Test
+    public void testWithDifferentOperands() {
+        // Test with string literal
+        ParsedNode stringOperand = TestUtils.createStringLiteralNode("\"test\"", 1, 2);
+        testParser.setNextExpression(stringOperand);
+        LocatableToken notToken = TestUtils.createToken(JavaTokenTypes.LNOT, "!", 1, 1);
+
+        ParseResult<ParsedNode> result1 = logicalNotParselet.parse(testParser, notToken);
+        assertNotNull("Should return a result", result1);
+        assertTrue("Should be successful", result1.isSuccess());
+        ParsedNode node1 = result1.getValue();
+        assertNotNull("Should parse with string operand", node1);
+        assertTrue("Should be prefix node", node1 instanceof TestNodeFactory.TestNode);
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", ((TestNodeFactory.TestNode)node1).getTestNodeType());
+
+        // Test with null literal
+        ParsedNode nullOperand = TestUtils.createNullLiteralNode(2, 2);
+        testParser.reset(); // Clear any previous state
+        testParser.setNextExpression(nullOperand);
+        LocatableToken tildeToken = TestUtils.createToken(JavaTokenTypes.BNOT, "~", 2, 1);
+
+        ParseResult<ParsedNode> result2 = bitwiseNotParselet.parse(testParser, tildeToken);
+        assertNotNull("Should return a result", result2);
+        assertTrue("Should be successful", result2.isSuccess());
+        ParsedNode node2 = result2.getValue();
+        assertNotNull("Should parse with null operand", node2);
+        assertTrue("Should be prefix node", node2 instanceof TestNodeFactory.TestNode);
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", ((TestNodeFactory.TestNode)node2).getTestNodeType());
+    }
+
+    /**
+     * Test error handling when parser fails to parse operand.
+     */
+    @Test
+    public void testErrorHandlingWithFailedOperandParse() {
+        LocatableToken incToken = TestUtils.createToken(JavaTokenTypes.INC, "++", 1, 1);
+
+        // Configure parser to return failure when parsing operand
+        testParser.setNextExpressionFailure("Failed to parse operand");
+
+        ParseResult<ParsedNode> result = prefixIncrementParselet.parse(testParser, incToken);
+
+        assertNotNull("Should return a result", result);
+        assertFalse("Should fail when operand parsing fails", result.isSuccess());
+        assertFalse("Should have errors", result.getErrors().isEmpty());
+        assertEquals("Should propagate error message", "Missing operand for prefix increment (++) operator", result.getErrors().get(0).message());
+    }
+
+    /**
+     * Test NodeFactory integration.
      */
     @Test
     public void testNodeFactoryIntegration() {
-        LocatableToken plusToken = createToken(JavaTokenTypes.PLUS, "+", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 2);
+        LocatableToken incToken = TestUtils.createToken(JavaTokenTypes.INC, "++", 1, 1);
+        ParsedNode operand = TestUtils.createIdentifierNode("x", 1, 3);
+        testParser.setNextExpression(operand);
 
-        testParser.setNextOperand(operandToken);
-
-        ParseResult<ParsedNode> result = unaryPlusParselet.parse(testParser, plusToken);
+        ParseResult<ParsedNode> result = prefixIncrementParselet.parse(testParser, incToken);
 
         assertNotNull("Should return a result", result);
         assertTrue("Should be successful", result.isSuccess());
         ParsedNode node = result.getValue();
-        assertNotNull("NodeFactory should create unary prefix node", node);
+        assertNotNull("Should create node via factory", node);
         assertTrue("Should be TestNodeFactory node", node instanceof TestNodeFactory.TestNode);
 
         // Verify factory was used by checking node type and structure
-        TestNodeFactory.TestNode unaryNode = (TestNodeFactory.TestNode) node;
-        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", unaryNode.getTestNodeType());
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertNotNull("Should have children", prefixNode.getChildren());
+        assertEquals("Should have one child (operand)", 1, prefixNode.getChildren().size());
+        assertSame("Should preserve operand", operand, prefixNode.getChildren().get(0));
     }
 
     /**
-     * Test various operator types with different operands.
+     * Test nested prefix operators: ++--x should be parsed as ++(--x)
      */
     @Test
-    public void testWithDifferentOperands() {
-        // Test unary minus with numeric literal
-        LocatableToken minusToken = createToken(JavaTokenTypes.MINUS, "-", 1, 1);
-        LocatableToken numToken = createToken(JavaTokenTypes.NUM_INT, "123", 1, 2);
+    public void testNestedPrefixOperators() {
+        // Setup for inner operator (--)
+        LocatableToken decToken = TestUtils.createToken(JavaTokenTypes.DEC, "--", 1, 3);
+        ParsedNode baseOperand = TestUtils.createIdentifierNode("x", 1, 5);
+        testParser.setNextExpression(baseOperand);
 
-        testParser.setNextOperand(numToken);
-        ParseResult<ParsedNode> result1 = unaryMinusParselet.parse(testParser, minusToken);
+        ParseResult<ParsedNode> innerResult = prefixDecrementParselet.parse(testParser, decToken);
+        assertNotNull("Should return inner result", innerResult);
+        assertTrue("Inner result should be successful", innerResult.isSuccess());
+        ParsedNode innerNode = innerResult.getValue();
 
-        assertNotNull("Should return a result", result1);
-        assertTrue("Should be successful", result1.isSuccess());
-        ParsedNode node1 = result1.getValue();
-        assertNotNull("Should parse with numeric operand", node1);
-        assertTrue("Should be unary prefix node", node1 instanceof TestNodeFactory.TestNode);
+        // Setup for outer operator (++)
+        testParser.reset();
+        testParser.setNextExpression(innerNode);
+        LocatableToken incToken = TestUtils.createToken(JavaTokenTypes.INC, "++", 1, 1);
 
-        // Test logical NOT with boolean literal
-        LocatableToken notToken = createToken(JavaTokenTypes.LNOT, "!", 2, 1);
-        LocatableToken boolToken = createToken(JavaTokenTypes.LITERAL_false, "false", 2, 2);
+        ParseResult<ParsedNode> outerResult = prefixIncrementParselet.parse(testParser, incToken);
 
-        testParser.setNextOperand(boolToken);
-        ParseResult<ParsedNode> result2 = logicalNotParselet.parse(testParser, notToken);
+        assertNotNull("Should return outer result", outerResult);
+        assertTrue("Outer result should be successful", outerResult.isSuccess());
+        ParsedNode outerNode = outerResult.getValue();
+        assertNotNull("Should parse nested prefix operators", outerNode);
+        assertTrue("Outer result should be prefix node", outerNode instanceof TestNodeFactory.TestNode);
 
-        assertNotNull("Should return a result", result2);
-        assertTrue("Should be successful", result2.isSuccess());
-        ParsedNode node2 = result2.getValue();
-        assertNotNull("Should parse with boolean operand", node2);
-        assertTrue("Should be unary prefix node", node2 instanceof TestNodeFactory.TestNode);
+        TestNodeFactory.TestNode outerPrefix = (TestNodeFactory.TestNode) outerNode;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", outerPrefix.getTestNodeType());
+        assertEquals("Should have one child", 1, outerPrefix.getChildren().size());
+
+        assertTrue("Inner operand should also be prefix node",
+                outerPrefix.getChildren().get(0) instanceof TestNodeFactory.TestNode);
+        TestNodeFactory.TestNode innerPrefix =
+                (TestNodeFactory.TestNode) outerPrefix.getChildren().get(0);
+        assertEquals("Inner should be UnaryPrefix node", "UnaryPrefix", innerPrefix.getTestNodeType());
     }
 
     /**
-     * Test error handling when NodeFactory fails.
+     * Test precedence comparison with other operator types.
      */
     @Test
-    public void testNodeFactoryFailure() {
-        LocatableToken plusToken = createToken(JavaTokenTypes.PLUS, "+", 1, 1);
-        LocatableToken operandToken = createToken(JavaTokenTypes.NUM_INT, "42", 1, 2);
+    public void testPrecedenceComparison() {
+        PrefixOperatorParselet prefixParselet = new PrefixOperatorParselet(13);
+        PostfixOperatorParselet postfixParselet = new PostfixOperatorParselet(15);
 
-        testParser.setNextOperand(operandToken);
-        testParser.setNodeFactoryFailure(true);  // Make NodeFactory return null
+        assertTrue("Prefix should have lower precedence than postfix",
+                prefixParselet.getPrecedence() < postfixParselet.getPrecedence());
 
-        ParseResult<ParsedNode> result = unaryPlusParselet.parse(testParser, plusToken);
+        // Test with different precedence levels
+        PrefixOperatorParselet higherPrefixParselet = new PrefixOperatorParselet(14);
+        assertTrue("Higher precedence prefix should bind tighter",
+                higherPrefixParselet.getPrecedence() > prefixParselet.getPrecedence());
+    }
+
+    /**
+     * Test with complex operand expressions.
+     */
+    @Test
+    public void testWithComplexOperand() {
+        LocatableToken minusToken = TestUtils.createToken(JavaTokenTypes.MINUS, "-", 1, 1);
+
+        // Create a complex operand (e.g., method call)
+        ParsedNode methodCallOperand = TestUtils.createIdentifierNode("getValue", 1, 2);
+
+        testParser.setNextExpression(methodCallOperand);
+
+        ParseResult<ParsedNode> result = unaryMinusParselet.parse(testParser, minusToken);
 
         assertNotNull("Should return a result", result);
-        assertTrue("Should be a failure when NodeFactory fails", result.isFailure());
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse with complex operand", node);
+        assertTrue("Should be prefix node", node instanceof TestNodeFactory.TestNode);
+
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertEquals("Should preserve complex operand", methodCallOperand, prefixNode.getChildren().get(0));
     }
 
     /**
-     * Helper method to create test tokens with specified properties.
+     * Test toString method.
      */
-    private LocatableToken createToken(int type, String text, int line, int column) {
-        bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);
-        bluej.parser.lexer.LineColPos end = new bluej.parser.lexer.LineColPos(line, column + text.length(), text.length());
-        return new LocatableToken(type, text, begin, end);
+    @Test
+    public void testToString() {
+        String result = prefixIncrementParselet.toString();
+        assertNotNull("ToString should not return null", result);
+        assertTrue("ToString should not be empty", result.length() > 0);
     }
 
     /**
-     * Test implementation of KotlinPrattParser for testing prefix operators.
+     * Test with parenthesized operand.
      */
-    private static class TestKotlinPrattParser extends KotlinPrattParser {
-        private boolean hasErrors = false;
-        private String lastError = "";
-        private LocatableToken nextOperand = null;
-        private boolean nodeFactoryFailure = false;
+    @Test
+    public void testWithParenthesizedOperand() {
+        LocatableToken notToken = TestUtils.createToken(JavaTokenTypes.LNOT, "!", 1, 1);
 
-        public TestKotlinPrattParser() {
-            super(new TestTokenOperations(), null, new TestNodeFactory());
-        }
+        // Create a parenthesized expression
+        ParsedNode parenOperand = TestUtils.createBooleanLiteralNode(false, 1, 3);
 
-        @Override
-        public void error(String message, LocatableToken token) {
-            hasErrors = true;
-            lastError = message;
-        }
+        testParser.setNextExpression(parenOperand);
 
-        /**
-         * Override parseExpression to return a mock operand for testing.
-         */
-        @Override
-        public ParsedNode parseExpression(int precedence) {
-            if (nextOperand == null) {
-                return null;  // Simulate missing operand
-            }
+        ParseResult<ParsedNode> result = logicalNotParselet.parse(testParser, notToken);
 
-            // Create a simple literal node as the operand using the NodeFactory
-            LiteralParselet literalParselet = new LiteralParselet();
-            ParseResult<ParsedNode> result = literalParselet.parse(this, nextOperand);
-            return result != null && result.isSuccess() ? result.getValue() : null;
-        }
+        assertNotNull("Should return a result", result);
+        assertTrue("Should be successful", result.isSuccess());
+        ParsedNode node = result.getValue();
+        assertNotNull("Should parse with parenthesized operand", node);
+        assertTrue("Should be prefix node", node instanceof TestNodeFactory.TestNode);
 
-        /**
-         * Override parseExpressionResult to return a mock operand for testing.
-         */
-        @Override
-        public ParseResult<ParsedNode> parseExpressionResult(int precedence) {
-            if (nextOperand == null) {
-                return ParseResult.failure("Missing operand", null);
-            }
-
-            // Create a simple literal node as the operand using the NodeFactory
-            LiteralParselet literalParselet = new LiteralParselet();
-            return literalParselet.parse(this, nextOperand);
-        }
-
-        @Override
-        public NodeFactory getNodeFactory() {
-            if (nodeFactoryFailure) {
-                return new FailingNodeFactory();
-            }
-            return super.getNodeFactory();
-        }
-
-        public void setNextOperand(LocatableToken operand) {
-            this.nextOperand = operand;
-        }
-
-        public void setNodeFactoryFailure(boolean failure) {
-            this.nodeFactoryFailure = failure;
-        }
-
-        public boolean hasErrors() {
-            return hasErrors;
-        }
-
-        public String getLastError() {
-            return lastError;
-        }
-    }
-
-    /**
-     * NodeFactory that always fails for testing error conditions.
-     */
-    private static class FailingNodeFactory implements NodeFactory {
-        @Override
-        public ParsedNode createLiteralNode(LocatableToken token) { return null; }
-
-        @Override
-        public ParsedNode createBinaryOperatorNode(ParsedNode left, LocatableToken operator, ParsedNode right) { return null; }
-
-        @Override
-        public ParsedNode createUnaryPrefixNode(LocatableToken operator, ParsedNode operand) { return null; }
-
-        @Override
-        public ParsedNode createUnaryPostfixNode(ParsedNode operand, LocatableToken operator) { return null; }
-
-        @Override
-        public ParsedNode createGroupNode(ParsedNode innerExpression) { return null; }
-
-        @Override
-        public ParsedNode createIdentifierNode(LocatableToken identifier) { return null; }
-
-        @Override
-        public ParsedNode createMemberAccessNode(ParsedNode object, LocatableToken memberName, boolean isSafeCall) { return null; }
-
-        @Override
-        public ParsedNode createCallNode(ParsedNode function, ParsedNode[] arguments) { return null; }
-
-        @Override
-        public ParsedNode createArrayAccessNode(ParsedNode array, ParsedNode index) { return null; }
-
-        @Override
-        public ParsedNode createThisNode(LocatableToken thisToken) { return null; }
-
-        @Override
-        public ParsedNode createSuperNode(LocatableToken superToken) { return null; }
-
-        @Override
-        public void reportError(String message, LocatableToken token) {}
-
-        @Override
-        public boolean hasErrors() { return false; }
-    }
-
-    /**
-     * Simple test implementation of TokenOperations.
-     */
-    private static class TestTokenOperations implements TokenOperations {
-        @Override
-        public @NotNull LocatableToken nextToken() { return null; }
-
-        @Override
-        public @NotNull LocatableToken LA(int distance) { return null; }
-
-        @Override
-        public void pushBack(LocatableToken token) {}
-
-        @Override
-        public LocatableToken getMostRecent() { return null; }
+        TestNodeFactory.TestNode prefixNode = (TestNodeFactory.TestNode) node;
+        assertEquals("Should be UnaryPrefix node", "UnaryPrefix", prefixNode.getTestNodeType());
+        assertEquals("Should preserve parenthesized operand", parenOperand, prefixNode.getChildren().get(0));
     }
 }

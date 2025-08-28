@@ -336,15 +336,22 @@ public class TestNodeFactory implements NodeFactory {
             reportError("Cannot create call node with null function", null);
             return null;
         }
+        
+        // Create Call node with function and arguments list as separate children
         TestNode node = new TestNode("Call", ++nodeIdCounter) {};
         node.addChild(function);
+        
+        // Create an arguments list node (even if empty) as the second child
+        TestNode argumentsNode = new TestNode("Arguments", ++nodeIdCounter) {};
         if (arguments != null) {
             for (ParsedNode arg : arguments) {
                 if (arg != null) {
-                    node.addChild(arg);
+                    argumentsNode.addChild(arg);
                 }
             }
         }
+        node.addChild(argumentsNode);
+        
         // Set offsets based on function and last argument if any
         if (function instanceof TestNode) {
             int endOffset = ((TestNode)function).getTestAbsoluteEnd();
