@@ -44,6 +44,7 @@ dependencies {
     testImplementation 'io.github.sebivenlo:openjfx-monocle:jdk-21.0.1'
     testImplementation 'org.openjdk.jmh:jmh-core:1.37'
     testAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 compileJava {
@@ -224,9 +225,30 @@ def testJvmArgs = // Headless is the default because headed GUI tests are quite 
 test {
     maxParallelForks = 2 * Runtime.runtime.availableProcessors()
 
-    useJUnit {}
+    useJUnit {
+        excludeCategories 'bluej.parser.BenchmarkTest'
+    }
 
     jvmArgs += testJvmArgs
+}
+
+task benchmarkTest(type: Test) {
+    description = 'Runs performance benchmark tests'
+    group = 'verification'
+
+    maxParallelForks = 1 // Run benchmarks sequentially for more reliable results
+
+    useJUnit {
+        includeCategories 'bluej.parser.BenchmarkTest'
+    }
+
+    jvmArgs += testJvmArgs
+
+    // Set different timeout for benchmark tests since they take longer
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
 }
 
 repositories {

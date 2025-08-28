@@ -31,7 +31,10 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
+
+import bluej.parser.BenchmarkTest;
 
 import java.io.StringReader;
 import java.util.Collection;
@@ -55,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 2, jvmArgs = {"-Xms2G", "-Xmx2G"})
 @Warmup(iterations = 5, time = 1)
 @Measurement(iterations = 10, time = 1)
+@Category(BenchmarkTest.class)
 public class SimplePerformanceTest {
 
     private static final String PRATT_CONFIG_KEY = "bluej.kotlin.usePrattParser";
