@@ -23,6 +23,7 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.LocatableToken;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Test implementation of TokenOperations for unit testing.
@@ -57,7 +58,7 @@ public class TestTokenOperations implements TokenOperations {
     }
 
     @Override
-    public LocatableToken nextToken() {
+    public @NotNull LocatableToken nextToken() {
         if (tokenStream == null) {
             return null;
         }
@@ -65,7 +66,7 @@ public class TestTokenOperations implements TokenOperations {
     }
 
     @Override
-    public LocatableToken LA(int distance) {
+    public @NotNull LocatableToken LA(int distance) {
         if (tokenStream == null) {
             return null;
         }

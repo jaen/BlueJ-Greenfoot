@@ -28,6 +28,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -184,10 +185,10 @@ public class NameParseletTest {
      */
     private static class TestTokenOperations implements TokenOperations {
         @Override
-        public LocatableToken nextToken() { return null; }
+        public @NotNull LocatableToken nextToken() { return null; }
 
         @Override
-        public LocatableToken LA(int distance) { return null; }
+        public @NotNull LocatableToken LA(int distance) { return null; }
 
         @Override
         public void pushBack(LocatableToken token) {}

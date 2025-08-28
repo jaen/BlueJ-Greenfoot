@@ -26,6 +26,7 @@ import java.util.List;
 
 import bluej.parser.JavaParserCallbacks;
 import bluej.parser.TokenStream;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -55,7 +56,7 @@ public final class JavaTokenFilter implements TokenStream
         this.parser = parser;
     }
 
-    public LocatableToken nextToken()
+    public @NotNull LocatableToken nextToken()
     {
         LocatableToken rval;
         if (! buffer.isEmpty()) {
@@ -117,23 +118,26 @@ public final class JavaTokenFilter implements TokenStream
      * Look ahead a certain number of tokens (without actually consuming them).
      * @param distance  The distance to look ahead (1 or greater).
      */
-    public LocatableToken LA(int distance)
+    public @NotNull LocatableToken LA(int distance)
     {
         if (cachedToken != null) {
-           buffer.add(0, (LocatableToken) cachedToken);
+           buffer.addFirst((LocatableToken) cachedToken);
            cachedToken = null;
         }
         
         int numToAdd = distance - buffer.size();
         while (numToAdd > 0) {
-           buffer.add(0, nextToken2());
+           buffer.addFirst(nextToken2());
            numToAdd--;
         }
-    
-        return buffer.get(buffer.size() - distance);
+
+        // Will return the last token (EOF) if no looking ahead beyond the end of the stream.
+        int tokens = buffer.size();
+
+        return buffer.get(Math.clamp(tokens - distance, 0 , tokens - 1));
     }
     
-    private LocatableToken nextToken2()
+    private @NotNull LocatableToken nextToken2()
     {
         LocatableToken t = null;
         

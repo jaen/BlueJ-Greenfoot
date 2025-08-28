@@ -28,6 +28,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A parselet for handling parenthesized expressions (grouping) in Kotlin code.
@@ -74,11 +75,7 @@ public final class GroupParselet implements PrefixParselet {
      * @return A ParseResult containing the inner expression or accumulated errors
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            return ParseResult.failure("Null token in group parselet", null);
-        }
-
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
         // Validate that this is indeed a left parenthesis
         if (token.getType() != JavaTokenTypes.LPAREN) {
             return ParseResult.failure("Expected '(' for grouped expression, got: " + getTokenTypeName(token.getType()), token);
@@ -95,7 +92,7 @@ public final class GroupParselet implements PrefixParselet {
 
         // Expect closing parenthesis
         LocatableToken closingParen = parser.consume();
-        if (closingParen == null) {
+        if (closingParen.getType() == JavaTokenTypes.EOF) {
             return ParseResult.failure(
                 "Unbalanced parentheses: expected ')' to match '(' at line " + token.getLine(),
                 token);
@@ -109,9 +106,9 @@ public final class GroupParselet implements PrefixParselet {
 
         // Create the grouped expression node using the NodeFactory
         NodeFactory nodeFactory = parser.getNodeFactory();
-        if (nodeFactory == null) {
-            return ParseResult.failure("NodeFactory not available for AST node creation", token);
-        }
+//        if (nodeFactory == null) {
+//            return ParseResult.failure("NodeFactory not available for AST node creation", token);
+//        }
 
         // Return the grouped expression
         // The factory may return the inner expression directly since
@@ -143,46 +140,6 @@ public final class GroupParselet implements PrefixParselet {
             case JavaTokenTypes.EOF -> "end of file";
             default -> "token type " + tokenType;
         };
-    }
-
-
-
-    /**
-     * Gets a description of what this parselet handles for the given token type.
-     * This method is used for validation and testing during the foundation phase.
-     *
-     * @param tokenType The token type to get information for
-     * @return A description of what this parselet handles for the token type
-     */
-    public String getHandledConstruct(int tokenType) {
-        if (tokenType == JavaTokenTypes.LPAREN) {
-            return "parenthesized expression";
-        }
-        return "unsupported token type";
-    }
-
-    /**
-     * Validates that a parenthesized expression has proper structure.
-     *
-     * <p>This method can be used during testing to verify that the parselet
-     * correctly identifies balanced parentheses and valid inner expressions.</p>
-     *
-     * @param parser The parser instance to use for validation
-     * @param token The starting left parenthesis token
-     * @return true if the structure is valid, false otherwise
-     */
-    public boolean validateStructure(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null || token.getType() != JavaTokenTypes.LPAREN) {
-            return false;
-        }
-
-        try {
-            // Try to parse the grouped expression
-            ParseResult<ParsedNode> result = parse(parser, token);
-            return result.isSuccess(); // Success means parsing worked correctly
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     @Override

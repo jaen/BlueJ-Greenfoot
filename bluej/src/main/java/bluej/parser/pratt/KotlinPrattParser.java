@@ -37,6 +37,7 @@ import bluej.parser.pratt.parselets.PostfixOperatorParselet;
 import bluej.parser.pratt.parselets.PrefixOperatorParselet;
 import bluej.parser.pratt.parselets.SuperParselet;
 import bluej.parser.pratt.parselets.ThisParselet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +228,7 @@ public class KotlinPrattParser {
     public ParseResult<ParsedNode> parseExpressionResult(int minPrecedence) {
         LocatableToken token = consume();
 
-        if (token == null || token.getType() == JavaTokenTypes.EOF) {
+        if (token.getType() == JavaTokenTypes.EOF) {
             return ParseResult.failure("Unexpected end of input", token);
         }
 
@@ -244,6 +245,7 @@ public class KotlinPrattParser {
         }
 
         ParsedNode left = leftResult.getValue();
+        // TODO: I don't think we should need to do this manually
         List<ParseResult.ParseError> accumulatedErrors = new java.util.ArrayList<>(leftResult.getErrors());
 
         // Continue parsing infix expressions while precedence allows
@@ -271,7 +273,7 @@ public class KotlinPrattParser {
         // Check for invalid token sequences after expression parsing
         // This catches cases like "42 42" where two operands appear without an operator
         LocatableToken nextToken = peek();
-        if (nextToken != null && nextToken.getType() != JavaTokenTypes.EOF) {
+        if (nextToken.getType() != JavaTokenTypes.EOF) {
             // Check if we have an operand following another operand without an operator
             if (isOperandToken(nextToken.getType()) && left != null) {
                 // We just parsed an expression (operand) and the next token is also an operand
@@ -336,7 +338,7 @@ public class KotlinPrattParser {
      */
     private int getCurrentPrecedence() {
         LocatableToken token = peek();
-        if (token == null || token.getType() == JavaTokenTypes.EOF) {
+        if (token.getType() == JavaTokenTypes.EOF) {
             return 0;
         }
         return registry.getPrecedence(token.getType());
@@ -347,7 +349,7 @@ public class KotlinPrattParser {
      *
      * @return The next token, or null if at end of stream
      */
-    public LocatableToken consume() {
+    public @NotNull LocatableToken consume() {
         currentToken = tokenOps.nextToken();
         return currentToken;
     }
@@ -357,7 +359,7 @@ public class KotlinPrattParser {
      *
      * @return The next token, or null if at end of stream
      */
-    public LocatableToken peek() {
+    public @NotNull LocatableToken peek() {
         return tokenOps.LA(1);
     }
 
@@ -367,10 +369,7 @@ public class KotlinPrattParser {
      * @param distance The distance to look ahead (1 or greater)
      * @return The token at the specified distance, or null if beyond end of stream
      */
-    public LocatableToken peek(int distance) {
-        if (distance < 1) {
-            throw new IllegalArgumentException("Look-ahead distance must be 1 or greater");
-        }
+    public @NotNull LocatableToken peek(int distance) {
         return tokenOps.LA(distance);
     }
 
@@ -393,7 +392,7 @@ public class KotlinPrattParser {
      */
     public boolean match(int tokenType) {
         LocatableToken token = peek();
-        return token != null && token.getType() == tokenType;
+        return token.getType() == tokenType;
     }
 
     /**
@@ -419,7 +418,7 @@ public class KotlinPrattParser {
      */
     public LocatableToken expect(int tokenType, String errorMessage) {
         LocatableToken token = consume();
-        if (token == null || token.getType() != tokenType) {
+        if (token.getType() != tokenType) {
             error(errorMessage, token);
             return null;
         }
@@ -676,7 +675,7 @@ public class KotlinPrattParser {
             return check(tokenType);
         }
         LocatableToken token = peek(offset + 1);
-        return token != null && token.getType() == tokenType;
+        return token.getType() == tokenType;
     }
 
     /**
@@ -687,9 +686,6 @@ public class KotlinPrattParser {
      */
     public boolean checkAny(int... tokenTypes) {
         LocatableToken token = peek();
-        if (token == null) {
-            return false;
-        }
         int type = token.getType();
         for (int tokenType : tokenTypes) {
             if (type == tokenType) {
@@ -720,7 +716,7 @@ public class KotlinPrattParser {
      */
     public boolean isAtEnd() {
         LocatableToken token = peek();
-        return token == null || token.getType() == JavaTokenTypes.EOF;
+        return token.getType() == JavaTokenTypes.EOF;
     }
 
     /**
@@ -746,7 +742,7 @@ public class KotlinPrattParser {
     public LocatableToken synchronize(int... synchronizationTokens) {
         while (true) {
             LocatableToken token = peek();
-            if (token == null || token.getType() == JavaTokenTypes.EOF) {
+            if (token.getType() == JavaTokenTypes.EOF) {
                 return null;
             }
 

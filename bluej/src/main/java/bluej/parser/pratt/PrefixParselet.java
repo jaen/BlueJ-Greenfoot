@@ -23,6 +23,7 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for parselets that handle prefix expressions in the Pratt parser.
@@ -118,7 +119,7 @@ public non-sealed interface PrefixParselet extends Parselet {
      * @return A ParseResult containing the parsed AST node or accumulated errors
      * @throws NullPointerException if parser or token is null
      */
-    ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token);
+    @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token);
 
 
 }

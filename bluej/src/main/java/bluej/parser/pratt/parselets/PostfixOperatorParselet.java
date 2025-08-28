@@ -26,6 +26,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.ParseResult;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for postfix unary operators in Kotlin.
@@ -72,17 +73,17 @@ public class PostfixOperatorParselet implements InfixParselet
      * @return ParsedNode representing the postfix operator expression, or null on error
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token)
     {
-        if (left == null) {
-            return ParseResult.failure(
-                "Missing left operand for postfix operator" +
-                (token != null ? ": " + token.getText() : ""), token);
-        }
-
-        if (token == null) {
-            return ParseResult.failure("Null token in postfix operator parselet", null);
-        }
+//        if (left == null) {
+//            return ParseResult.failure(
+//                "Missing left operand for postfix operator" +
+//                (token != null ? ": " + token.getText() : ""), token);
+//        }
+//
+//        if (token == null) {
+//            return ParseResult.failure("Null token in postfix operator parselet", null);
+//        }
 
         // Use the NodeFactory to create the postfix operator node
         try {

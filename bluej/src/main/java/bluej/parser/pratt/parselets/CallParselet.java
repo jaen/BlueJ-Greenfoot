@@ -29,6 +29,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,13 +81,9 @@ public class CallParselet implements InfixParselet
      * @return ParsedNode representing the function call, or null on error
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token)
     {
-        if (left == null) {
-            return ParseResult.failure("Missing function expression for call", token);
-        }
-
-        if (token == null || token.getType() != JavaTokenTypes.LPAREN) {
+        if (token.getType() != JavaTokenTypes.LPAREN) {
             return ParseResult.failure("Expected '(' for function call", token);
         }
 
@@ -136,7 +133,7 @@ public class CallParselet implements InfixParselet
 
         // Check if we have an empty argument list
         LocatableToken nextToken = parser.peek();
-        if (nextToken != null && nextToken.getType() == JavaTokenTypes.RPAREN) {
+        if (nextToken.getType() == JavaTokenTypes.RPAREN) {
             // Empty argument list - consume the closing paren and return empty list
             parser.consume();
             return new ArrayList<>();
@@ -150,7 +147,7 @@ public class CallParselet implements InfixParselet
 
             // Check what comes next
             LocatableToken token = parser.peek();
-            if (token == null) {
+            if (token.getType() == JavaTokenTypes.EOF) {
                 argumentResults.add(ParseResult.failure("Unexpected end of input in argument list", null));
                 break;
             }
@@ -165,7 +162,7 @@ public class CallParselet implements InfixParselet
 
                 // Check for trailing comma before closing paren
                 LocatableToken afterComma = parser.peek();
-                if (afterComma != null && afterComma.getType() == JavaTokenTypes.RPAREN) {
+                if (afterComma.getType() == JavaTokenTypes.RPAREN) {
                     // Trailing comma - consume the closing paren and finish
                     parser.consume();
                     break;

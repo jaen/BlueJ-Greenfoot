@@ -27,6 +27,7 @@ import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TokenOperations;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -288,15 +289,6 @@ public class GroupParseletTest {
     }
 
     @Test
-    public void testGetHandledConstruct() {
-        String description = parselet.getHandledConstruct(JavaTokenTypes.LPAREN);
-        assertEquals("parenthesized expression", description);
-
-        String unsupported = parselet.getHandledConstruct(JavaTokenTypes.NUM_INT);
-        assertEquals("unsupported token type", unsupported);
-    }
-
-    @Test
     public void testParserIntegration() {
         // This test would be more comprehensive once binary operator parselets are available
         // For now, we test basic integration structure
@@ -315,21 +307,6 @@ public class GroupParseletTest {
         ParsedNode node = result.getValue();
         assertNotNull("Should create a node for integrated parsing", node);
         assertFalse("Should integrate without errors", parser.hasErrors());
-    }
-
-    @Test
-    public void testValidateStructure() {
-        LocatableToken lparen = createToken(JavaTokenTypes.LPAREN, "(", 1, 1);
-        LocatableToken literal = createToken(JavaTokenTypes.NUM_INT, "42", 1, 2);
-        LocatableToken rparen = createToken(JavaTokenTypes.RPAREN, ")", 1, 4);
-
-        tokenOps.setTokens(List.of(literal, rparen));
-
-        // Act
-        boolean isValid = parselet.validateStructure(parser, lparen);
-
-        // Assert - With NodeFactory, validation should succeed for valid structure
-        assertTrue("Should validate correct parenthesized structure", isValid);
     }
 
     @Test
@@ -389,12 +366,12 @@ public class GroupParseletTest {
         }
 
         @Override
-        public LocatableToken consume() {
+        public @NotNull LocatableToken consume() {
             return tokenOps.nextToken();
         }
 
         @Override
-        public LocatableToken peek() {
+        public @NotNull LocatableToken peek() {
             return tokenOps.peek();
         }
     }
@@ -416,7 +393,7 @@ public class GroupParseletTest {
         }
 
         @Override
-        public LocatableToken nextToken() {
+        public @NotNull LocatableToken nextToken() {
             if (position >= tokens.size()) {
                 bluej.parser.lexer.LineColPos pos = new bluej.parser.lexer.LineColPos(1, 1, 0);
                 return new LocatableToken(JavaTokenTypes.EOF, "", pos, pos);
@@ -425,7 +402,7 @@ public class GroupParseletTest {
         }
 
         @Override
-        public LocatableToken LA(int distance) {
+        public @NotNull LocatableToken LA(int distance) {
             int peekPosition = position + distance - 1;
             if (peekPosition >= tokens.size()) {
                 bluej.parser.lexer.LineColPos pos = new bluej.parser.lexer.LineColPos(1, 1, 0);

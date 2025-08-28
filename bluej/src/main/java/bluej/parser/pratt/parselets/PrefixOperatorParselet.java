@@ -28,6 +28,7 @@ import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.PrefixParselet;
 import bluej.parser.pratt.ParseResult;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for prefix unary operators in Kotlin.
@@ -71,12 +72,12 @@ public class PrefixOperatorParselet implements PrefixParselet
      * @return ParsedNode representing the unary operator expression, or null on error
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token)
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token)
     {
         // Validate token is not null
-        if (token == null) {
-            return ParseResult.failure("Null token in prefix operator parselet", null);
-        }
+//        if (token == null) {
+//            return ParseResult.failure("Null token in prefix operator parselet", null);
+//        }
 
         // Get NodeFactory
         NodeFactory nodeFactory = parser.getNodeFactory();

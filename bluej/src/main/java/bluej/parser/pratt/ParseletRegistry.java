@@ -74,8 +74,8 @@ public class ParseletRegistry {
      * @param parent The parent registry to delegate to, or null for no delegation
      */
     public ParseletRegistry(ParseletRegistry parent) {
-        this.prefixParselets = new ConcurrentHashMap<>();
-        this.infixParselets = new ConcurrentHashMap<>();
+        this.prefixParselets = new HashMap<>();
+        this.infixParselets = new HashMap<>();
         this.parent = parent;
     }
 
@@ -122,9 +122,9 @@ public class ParseletRegistry {
      */
     public PrefixParselet getPrefix(int tokenType) {
         PrefixParselet parselet = prefixParselets.get(tokenType);
-        if (parselet == null && parent != null) {
-            return parent.getPrefix(tokenType);
-        }
+//        if (parselet == null && parent != null) {
+//            return parent.getPrefix(tokenType);
+//        }
         return parselet;
     }
 
@@ -139,9 +139,9 @@ public class ParseletRegistry {
      */
     public InfixParselet getInfix(int tokenType) {
         InfixParselet parselet = infixParselets.get(tokenType);
-        if (parselet == null && parent != null) {
-            return parent.getInfix(tokenType);
-        }
+//        if (parselet == null && parent != null) {
+//            return parent.getInfix(tokenType);
+//        }
         return parselet;
     }
 
@@ -166,8 +166,8 @@ public class ParseletRegistry {
      * @return true if a prefix parselet is registered, false otherwise
      */
     public boolean hasPrefix(int tokenType) {
-        return prefixParselets.containsKey(tokenType) ||
-               (parent != null && parent.hasPrefix(tokenType));
+        return prefixParselets.containsKey(tokenType); // ||
+//               (parent != null && parent.hasPrefix(tokenType));
     }
 
     /**
@@ -177,8 +177,8 @@ public class ParseletRegistry {
      * @return true if an infix parselet is registered, false otherwise
      */
     public boolean hasInfix(int tokenType) {
-        return infixParselets.containsKey(tokenType) ||
-               (parent != null && parent.hasInfix(tokenType));
+        return infixParselets.containsKey(tokenType); // ||
+//               (parent != null && parent.hasInfix(tokenType));
     }
 
     /**

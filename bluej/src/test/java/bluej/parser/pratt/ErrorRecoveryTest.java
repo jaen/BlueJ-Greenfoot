@@ -24,6 +24,7 @@ package bluej.parser.pratt;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LineColPos;
 import bluej.parser.lexer.LocatableToken;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -368,7 +369,7 @@ public class ErrorRecoveryTest {
         }
 
         @Override
-        public LocatableToken peek() {
+        public @NotNull LocatableToken peek() {
             if (tokenIndex < tokenStream.size()) {
                 return tokenStream.get(tokenIndex);
             }
@@ -376,7 +377,7 @@ public class ErrorRecoveryTest {
         }
 
         @Override
-        public LocatableToken consume() {
+        public @NotNull LocatableToken consume() {
             if (tokenIndex < tokenStream.size()) {
                 return tokenStream.get(tokenIndex++);
             }
@@ -389,12 +390,12 @@ public class ErrorRecoveryTest {
      */
     private static class MockTokenOperations implements TokenOperations {
         @Override
-        public LocatableToken nextToken() {
+        public @NotNull LocatableToken nextToken() {
             return createToken(JavaTokenTypes.EOF, "");
         }
 
         @Override
-        public LocatableToken LA(int distance) {
+        public @NotNull LocatableToken LA(int distance) {
             return createToken(JavaTokenTypes.EOF, "");
         }
 

@@ -24,6 +24,7 @@ package bluej.parser.pratt;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.LineColPos;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -447,7 +448,7 @@ public class SynchronizationTokenTest {
         }
 
         @Override
-        public LocatableToken nextToken() {
+        public @NotNull LocatableToken nextToken() {
             if (position < tokens.length) {
                 mostRecent = tokens[position++];
                 return mostRecent;
@@ -457,7 +458,7 @@ public class SynchronizationTokenTest {
         }
 
         @Override
-        public LocatableToken LA(int distance) {
+        public @NotNull LocatableToken LA(int distance) {
             int lookPosition = position + distance - 1;
             if (lookPosition < tokens.length && lookPosition >= 0) {
                 return tokens[lookPosition];

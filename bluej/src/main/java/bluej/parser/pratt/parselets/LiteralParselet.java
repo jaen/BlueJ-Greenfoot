@@ -29,6 +29,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A parselet for handling literal values in Kotlin code.
@@ -70,10 +71,10 @@ public final class LiteralParselet implements PrefixParselet {
      * @return An ExpressionNode representing the literal, or null if parsing failed
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
-        if (token == null) {
-            return ParseResult.failure("Null token in literal parselet", null);
-        }
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
+//        if (token == null) {
+//            return ParseResult.failure("Null token in literal parselet", null);
+//        }
 
         // Validate that this is indeed a literal token type
         if (!isLiteralToken(token.getType())) {
@@ -83,9 +84,9 @@ public final class LiteralParselet implements PrefixParselet {
         // Create the literal node using the NodeFactory
         // This ensures thread-safe AST node creation
         NodeFactory nodeFactory = parser.getNodeFactory();
-        if (nodeFactory == null) {
-            return ParseResult.failure("NodeFactory not available for AST node creation", token);
-        }
+//        if (nodeFactory == null) {
+//            return ParseResult.failure("NodeFactory not available for AST node creation", token);
+//        }
 
         // Create and return the literal node
         // The factory handles all threading requirements

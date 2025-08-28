@@ -29,6 +29,7 @@ import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.PrefixParselet;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -63,7 +64,7 @@ public class ParseletRegistryTest {
         }
 
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
             return ParseResult.success(null); // Mock implementation
         }
 
@@ -91,7 +92,7 @@ public class ParseletRegistryTest {
         }
 
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token) {
             return ParseResult.success(null); // Mock implementation
         }
 

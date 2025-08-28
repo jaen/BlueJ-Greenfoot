@@ -29,6 +29,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A parselet for handling binary operators in Kotlin code.
@@ -100,19 +101,10 @@ public final class BinaryOperatorParselet implements InfixParselet {
      * @return A ParsedNode representing the binary expression, or null during foundation phase
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken operator) {
-        // Validate left operand
-        if (left == null) {
-            return ParseResult.failure("Missing left operand for binary operator", operator);
-        }
-
-        if (operator == null) {
-            return ParseResult.failure("Null operator token in binary operator parselet", null);
-        }
-
-        if (!isBinaryOperator(operator.getType())) {
-            return ParseResult.failure("Expected binary operator, got: " + getTokenTypeName(operator.getType()), operator);
-        }
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken operator) {
+//        if (!isBinaryOperator(operator.getType())) {
+//            return ParseResult.failure("Expected binary operator, got: " + getTokenTypeName(operator.getType()), operator);
+//        }
 
         // Determine the precedence for parsing the right operand
         // Right-associative operators use precedence - 1 to allow same-precedence operators to bind to the right
@@ -129,9 +121,9 @@ public final class BinaryOperatorParselet implements InfixParselet {
 
         // Create the binary operator node using the NodeFactory
         NodeFactory nodeFactory = parser.getNodeFactory();
-        if (nodeFactory == null) {
-            return ParseResult.failure("NodeFactory not available for AST node creation", operator);
-        }
+//        if (nodeFactory == null) {
+//            return ParseResult.failure("NodeFactory not available for AST node creation", operator);
+//        }
 
         // Create and return the binary operator node
         ParsedNode result = nodeFactory.createBinaryOperatorNode(left, operator, right);

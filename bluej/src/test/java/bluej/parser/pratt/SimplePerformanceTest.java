@@ -23,248 +23,188 @@ package bluej.parser.pratt;
 
 import bluej.parser.SourceParser;
 import bluej.parser.InitConfig;
-import bluej.parser.nodes.ParsedNode;
 import bluej.extensions2.SourceType;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.BeforeClass;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.results.RunResult;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Simple performance comparison test between monolithic and Pratt parsers.
+ * JMH-based performance comparison benchmark between monolithic and Pratt parsers.
  *
- * <p>This test provides basic performance benchmarking without external dependencies
- * like JMH. It measures parsing times for various expression types and compares
+ * <p>This benchmark measures parsing times for various expression types and compares
  * the performance between the two parser implementations.</p>
  *
  * <p>Performance goal: Pratt parser should be within 10% of monolithic parser performance.</p>
  *
+ * <p>To run benchmarks: execute the test method or use JMH command line tools.</p>
+ *
  * @author BlueJ Team
  */
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@State(Scope.Benchmark)
+@Fork(value = 2, jvmArgs = {"-Xms2G", "-Xmx2G"})
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 10, time = 1)
 public class SimplePerformanceTest {
 
-    @BeforeClass
-    public static void initConfig() {
+    private static final String PRATT_CONFIG_KEY = "bluej.kotlin.usePrattParser";
+    private static final double PERFORMANCE_TARGET_RATIO = 1.10; // Pratt should be within 10% of monolithic
+
+    @Param({"false", "true"})
+    private boolean usePrattParser;
+
+    static {
         InitConfig.init();
     }
 
-    private static final String PRATT_CONFIG_KEY = "bluej.kotlin.usePrattParser";
-
-    // Store original config value to restore after tests
-    private String originalPrattConfig;
-
-    // Test expressions of varying complexity
-    private static final String[] TEST_EXPRESSIONS = {
-        // Simple expressions
-        "42",
-        "myVariable",
-        "true",
-        "\"hello world\"",
-
-        // Binary operations
-        "a + b",
-        "x * y",
-        "a == b",
-        "flag && other",
-
-        // Complex arithmetic
-        "a + b * c - d / e",
-        "x * y + z - w / q",
-        "(a + b) * (c - d)",
-
-        // Nested expressions
-        "((a + b) * (c - d)) / ((e + f) * (g - h))",
-        "(x + y) * (z - w) + (a / b) - (c % d)",
-
-        // Unary operations
-        "-a",
-        "!flag",
-        "++counter",
-        "value--",
-        "-x + !y + ++z + w--",
-
-        // Comparison chains
-        "a > b && c < d",
-        "x == y || z != w",
-        "a > b && c < d || e == f && g != h",
-
-        // Mixed complex expressions
-        "(a + b) * (c - d) + e / f - g % h",
-        "((x || y) && (z || w)) && ((a < b) || (c > d))",
-
-        // Large nested expression
-        buildLargeExpression()
-    };
-
-    // Number of iterations for timing tests
-    private static final int WARMUP_ITERATIONS = 100;
-    private static final int MEASUREMENT_ITERATIONS = 1000;
-
-    @Before
-    public void setUp() throws Exception {
-        originalPrattConfig = System.getProperty(PRATT_CONFIG_KEY);
+    @Setup(Level.Trial)
+    public void setUp() {
+        System.setProperty(PRATT_CONFIG_KEY, Boolean.toString(usePrattParser));
     }
 
-    @After
-    public void tearDown() throws Exception {
-        if (originalPrattConfig != null) {
-            System.setProperty(PRATT_CONFIG_KEY, originalPrattConfig);
-        } else {
-            System.clearProperty(PRATT_CONFIG_KEY);
+    // Benchmark methods for each expression type
+
+    @Benchmark
+    public void benchmarkIntegerLiteral() {
+        parseExpression("42");
+    }
+
+    @Benchmark
+    public void benchmarkSimpleVariable() {
+        parseExpression("myVariable");
+    }
+
+    @Benchmark
+    public void benchmarkBooleanLiteral() {
+        parseExpression("true");
+    }
+
+    @Benchmark
+    public void benchmarkStringLiteral() {
+        parseExpression("\"hello world\"");
+    }
+
+    @Benchmark
+    public void benchmarkSimpleAddition() {
+        parseExpression("a + b");
+    }
+
+    @Benchmark
+    public void benchmarkSimpleMultiplication() {
+        parseExpression("x * y");
+    }
+
+    @Benchmark
+    public void benchmarkEqualityComparison() {
+        parseExpression("a == b");
+    }
+
+    @Benchmark
+    public void benchmarkLogicalAnd() {
+        parseExpression("flag && other");
+    }
+
+    @Benchmark
+    public void benchmarkArithmeticPrecedence() {
+        parseExpression("a + b * c - d / e");
+    }
+
+    @Benchmark
+    public void benchmarkArithmeticPrecedenceVariant() {
+        parseExpression("x * y + z - w / q");
+    }
+
+    @Benchmark
+    public void benchmarkParenthesizedArithmetic() {
+        parseExpression("(a + b) * (c - d)");
+    }
+
+    @Benchmark
+    public void benchmarkNestedParentheses() {
+        parseExpression("((a + b) * (c - d)) / ((e + f) * (g - h))");
+    }
+
+    @Benchmark
+    public void benchmarkMixedOperations() {
+        parseExpression("(x + y) * (z - w) + (a / b) - (c % d)");
+    }
+
+    @Benchmark
+    public void benchmarkUnaryMinus() {
+        parseExpression("-a");
+    }
+
+    @Benchmark
+    public void benchmarkUnaryNot() {
+        parseExpression("!flag");
+    }
+
+    @Benchmark
+    public void benchmarkPrefixIncrement() {
+        parseExpression("++counter");
+    }
+
+    @Benchmark
+    public void benchmarkPostfixDecrement() {
+        parseExpression("value--");
+    }
+
+    @Benchmark
+    public void benchmarkMixedUnaryOperations() {
+        parseExpression("-x + !y + ++z + w--");
+    }
+
+    @Benchmark
+    public void benchmarkComparisonWithLogical() {
+        parseExpression("a > b && c < d");
+    }
+
+    @Benchmark
+    public void benchmarkEqualityWithLogicalOr() {
+        parseExpression("x == y || z != w");
+    }
+
+    @Benchmark
+    public void benchmarkComplexLogical() {
+        parseExpression("a > b && c < d || e == f && g != h");
+    }
+
+    @Benchmark
+    public void benchmarkComplexArithmetic() {
+        parseExpression("(a + b) * (c - d) + e / f - g % h");
+    }
+
+    @Benchmark
+    public void benchmarkNestedLogical() {
+        parseExpression("((x || y) && (z || w)) && ((a < b) || (c > d))");
+    }
+
+    @Benchmark
+    public void benchmarkLargeNestedExpression() {
+        parseExpression(buildLargeExpression());
+    }
+
+    /**
+     * Helper method to parse an expression.
+     */
+    private void parseExpression(String expression) {
+        try {
+            StringReader reader = new StringReader(expression);
+            SourceParser parser = new SourceParser(reader, SourceType.Kotlin);
+            parser.parseExpression();
+        } catch (Exception e) {
+            // Ignore exceptions for benchmarking purposes
         }
-    }
-
-    @Test
-    public void testPerformanceComparison() {
-        System.out.println("=== Parser Performance Comparison ===");
-        System.out.println("Warmup iterations: " + WARMUP_ITERATIONS);
-        System.out.println("Measurement iterations: " + MEASUREMENT_ITERATIONS);
-        System.out.println("Target: Pratt parser within 10% of monolithic parser performance");
-        System.out.println();
-
-        List<PerformanceResult> results = new ArrayList<>();
-
-        for (int i = 0; i < TEST_EXPRESSIONS.length; i++) {
-            String expression = TEST_EXPRESSIONS[i];
-            String testName = getTestName(expression, i);
-
-            System.out.println("Testing: " + testName);
-            System.out.println("Expression: " + (expression.length() > 60 ?
-                expression.substring(0, 57) + "..." : expression));
-
-            PerformanceResult result = measureExpressionPerformance(expression, testName);
-            results.add(result);
-
-            System.out.println("Monolithic: " + formatTime(result.monolithicTime) + " ns/op");
-            System.out.println("Pratt:      " + formatTime(result.prattTime) + " ns/op");
-            System.out.println("Ratio:      " + String.format("%.2f", result.getRatio()) +
-                              " (Pratt/Monolithic)");
-            System.out.println("Performance: " +
-                (result.isWithinTarget() ? "✅ WITHIN TARGET" : "❌ OUTSIDE TARGET"));
-            System.out.println();
-        }
-
-        // Overall performance summary
-        System.out.println("=== Overall Performance Summary ===");
-        PerformanceResult overall = calculateOverallPerformance(results);
-
-        System.out.println("Overall average ratio: " + String.format("%.2f", overall.getRatio()));
-        System.out.println("Tests within target: " + countWithinTarget(results) + "/" + results.size());
-
-        // Verify overall performance is within target
-        assertTrue("Overall Pratt parser performance should be within 10% of monolithic parser. " +
-                  "Actual ratio: " + String.format("%.2f", overall.getRatio()) +
-                  " (target: ≤ 1.10)", overall.isWithinTarget());
-
-        // Verify that at least 80% of individual tests are within target
-        double withinTargetPercentage = (double) countWithinTarget(results) / results.size();
-        assertTrue("At least 80% of tests should be within performance target. " +
-                  "Actual: " + String.format("%.1f%%", withinTargetPercentage * 100),
-                  withinTargetPercentage >= 0.8);
-    }
-
-    private PerformanceResult measureExpressionPerformance(String expression, String testName) {
-        // Warmup both parsers
-        warmupParser(expression, true);  // Pratt
-        warmupParser(expression, false); // Monolithic
-
-        // Measure monolithic parser
-        long monolithicTime = measureParsingTime(expression, false);
-
-        // Measure Pratt parser
-        long prattTime = measureParsingTime(expression, true);
-
-        return new PerformanceResult(testName, expression, monolithicTime, prattTime);
-    }
-
-    private void warmupParser(String expression, boolean usePratt) {
-        System.setProperty(PRATT_CONFIG_KEY, Boolean.toString(usePratt));
-
-        for (int i = 0; i < WARMUP_ITERATIONS; i++) {
-            try {
-                StringReader reader = new StringReader(expression);
-                SourceParser parser = new SourceParser(reader, SourceType.Kotlin);
-                parser.parseExpression();
-            } catch (Exception e) {
-                // Ignore exceptions during warmup
-            }
-        }
-    }
-
-    private long measureParsingTime(String expression, boolean usePratt) {
-        System.setProperty(PRATT_CONFIG_KEY, Boolean.toString(usePratt));
-
-        long totalTime = 0;
-        int successfulRuns = 0;
-
-        for (int i = 0; i < MEASUREMENT_ITERATIONS; i++) {
-            long startTime = System.nanoTime();
-
-            try {
-                StringReader reader = new StringReader(expression);
-                SourceParser parser = new SourceParser(reader, SourceType.Kotlin);
-                parser.parseExpression();
-
-                long endTime = System.nanoTime();
-                totalTime += (endTime - startTime);
-                successfulRuns++;
-            } catch (Exception e) {
-                // Count failed runs as taking maximum time to penalize failures
-                long endTime = System.nanoTime();
-                totalTime += (endTime - startTime) + 1000000; // Add 1ms penalty
-                successfulRuns++;
-            }
-        }
-
-        return totalTime / successfulRuns;
-    }
-
-    private String getTestName(String expression, int index) {
-        if (expression.length() <= 20) {
-            return "Test " + (index + 1) + ": \"" + expression + "\"";
-        } else {
-            return "Test " + (index + 1) + ": Complex Expression";
-        }
-    }
-
-    private String formatTime(long nanos) {
-        if (nanos < 1000) {
-            return String.valueOf(nanos);
-        } else if (nanos < 1000000) {
-            return String.format("%.1f", nanos / 1000.0) + "k";
-        } else {
-            return String.format("%.1f", nanos / 1000000.0) + "M";
-        }
-    }
-
-    private PerformanceResult calculateOverallPerformance(List<PerformanceResult> results) {
-        long totalMonolithic = 0;
-        long totalPratt = 0;
-
-        for (PerformanceResult result : results) {
-            totalMonolithic += result.monolithicTime;
-            totalPratt += result.prattTime;
-        }
-
-        long avgMonolithic = totalMonolithic / results.size();
-        long avgPratt = totalPratt / results.size();
-
-        return new PerformanceResult("Overall Average", "", avgMonolithic, avgPratt);
-    }
-
-    private int countWithinTarget(List<PerformanceResult> results) {
-        int count = 0;
-        for (PerformanceResult result : results) {
-            if (result.isWithinTarget()) {
-                count++;
-            }
-        }
-        return count;
     }
 
     private static String buildLargeExpression() {
@@ -274,28 +214,182 @@ public class SimplePerformanceTest {
                "(((y % z) + (aa - bb)) / ((cc * dd) + (ee / ff)))";
     }
 
+    // Individual performance test methods for each expression type
+
+    @Test
+    public void testPerformance_IntegerLiteral() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkIntegerLiteral", "Integer literal");
+    }
+
+    @Test
+    public void testPerformance_SimpleVariable() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkSimpleVariable", "Simple variable");
+    }
+
+    @Test
+    public void testPerformance_BooleanLiteral() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkBooleanLiteral", "Boolean literal");
+    }
+
+    @Test
+    public void testPerformance_StringLiteral() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkStringLiteral", "String literal");
+    }
+
+    @Test
+    public void testPerformance_SimpleAddition() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkSimpleAddition", "Simple addition");
+    }
+
+    @Test
+    public void testPerformance_SimpleMultiplication() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkSimpleMultiplication", "Simple multiplication");
+    }
+
+    @Test
+    public void testPerformance_EqualityComparison() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkEqualityComparison", "Equality comparison");
+    }
+
+    @Test
+    public void testPerformance_LogicalAnd() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkLogicalAnd", "Logical AND");
+    }
+
+    @Test
+    public void testPerformance_ArithmeticPrecedence() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkArithmeticPrecedence", "Arithmetic precedence");
+    }
+
+    @Test
+    public void testPerformance_ArithmeticPrecedenceVariant() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkArithmeticPrecedenceVariant", "Arithmetic precedence variant");
+    }
+
+    @Test
+    public void testPerformance_ParenthesizedArithmetic() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkParenthesizedArithmetic", "Parenthesized arithmetic");
+    }
+
+    @Test
+    public void testPerformance_NestedParentheses() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkNestedParentheses", "Nested parentheses");
+    }
+
+    @Test
+    public void testPerformance_MixedOperations() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkMixedOperations", "Mixed operations");
+    }
+
+    @Test
+    public void testPerformance_UnaryMinus() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkUnaryMinus", "Unary minus");
+    }
+
+    @Test
+    public void testPerformance_UnaryNot() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkUnaryNot", "Unary not");
+    }
+
+    @Test
+    public void testPerformance_PrefixIncrement() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkPrefixIncrement", "Prefix increment");
+    }
+
+    @Test
+    public void testPerformance_PostfixDecrement() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkPostfixDecrement", "Postfix decrement");
+    }
+
+    @Test
+    public void testPerformance_MixedUnaryOperations() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkMixedUnaryOperations", "Mixed unary operations");
+    }
+
+    @Test
+    public void testPerformance_ComparisonWithLogical() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkComparisonWithLogical", "Comparison with logical");
+    }
+
+    @Test
+    public void testPerformance_EqualityWithLogicalOr() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkEqualityWithLogicalOr", "Equality with logical OR");
+    }
+
+    @Test
+    public void testPerformance_ComplexLogical() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkComplexLogical", "Complex logical");
+    }
+
+    @Test
+    public void testPerformance_ComplexArithmetic() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkComplexArithmetic", "Complex arithmetic");
+    }
+
+    @Test
+    public void testPerformance_NestedLogical() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkNestedLogical", "Nested logical");
+    }
+
+    @Test
+    public void testPerformance_LargeNestedExpression() throws RunnerException {
+        runSingleBenchmarkTest("benchmarkLargeNestedExpression", "Large nested expression");
+    }
+
     /**
-     * Represents the performance measurement result for a single test case.
+     * Helper method to run a single benchmark and verify performance target.
      */
-    private static class PerformanceResult {
-        final String testName;
-        final String expression;
-        final long monolithicTime;
-        final long prattTime;
+    private void runSingleBenchmarkTest(String benchmarkMethod, String testName) throws RunnerException {
+        Options opt = new OptionsBuilder()
+                .include(SimplePerformanceTest.class.getSimpleName() + "\\." + benchmarkMethod)
+                .forks(1)
+                .warmupIterations(3)
+                .measurementIterations(5)
+                .build();
 
-        public PerformanceResult(String testName, String expression, long monolithicTime, long prattTime) {
-            this.testName = testName;
-            this.expression = expression;
-            this.monolithicTime = monolithicTime;
-            this.prattTime = prattTime;
+        Collection<RunResult> results = new Runner(opt).run();
+
+        // Extract results for both parser configurations
+        double monolithicTime = 0;
+        double prattTime = 0;
+
+        for (RunResult result : results) {
+            boolean isPratt = result.getParams().getParam("usePrattParser").equals("true");
+            double score = result.getPrimaryResult().getScore();
+
+            if (isPratt) {
+                prattTime = score;
+            } else {
+                monolithicTime = score;
+            }
         }
 
-        public double getRatio() {
-            return (double) prattTime / monolithicTime;
-        }
+        double ratio = prattTime / monolithicTime;
 
-        public boolean isWithinTarget() {
-            return getRatio() <= 1.10; // Within 10% (ratio ≤ 1.10)
-        }
+        System.out.println(String.format("\n=== %s Performance ===", testName));
+        System.out.println(String.format("Monolithic: %.2f ns/op", monolithicTime));
+        System.out.println(String.format("Pratt:      %.2f ns/op", prattTime));
+        System.out.println(String.format("Ratio:      %.2f (Pratt/Monolithic)", ratio));
+        System.out.println("Target:     ≤ " + PERFORMANCE_TARGET_RATIO);
+        System.out.println("Status:     " + (ratio <= PERFORMANCE_TARGET_RATIO ? "✅ PASS" : "❌ FAIL"));
+
+        assertTrue(
+            String.format("Pratt parser performance for '%s' should be within %.0f%% of monolithic parser. " +
+                         "Actual ratio: %.2f (target: ≤ %.2f)",
+                         testName, (PERFORMANCE_TARGET_RATIO - 1) * 100, ratio, PERFORMANCE_TARGET_RATIO),
+            ratio <= PERFORMANCE_TARGET_RATIO
+        );
+    }
+
+    /**
+     * Main method to run benchmarks directly.
+     * Can be used for standalone benchmark execution outside of JUnit.
+     */
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+                .include(SimplePerformanceTest.class.getSimpleName())
+                .build();
+
+        new Runner(opt).run();
     }
 }

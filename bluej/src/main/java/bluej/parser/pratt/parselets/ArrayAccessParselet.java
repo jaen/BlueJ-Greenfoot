@@ -21,6 +21,7 @@
  */
 package bluej.parser.pratt.parselets;
 
+import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
@@ -28,6 +29,7 @@ import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.ParseResult;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for array and collection access expressions in Kotlin.
@@ -79,13 +81,8 @@ public class ArrayAccessParselet implements InfixParselet
      * @return ParsedNode representing the array access, or null on error
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
-    {
-        if (left == null) {
-            return ParseResult.failure("Missing array expression for indexing", token);
-        }
-
-        if (token == null || token.getType() != JavaTokenTypes.LBRACK) {
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token) {
+        if (token.getType() != JavaTokenTypes.LBRACK) {
             return ParseResult.failure("Expected '[' for array access", token);
         }
 
@@ -96,11 +93,13 @@ public class ArrayAccessParselet implements InfixParselet
             .flatMap(index -> {
                 // Expect closing bracket
                 LocatableToken closingBracket = parser.peek();
-                if (closingBracket == null) {
+                int tokenType = closingBracket.getType();
+
+                if (tokenType == JavaTokenTypes.EOF) {
                     return ParseResult.failure("Unexpected end of input in array access", token);
                 }
 
-                if (closingBracket.getType() != JavaTokenTypes.RBRACK) {
+                if (tokenType != JavaTokenTypes.RBRACK) {
                     return ParseResult.failure(
                         "Expected ']' after index expression, found: " + closingBracket.getText(),
                         closingBracket);

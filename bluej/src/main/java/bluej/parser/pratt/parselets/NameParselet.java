@@ -28,6 +28,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for parsing identifier names in Kotlin.
@@ -88,11 +89,11 @@ public class NameParselet implements PrefixParselet {
      * @throws IllegalArgumentException if token is null
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
         // Validate token is not null
-        if (token == null) {
-            return ParseResult.failure("Null token in name parselet", null);
-        }
+//        if (token == null) {
+//            return ParseResult.failure("Null token in name parselet", null);
+//        }
 
         // Validate that this is indeed an identifier token
         if (token.getType() != JavaTokenTypes.IDENT) {

@@ -28,6 +28,7 @@ import bluej.parser.pratt.InfixParselet;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.ParseResult;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for member access expressions in Kotlin.
@@ -79,15 +80,15 @@ public class MemberAccessParselet implements InfixParselet
      * @return ParsedNode representing the member access, or null on error
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token)
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token)
     {
-        if (left == null) {
-            return ParseResult.failure("Missing object expression for member access", token);
-        }
-
-        if (token == null) {
-            return ParseResult.failure("Missing access operator", null);
-        }
+//        if (left == null) {
+//            return ParseResult.failure("Missing object expression for member access", token);
+//        }
+//
+//        if (token == null) {
+//            return ParseResult.failure("Missing access operator", null);
+//        }
 
         // Determine if this is a safe call
         boolean isSafeCall;
@@ -102,11 +103,12 @@ public class MemberAccessParselet implements InfixParselet
 
         // Parse the member name (should be an identifier)
         LocatableToken memberToken = parser.peek();
-        if (memberToken == null) {
+        int tokenType = memberToken.getType();
+        if (tokenType == JavaTokenTypes.EOF) {
             return ParseResult.failure("Expected member name after " + token.getText(), token);
         }
 
-        if (memberToken.getType() != JavaTokenTypes.IDENT) {
+        if (tokenType != JavaTokenTypes.IDENT) {
             return ParseResult.failure(
                 "Expected identifier for member name, found: " + memberToken.getText(), memberToken);
         }

@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 
 import bluej.parser.EscapedUnicodeReader;
 import bluej.parser.TokenStream;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -131,7 +132,7 @@ public final class JavaLexer implements TokenStream
     /**
      * Retrieve the next token.
      */
-    public LocatableToken nextToken()
+    public @NotNull LocatableToken nextToken()
     {  
         textBuffer.setLength(0);
 

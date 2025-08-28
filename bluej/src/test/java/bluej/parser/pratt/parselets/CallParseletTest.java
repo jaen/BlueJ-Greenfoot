@@ -30,6 +30,7 @@ import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.Precedence;
 import bluej.parser.pratt.TestNodeFactory;
 import bluej.parser.pratt.TokenOperations;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -390,7 +391,7 @@ public class CallParseletTest
         }
 
         @Override
-        public LocatableToken peek() {
+        public @NotNull LocatableToken peek() {
             if (endOfInput && tokenIndex >= tokenSequence.size()) {
                 return null;
             }
@@ -401,7 +402,7 @@ public class CallParseletTest
         }
 
         @Override
-        public LocatableToken consume() {
+        public @NotNull LocatableToken consume() {
             if (tokenIndex < tokenSequence.size()) {
                 return tokenSequence.get(tokenIndex++);
             }
@@ -473,10 +474,10 @@ public class CallParseletTest
         private LocatableToken mostRecent = null;
 
         @Override
-        public LocatableToken nextToken() { return null; }
+        public @NotNull LocatableToken nextToken() { return null; }
 
         @Override
-        public LocatableToken LA(int distance) { return null; }
+        public @NotNull LocatableToken LA(int distance) { return null; }
 
         public LocatableToken createToken(int type, String text, int line, int column) {
             bluej.parser.lexer.LineColPos begin = new bluej.parser.lexer.LineColPos(line, column, 0);

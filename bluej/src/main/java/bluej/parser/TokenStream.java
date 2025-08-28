@@ -22,6 +22,7 @@
 package bluej.parser;
 
 import bluej.parser.lexer.LocatableToken;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -31,5 +32,5 @@ import bluej.parser.lexer.LocatableToken;
  */
 public interface TokenStream
 {
-    public LocatableToken nextToken();
+    public @NotNull LocatableToken nextToken();
 }

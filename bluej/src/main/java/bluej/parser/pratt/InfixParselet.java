@@ -23,6 +23,7 @@ package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for parselets that handle infix expressions in the Pratt parser.
@@ -150,7 +151,7 @@ public non-sealed interface InfixParselet extends Parselet {
      * @return A ParseResult containing the complete parsed expression or accumulated errors
      * @throws NullPointerException if any parameter is null
      */
-    ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token);
+    @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token);
 
     /**
      * Indicates whether this infix operator is right-associative.

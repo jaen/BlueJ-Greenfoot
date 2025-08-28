@@ -28,6 +28,7 @@ import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.PrefixParselet;
 import bluej.parser.pratt.ParseResult;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parselet for parsing 'super' keyword references in Kotlin.
@@ -86,11 +87,11 @@ public class SuperParselet implements PrefixParselet {
      * @throws IllegalArgumentException if token is null
      */
     @Override
-    public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+    public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
         // Validate token is not null
-        if (token == null) {
-            return ParseResult.failure("Null token in 'super' parselet", null);
-        }
+//        if (token == null) {
+//            return ParseResult.failure("Null token in 'super' parselet", null);
+//        }
 
         // Get NodeFactory
         NodeFactory nodeFactory = parser.getNodeFactory();

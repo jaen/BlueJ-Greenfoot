@@ -31,6 +31,7 @@ import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.TokenOperations;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
+import org.jetbrains.annotations.NotNull;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -497,12 +498,12 @@ public class KotlinParserAdapter implements ParserBehavior {
         }
 
         @Override
-        public LocatableToken nextToken() {
+        public @NotNull LocatableToken nextToken() {
             return tokenStream.nextToken();
         }
 
         @Override
-        public LocatableToken LA(int distance) {
+        public @NotNull LocatableToken LA(int distance) {
             return tokenStream.LA(distance);
         }
 

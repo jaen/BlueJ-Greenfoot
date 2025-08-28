@@ -22,6 +22,7 @@
 package bluej.parser.pratt;
 
 import bluej.parser.lexer.LocatableToken;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for token stream operations to abstract threading requirements.
@@ -44,7 +45,7 @@ public interface TokenOperations {
      *
      * @return The next token, or null if at end of stream
      */
-    LocatableToken nextToken();
+    @NotNull LocatableToken nextToken();
 
     /**
      * Looks ahead at a token without consuming it.
@@ -52,7 +53,7 @@ public interface TokenOperations {
      * @param distance The look-ahead distance (1 = next token, 2 = token after that, etc.)
      * @return The token at the specified distance, or null if beyond end of stream
      */
-    LocatableToken LA(int distance);
+    @NotNull LocatableToken LA(int distance);
 
     /**
      * Pushes a token back onto the token stream.

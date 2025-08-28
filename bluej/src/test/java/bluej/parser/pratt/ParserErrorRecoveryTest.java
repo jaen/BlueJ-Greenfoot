@@ -25,6 +25,7 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.lexer.LineColPos;
 import bluej.parser.nodes.ParsedNode;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -337,7 +338,7 @@ public class ParserErrorRecoveryTest {
     // Simple test parselets for testing error recovery
     private static class TestLiteralParselet implements PrefixParselet {
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
             // Return success with null node for testing
             return ParseResult.success(null);
         }
@@ -350,7 +351,7 @@ public class ParserErrorRecoveryTest {
 
     private static class TestIdentifierParselet implements PrefixParselet {
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
             // Return success with null node for testing
             return ParseResult.success(null);
         }
@@ -363,7 +364,7 @@ public class ParserErrorRecoveryTest {
 
     private static class TestBinaryOperatorParselet implements InfixParselet {
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, ParsedNode left, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull ParsedNode left, @NotNull LocatableToken token) {
             ParsedNode right = parser.parseExpression(getPrecedence());
             // Return success with null node for testing
             return ParseResult.success(null);
@@ -382,7 +383,7 @@ public class ParserErrorRecoveryTest {
 
     private static class TestGroupParselet implements PrefixParselet {
         @Override
-        public ParseResult<ParsedNode> parse(KotlinPrattParser parser, LocatableToken token) {
+        public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
             ParsedNode expression = parser.parseExpression();
             parser.expect(JavaTokenTypes.RPAREN, "Expected ')' after expression");
             // Return success with null node for testing
@@ -413,7 +414,7 @@ public class ParserErrorRecoveryTest {
         }
 
         @Override
-        public LocatableToken nextToken() {
+        public @NotNull LocatableToken nextToken() {
             if (position < tokens.length) {
                 mostRecent = tokens[position++];
                 return mostRecent;
@@ -423,7 +424,7 @@ public class ParserErrorRecoveryTest {
         }
 
         @Override
-        public LocatableToken LA(int distance) {
+        public @NotNull LocatableToken LA(int distance) {
             int lookPosition = position + distance - 1;
             if (lookPosition < tokens.length && lookPosition >= 0) {
                 return tokens[lookPosition];
