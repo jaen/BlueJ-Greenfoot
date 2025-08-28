@@ -29,6 +29,7 @@ import bluej.parser.SourceParser;
 import bluej.parser.pratt.parselets.ArrayAccessParselet;
 import bluej.parser.pratt.parselets.BinaryOperatorParselet;
 import bluej.parser.pratt.parselets.CallParselet;
+import bluej.parser.pratt.parselets.ElvisOperatorParselet;
 import bluej.parser.pratt.parselets.GroupParselet;
 import bluej.parser.pratt.parselets.LiteralParselet;
 import bluej.parser.pratt.parselets.MemberAccessParselet;
@@ -188,6 +189,9 @@ public class KotlinPrattParser {
         registry.register(JavaTokenTypes.LAND, new BinaryOperatorParselet(Precedence.CONJUNCTION));
         registry.register(JavaTokenTypes.LOR, new BinaryOperatorParselet(Precedence.DISJUNCTION));
 
+        // Elvis operator (?:) - null-coalescing operator
+        registry.register(JavaTokenTypes.ELVIS, new ElvisOperatorParselet());
+
         // Assignment operators (=, +=, -=, etc.)
         registry.register(JavaTokenTypes.ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
         registry.register(JavaTokenTypes.PLUS_ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
@@ -204,9 +208,10 @@ public class KotlinPrattParser {
         // For now, we don't register EXCLAM for postfix since it conflicts with logical not
 
         // ===================== ACCESS AND CALL PARSELETS (INFIX) =====================
-        // Member access (. and potentially ?. if that token exists)
-        registry.register(JavaTokenTypes.DOT, new MemberAccessParselet());
-        // TODO: Add QUESTION_DOT when available in JavaTokenTypes
+        // Member access (. and ?.)
+        MemberAccessParselet memberAccessParselet = new MemberAccessParselet();
+        registry.register(JavaTokenTypes.DOT, memberAccessParselet);
+        registry.register(JavaTokenTypes.SAFE_ACCESS, memberAccessParselet);
 
         // Array access ([])
         registry.register(JavaTokenTypes.LBRACK, new ArrayAccessParselet());
