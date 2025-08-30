@@ -31,6 +31,7 @@ import bluej.parser.pratt.parselets.BinaryOperatorParselet;
 import bluej.parser.pratt.parselets.CallParselet;
 import bluej.parser.pratt.parselets.ElvisOperatorParselet;
 import bluej.parser.pratt.parselets.GroupParselet;
+import bluej.parser.pratt.parselets.InOperatorParselet;
 import bluej.parser.pratt.parselets.LambdaExpressionParselet;
 import bluej.parser.pratt.parselets.LiteralParselet;
 import bluej.parser.pratt.parselets.MemberAccessParselet;
@@ -39,6 +40,7 @@ import bluej.parser.pratt.parselets.PostfixOperatorParselet;
 import bluej.parser.pratt.parselets.PrefixOperatorParselet;
 import bluej.parser.pratt.parselets.SuperParselet;
 import bluej.parser.pratt.parselets.ThisParselet;
+import bluej.parser.pratt.parselets.RangeParselet;
 import bluej.parser.pratt.parselets.TypeCastParselet;
 import bluej.parser.pratt.parselets.TypeCheckParselet;
 import org.jetbrains.annotations.NotNull;
@@ -204,6 +206,13 @@ public class KotlinPrattParser {
 
         // Type cast operators (as, as?)
         registry.register(JavaTokenTypes.LITERAL_as, new TypeCastParselet());
+
+        // Containment operators (in, !in)
+        registry.register(JavaTokenTypes.LITERAL_in, new InOperatorParselet());
+
+        // ===================== RANGE OPERATION PARSELETS (INFIX) =====================
+        // Range operator (..)
+        registry.register(JavaTokenTypes.RANGE, new RangeParselet());
 
         // Assignment operators (=, +=, -=, etc.)
         registry.register(JavaTokenTypes.ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
