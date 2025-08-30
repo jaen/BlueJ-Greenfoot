@@ -31,6 +31,7 @@ import bluej.parser.pratt.parselets.BinaryOperatorParselet;
 import bluej.parser.pratt.parselets.CallParselet;
 import bluej.parser.pratt.parselets.ElvisOperatorParselet;
 import bluej.parser.pratt.parselets.GroupParselet;
+import bluej.parser.pratt.parselets.LambdaExpressionParselet;
 import bluej.parser.pratt.parselets.LiteralParselet;
 import bluej.parser.pratt.parselets.MemberAccessParselet;
 import bluej.parser.pratt.parselets.NameParselet;
@@ -38,6 +39,8 @@ import bluej.parser.pratt.parselets.PostfixOperatorParselet;
 import bluej.parser.pratt.parselets.PrefixOperatorParselet;
 import bluej.parser.pratt.parselets.SuperParselet;
 import bluej.parser.pratt.parselets.ThisParselet;
+import bluej.parser.pratt.parselets.TypeCastParselet;
+import bluej.parser.pratt.parselets.TypeCheckParselet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -153,6 +156,9 @@ public class KotlinPrattParser {
         // ===================== GROUPING PARSELET (PREFIX) =====================
         registry.register(JavaTokenTypes.LPAREN, new GroupParselet());
 
+        // ===================== LAMBDA EXPRESSION PARSELET (PREFIX) =====================
+        registry.register(JavaTokenTypes.LCURLY, new LambdaExpressionParselet());
+
         // ===================== PREFIX OPERATOR PARSELETS =====================
         // Arithmetic prefix operators (+, -)
         registry.register(JavaTokenTypes.PLUS, new PrefixOperatorParselet(Precedence.PREFIX.getValue()));
@@ -191,6 +197,13 @@ public class KotlinPrattParser {
 
         // Elvis operator (?:) - null-coalescing operator
         registry.register(JavaTokenTypes.ELVIS, new ElvisOperatorParselet());
+
+        // ===================== TYPE OPERATION PARSELETS (INFIX) =====================
+        // Type check operators (is, !is)
+        registry.register(JavaTokenTypes.LITERAL_is, new TypeCheckParselet());
+
+        // Type cast operators (as, as?)
+        registry.register(JavaTokenTypes.LITERAL_as, new TypeCastParselet());
 
         // Assignment operators (=, +=, -=, etc.)
         registry.register(JavaTokenTypes.ASSIGN, new BinaryOperatorParselet(Precedence.ASSIGNMENT));
