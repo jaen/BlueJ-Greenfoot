@@ -394,11 +394,11 @@ public class RegistryIntegrationTest {
         assertTrue("Should have infix parselets registered", registry.getInfixCount() > 0);
 
         // Expected counts based on our initialization
-        // Literals: 10, Identifiers: 3, Grouping: 1, Prefix operators: 5 = 19 prefix parselets
-        assertEquals("Should have 19 prefix parselets", 19, registry.getPrefixCount());
+        // Literals: 10, Identifiers: 3, Grouping: 1, Lambda: 1, Prefix operators: 5 = 20 prefix parselets
+        assertEquals("Should have 20 prefix parselets", 20, registry.getPrefixCount());
 
-        // Binary operators: 18, Postfix operators: 2, Access/Call: 3 = 23 infix parselets
-        assertEquals("Should have 23 infix parselets", 23, registry.getInfixCount());
+        // Binary: 13, Kotlin: 5, Assignment: 5, Postfix: 2, Access/Call: 4 = 29 infix parselets
+        assertEquals("Should have 29 infix parselets", 29, registry.getInfixCount());
     }
 
     @Test

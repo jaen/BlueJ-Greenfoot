@@ -268,28 +268,6 @@ public class NodeFactoryIntegrationTest {
         assertEquals("Error message should match", "Test error", factory.getErrors().get(0));
     }
 
-    /**
-     * Test that parselets handle null NodeFactory gracefully.
-     */
-    @Test
-    @Ignore("This should not be possible anymore")
-    public void testParseletWithoutNodeFactory() {
-        // Create parser without node factory (simulate error condition)
-        SourceParser sourceParser = new SourceParser(
-            new StringReader("42"), SourceType.Kotlin);
-        JavaTokenFilter tokenStream = sourceParser.getTokenStream();
-        TokenOperations tokenOps = new TestTokenOperations(tokenStream);
-        KotlinPrattParser parser = new KotlinPrattParser(tokenOps, sourceParser, null);
-
-        // Register literal parselet
-        parser.getRegistry().register(JavaTokenTypes.NUM_INT, new LiteralParselet());
-
-        // Try to parse - should handle missing factory gracefully
-        ParsedNode node = parser.parseExpression(0);
-        assertNull("Should return null when NodeFactory is missing", node);
-        assertTrue("Parser should have errors", parser.hasErrors());
-    }
-
     // ========== Complex Expression Tests ==========
 
     /**
