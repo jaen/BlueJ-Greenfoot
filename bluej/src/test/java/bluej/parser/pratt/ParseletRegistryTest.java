@@ -349,9 +349,37 @@ public class ParseletRegistryTest {
 
     /**
      * Test parent registry delegation for prefix parselets.
+     *
+     * <p><b>Currently Ignored:</b> Parent delegation is not yet needed but will be essential
+     * for implementing Kotlin's contextual keywords and modular parser composition.</p>
+     *
+     * <p><b>Future Use Cases:</b></p>
+     * <ul>
+     *   <li><b>Contextual Keywords:</b> Kotlin has identifiers that act as keywords only in
+     *       specific contexts (e.g., 'get', 'set', 'field' in property accessors, 'by' in
+     *       delegation, 'contract' in contract DSL). Parent delegation would allow creating
+     *       context-specific parselet registries.</li>
+     *   <li><b>DSL Support:</b> Different parsing rules for Gradle Kotlin DSL or other
+     *       domain-specific languages embedded in Kotlin.</li>
+     *   <li><b>Educational Modes:</b> Restricted syntax subsets for teaching purposes.</li>
+     * </ul>
+     *
+     * <p><b>Example Implementation:</b></p>
+     * <pre>{@code
+     * // Future: Property accessor context
+     * ParseletRegistry propertyContext = new ParseletRegistry(mainRegistry);
+     * propertyContext.register(IDENT_GET, new GetterParselet());
+     * propertyContext.register(IDENT_SET, new SetterParselet());
+     * }</pre>
+     *
+     * <p><b>Note:</b> The parent delegation code is currently commented out in ParseletRegistry
+     * implementation. Before uncommenting this test, the implementation needs to be restored
+     * and properly designed for thread-safety and clear context boundaries.</p>
+     *
+     * @see <a href=".llm/memory/concepts/parent-delegation-pattern.md">Parent Delegation Pattern Documentation</a>
      */
     @Test
-    @Ignore("We do not need parent delegation, remove")
+    @Ignore("Parent delegation not yet needed - will be required for contextual keywords")
     public void testParentDelegationPrefix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -376,9 +404,29 @@ public class ParseletRegistryTest {
 
     /**
      * Test parent registry delegation for infix parselets.
+     *
+     * <p><b>Currently Ignored:</b> Complements the prefix delegation test for infix operators
+     * in context-specific parsing scenarios.</p>
+     *
+     * <p><b>Future Use Cases:</b></p>
+     * <ul>
+     *   <li><b>Context-Dependent Operators:</b> The same symbol might have different precedence
+     *       or behavior in different contexts (e.g., '=' in assignments vs property delegation).</li>
+     *   <li><b>Type-Specific Operations:</b> Different parsing for operators based on receiver
+     *       type or scope (e.g., extension functions, operator overloading).</li>
+     *   <li><b>Version Compatibility:</b> Supporting different Kotlin language versions with
+     *       varying operator semantics.</li>
+     * </ul>
+     *
+     * <p><b>Implementation Considerations:</b></p>
+     * <ul>
+     *   <li>Parent lookup should maintain correct precedence chains</li>
+     *   <li>Child registries should be able to override parent precedences</li>
+     *   <li>Performance impact of delegation should be minimal</li>
+     * </ul>
      */
     @Test
-    @Ignore("We do not need parent delegation, remove")
+    @Ignore("Parent delegation not yet needed - will be required for contextual operators")
     public void testParentDelegationInfix() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry child = new ParseletRegistry(parent);
@@ -432,9 +480,38 @@ public class ParseletRegistryTest {
 
     /**
      * Test registry copying with parent.
+     *
+     * <p><b>Currently Ignored:</b> Tests the interaction between registry copying and parent
+     * delegation, ensuring that copied registries maintain proper parent relationships.</p>
+     *
+     * <p><b>Future Use Cases:</b></p>
+     * <ul>
+     *   <li><b>Parser State Snapshots:</b> Creating immutable snapshots of parser state
+     *       for error recovery or speculative parsing.</li>
+     *   <li><b>Parallel Parsing Contexts:</b> Forking parser contexts for analyzing
+     *       different code paths or branches.</li>
+     *   <li><b>Testing and Experimentation:</b> Creating isolated parser configurations
+     *       for testing new parselets without affecting the main parser.</li>
+     * </ul>
+     *
+     * <p><b>Technical Requirements:</b></p>
+     * <ul>
+     *   <li>Copied registries should maintain parent references</li>
+     *   <li>Modifications to copies should not affect originals or parents</li>
+     *   <li>Parent chain traversal should work correctly in copies</li>
+     * </ul>
+     *
+     * <p><b>Re-enablement Criteria:</b></p>
+     * <ol>
+     *   <li>Identify concrete need for contextual parsing (e.g., property accessors)</li>
+     *   <li>Design parent delegation hierarchy and context boundaries</li>
+     *   <li>Restore commented-out implementation in ParseletRegistry</li>
+     *   <li>Ensure thread-safety of parent delegation mechanism</li>
+     *   <li>Update these tests to reflect final implementation design</li>
+     * </ol>
      */
     @Test
-    @Ignore("We do not need parent delegation, remove")
+    @Ignore("Parent delegation not yet needed - required for parser context management")
     public void testCopyWithParent() {
         ParseletRegistry parent = new ParseletRegistry();
         ParseletRegistry original = new ParseletRegistry(parent);
