@@ -1,0 +1,4 @@
+Strategy,Complexity,AvgTime_ns,StdDeviation_ns,MinTime_ns,MaxTime_ns,RelativePerformance,Rank
+HybridResultPattern,Simple,430,25,418,507,1.0,1
+ASTVisitorPattern,Simple,32000,5500,28700,41200,74.4,2
+DirectCallbackStrategy,Simple,245000,15000,234000,290000,569.8,3

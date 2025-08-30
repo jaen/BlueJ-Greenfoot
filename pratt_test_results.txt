@@ -1,0 +1,2024 @@
+Initialized native services in: /home/jaen/.gradle/native
+Initialized jansi services in: /home/jaen/.gradle/native
+Received JVM installation metadata from '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk': {JAVA_HOME=/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk, JAVA_VERSION=21.0.7, JAVA_VENDOR=N/A, RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=21.0.7+6-nixos, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=21.0.7+6-nixos, VM_VENDOR=Oracle Corporation, OS_ARCH=amd64}
+The client will now receive all logging from the daemon (pid: 1311294). The daemon log file: /home/jaen/.gradle/daemon/8.5/daemon-1311294.out.log
+Starting 33rd build in daemon [uptime: 1 hrs 43 mins 36.599 secs, performance: 99%, GC rate: 0.00/s, heap usage: 20% of 512 MiB, non-heap usage: 22% of 384 MiB]
+Using 16 worker leases.
+Not watching /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot since the file system is not supported
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/settings.gradle'.
+Projects loaded. Root project using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/build.gradle'.
+Included projects: [root project 'bluej-greenfoot', project ':anns-threadchecker', project ':bluej', project ':boot', project ':greenfoot', project ':lang-stride', project ':threadchecker']
+
+> Configure project :
+Evaluating root project 'bluej-greenfoot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/build.gradle'.
+
+> Configure project :anns-threadchecker
+Evaluating project ':anns-threadchecker' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/anns-threadchecker/build.gradle'.
+
+> Configure project :bluej
+Evaluating project ':bluej' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :boot
+Evaluating project ':boot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :greenfoot
+Evaluating project ':greenfoot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/greenfoot/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :lang-stride
+Evaluating project ':lang-stride' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/lang-stride/build.gradle'.
+
+> Configure project :threadchecker
+Evaluating project ':threadchecker' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/threadchecker/build.gradle'.
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Tasks to be executed: [task ':anns-threadchecker:compileJava', task ':anns-threadchecker:processResources', task ':anns-threadchecker:classes', task ':anns-threadchecker:jar', task ':anns-threadchecker:compileTestJava', task ':anns-threadchecker:processTestResources', task ':anns-threadchecker:testClasses', task ':anns-threadchecker:test', task ':threadchecker:compileJava', task ':threadchecker:processResources', task ':threadchecker:classes', task ':threadchecker:jar', task ':boot:compileJava', task ':boot:processResources', task ':boot:classes', task ':boot:compileSplashJava', task ':boot:processSplashResources', task ':boot:splashClasses', task ':boot:drawBlueJSplashVersion', task ':boot:drawBlueJSplashVersion2x', task ':boot:drawGreenfootSplashVersion', task ':boot:drawGreenfootSplashVersion2x', task ':boot:updateVersionNumber', task ':boot:jar', task ':lang-stride:compileJava', task ':bluej:compileJava', task ':bluej:blueJCoreJar', task ':bluej:processResources', task ':bluej:classes', task ':bluej:jar', task ':bluej:recordCommitID', task ':lang-stride:processResources', task ':lang-stride:classes', task ':lang-stride:jar', task ':bluej:copyToLib', task ':bluej:compileTestJava', task ':bluej:copyLibToTestBuild', task ':bluej:processTestResources', task ':bluej:testClasses', task ':bluej:test', task ':boot:compileTestJava', task ':boot:processTestResources', task ':boot:testClasses', task ':boot:test', task ':greenfoot:compileJava', task ':greenfoot:greenfootJar', task ':greenfoot:processResources', task ':greenfoot:classes', task ':greenfoot:copyGreenfootIcon1', task ':greenfoot:copyGreenfootIcon2', task ':greenfoot:copyImagelibToBuild', task ':greenfoot:copyLibToBuild', task ':greenfoot:jar', task ':greenfoot:copyToLib', task ':greenfoot:compileTestJava', task ':greenfoot:processTestResources', task ':greenfoot:testClasses', task ':greenfoot:test', task ':lang-stride:compileTestJava', task ':lang-stride:processTestResources', task ':lang-stride:testClasses', task ':lang-stride:test', task ':threadchecker:compileTestJava', task ':threadchecker:processTestResources', task ':threadchecker:testClasses', task ':threadchecker:test']
+Tasks that were excluded: []
+Resolve mutations for :anns-threadchecker:compileJava (Thread[#5704,Execution worker,5,main]) started.
+:anns-threadchecker:compileJava (Thread[#5704,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:compileJava UP-TO-DATE
+Caching disabled for task ':anns-threadchecker:compileJava' because:
+  Build cache is disabled
+Skipping task ':anns-threadchecker:compileJava' as it is up-to-date.
+work action resolve main (project :anns-threadchecker) (Thread[#5704,Execution worker,5,main]) started.
+Resolve mutations for :anns-threadchecker:processResources (Thread[#5708,Execution worker Thread 5,5,main]) started.
+:anns-threadchecker:processResources (Thread[#5710,Execution worker Thread 7,5,main]) started.
+
+> Task :anns-threadchecker:processResources NO-SOURCE
+Skipping task ':anns-threadchecker:processResources' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:classes (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:anns-threadchecker:classes (Thread[#5713,Execution worker Thread 10,5,main]) started.
+
+> Task :anns-threadchecker:classes UP-TO-DATE
+Skipping task ':anns-threadchecker:classes' as it has no actions.
+Resolve mutations for :anns-threadchecker:jar (Thread[#5713,Execution worker Thread 10,5,main]) started.
+:anns-threadchecker:jar (Thread[#5713,Execution worker Thread 10,5,main]) started.
+
+> Task :anns-threadchecker:jar UP-TO-DATE
+Caching disabled for task ':anns-threadchecker:jar' because:
+  Build cache is disabled
+Skipping task ':anns-threadchecker:jar' as it is up-to-date.
+work action resolve anns-threadchecker.jar (project :anns-threadchecker) (Thread[#5713,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :anns-threadchecker:compileTestJava (Thread[#5713,Execution worker Thread 10,5,main]) started.
+:anns-threadchecker:compileTestJava (Thread[#5713,Execution worker Thread 10,5,main]) started.
+
+> Task :anns-threadchecker:compileTestJava NO-SOURCE
+Skipping task ':anns-threadchecker:compileTestJava' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:processTestResources (Thread[#5713,Execution worker Thread 10,5,main]) started.
+:anns-threadchecker:processTestResources (Thread[#5707,Execution worker Thread 4,5,main]) started.
+
+> Task :anns-threadchecker:processTestResources NO-SOURCE
+Skipping task ':anns-threadchecker:processTestResources' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:testClasses (Thread[#5707,Execution worker Thread 4,5,main]) started.
+:anns-threadchecker:testClasses (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :anns-threadchecker:testClasses UP-TO-DATE
+Skipping task ':anns-threadchecker:testClasses' as it has no actions.
+Resolve mutations for :anns-threadchecker:test (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:anns-threadchecker:test (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :anns-threadchecker:test NO-SOURCE
+Skipping task ':anns-threadchecker:test' as it has no source files and no previous output files.
+Resolve mutations for :threadchecker:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:threadchecker:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:compileJava UP-TO-DATE
+Caching disabled for task ':threadchecker:compileJava' because:
+  Build cache is disabled
+Skipping task ':threadchecker:compileJava' as it is up-to-date.
+work action resolve main (project :threadchecker) (Thread[#5716,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :threadchecker:processResources (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:threadchecker:processResources (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:processResources UP-TO-DATE
+Caching disabled for task ':threadchecker:processResources' because:
+  Build cache is disabled
+Skipping task ':threadchecker:processResources' as it is up-to-date.
+Resolve mutations for :threadchecker:classes (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:threadchecker:classes (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:classes UP-TO-DATE
+Skipping task ':threadchecker:classes' as it has no actions.
+Resolve mutations for :threadchecker:jar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:threadchecker:jar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:jar UP-TO-DATE
+Caching disabled for task ':threadchecker:jar' because:
+  Build cache is disabled
+Skipping task ':threadchecker:jar' as it is up-to-date.
+work action resolve threadchecker.jar (project :threadchecker) (Thread[#5716,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :boot:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:compileJava UP-TO-DATE
+Caching disabled for task ':boot:compileJava' because:
+  Build cache is disabled
+Skipping task ':boot:compileJava' as it is up-to-date.
+Resolve mutations for :boot:processResources (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:processResources (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:processResources NO-SOURCE
+Deleting stale output file: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/main
+Skipping task ':boot:processResources' as it has no source files and no previous output files.
+Resolve mutations for :boot:classes (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:classes (Thread[#5714,Execution worker Thread 11,5,main]) started.
+
+> Task :boot:classes UP-TO-DATE
+Skipping task ':boot:classes' as it has no actions.
+Resolve mutations for :boot:compileSplashJava (Thread[#5706,Execution worker Thread 3,5,main]) started.
+:boot:compileSplashJava (Thread[#5706,Execution worker Thread 3,5,main]) started.
+
+> Task :boot:compileSplashJava UP-TO-DATE
+Caching disabled for task ':boot:compileSplashJava' because:
+  Build cache is disabled
+Skipping task ':boot:compileSplashJava' as it is up-to-date.
+Resolve mutations for :boot:processSplashResources (Thread[#5706,Execution worker Thread 3,5,main]) started.
+:boot:processSplashResources (Thread[#5703,included builds,5,main]) started.
+
+> Task :boot:processSplashResources NO-SOURCE
+Skipping task ':boot:processSplashResources' as it has no source files and no previous output files.
+Resolve mutations for :boot:splashClasses (Thread[#5703,included builds,5,main]) started.
+:boot:splashClasses (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:splashClasses UP-TO-DATE
+Skipping task ':boot:splashClasses' as it has no actions.
+Resolve mutations for :boot:drawBlueJSplashVersion (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:drawBlueJSplashVersion (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawBlueJSplashVersion
+Caching disabled for task ':boot:drawBlueJSplashVersion' because:
+  Build cache is disabled
+Task ':boot:drawBlueJSplashVersion' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../bluej/resources/unversioned-bluej-splash.png 5.5.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 16 215 114 build/resources/main/bluej/gen-bluej-splash.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawBlueJSplashVersion2x (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:drawBlueJSplashVersion2x (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawBlueJSplashVersion2x
+Caching disabled for task ':boot:drawBlueJSplashVersion2x' because:
+  Build cache is disabled
+Task ':boot:drawBlueJSplashVersion2x' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../bluej/resources/unversioned-bluej-splash@2x.png 5.5.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 32 430 228 build/resources/main/bluej/gen-bluej-splash@2x.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawGreenfootSplashVersion (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:drawGreenfootSplashVersion (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawGreenfootSplashVersion
+Caching disabled for task ':boot:drawGreenfootSplashVersion' because:
+  Build cache is disabled
+Task ':boot:drawGreenfootSplashVersion' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../greenfoot/resources/images/greenfoot-splash.png 3.9.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 16 165 145 build/resources/main/bluej/gen-greenfoot-splash.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawGreenfootSplashVersion2x (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:drawGreenfootSplashVersion2x (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawGreenfootSplashVersion2x
+Caching disabled for task ':boot:drawGreenfootSplashVersion2x' because:
+  Build cache is disabled
+Task ':boot:drawGreenfootSplashVersion2x' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../greenfoot/resources/images/greenfoot-splash@2x.png 3.9.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 32 330 290 build/resources/main/bluej/gen-greenfoot-splash@2x.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:updateVersionNumber (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:updateVersionNumber (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:updateVersionNumber
+Skipping task ':boot:updateVersionNumber' as it has no actions.
+Resolve mutations for :boot:jar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:boot:jar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:jar UP-TO-DATE
+Caching disabled for task ':boot:jar' because:
+  Build cache is disabled
+Skipping task ':boot:jar' as it is up-to-date.
+work action resolve boot.jar (project :boot) (Thread[#5716,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :lang-stride:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:lang-stride:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :lang-stride:compileJava UP-TO-DATE
+Caching disabled for task ':lang-stride:compileJava' because:
+  Build cache is disabled
+Skipping task ':lang-stride:compileJava' as it is up-to-date.
+work action resolve main (project :lang-stride) (Thread[#5716,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :bluej:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:bluej:compileJava (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :bluej:compileJava UP-TO-DATE
+Caching disabled for task ':bluej:compileJava' because:
+  Build cache is disabled
+Skipping task ':bluej:compileJava' as it is up-to-date.
+work action resolve main (project :bluej) (Thread[#5716,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :bluej:blueJCoreJar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:bluej:blueJCoreJar (Thread[#5716,Execution worker Thread 13,5,main]) started.
+
+> Task :bluej:blueJCoreJar UP-TO-DATE
+Caching disabled for task ':bluej:blueJCoreJar' because:
+  Build cache is disabled
+Skipping task ':bluej:blueJCoreJar' as it is up-to-date.
+Resolve mutations for :bluej:processResources (Thread[#5716,Execution worker Thread 13,5,main]) started.
+:bluej:processResources (Thread[#5718,Execution worker Thread 14,5,main]) started.
+
+> Task :bluej:processResources NO-SOURCE
+Skipping task ':bluej:processResources' as it has no source files and no previous output files.
+Resolve mutations for :bluej:classes (Thread[#5718,Execution worker Thread 14,5,main]) started.
+:bluej:classes (Thread[#5713,Execution worker Thread 10,5,main]) started.
+
+> Task :bluej:classes UP-TO-DATE
+Skipping task ':bluej:classes' as it has no actions.
+Resolve mutations for :bluej:jar (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:bluej:jar (Thread[#5710,Execution worker Thread 7,5,main]) started.
+
+> Task :bluej:jar UP-TO-DATE
+Caching disabled for task ':bluej:jar' because:
+  Build cache is disabled
+Skipping task ':bluej:jar' as it is up-to-date.
+work action resolve bluej.jar (project :bluej) (Thread[#5710,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :bluej:recordCommitID (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:bluej:recordCommitID (Thread[#5710,Execution worker Thread 7,5,main]) started.
+
+> Task :bluej:recordCommitID
+Caching disabled for task ':bluej:recordCommitID' because:
+  Build cache is disabled
+Task ':bluej:recordCommitID' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command 'git''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: git rev-parse --short=8 HEAD
+Successfully started process 'command 'git''
+Resolve mutations for :lang-stride:processResources (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:lang-stride:processResources (Thread[#5710,Execution worker Thread 7,5,main]) started.
+
+> Task :lang-stride:processResources NO-SOURCE
+Skipping task ':lang-stride:processResources' as it has no source files and no previous output files.
+Resolve mutations for :lang-stride:classes (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:lang-stride:classes (Thread[#5710,Execution worker Thread 7,5,main]) started.
+
+> Task :lang-stride:classes UP-TO-DATE
+Skipping task ':lang-stride:classes' as it has no actions.
+Resolve mutations for :lang-stride:jar (Thread[#5710,Execution worker Thread 7,5,main]) started.
+:lang-stride:jar (Thread[#5705,Execution worker Thread 2,5,main]) started.
+
+> Task :lang-stride:jar UP-TO-DATE
+Caching disabled for task ':lang-stride:jar' because:
+  Build cache is disabled
+Skipping task ':lang-stride:jar' as it is up-to-date.
+work action resolve lang-stride.jar (project :lang-stride) (Thread[#5705,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :bluej:copyToLib (Thread[#5705,Execution worker Thread 2,5,main]) started.
+:bluej:copyToLib (Thread[#5705,Execution worker Thread 2,5,main]) started.
+
+> Task :bluej:copyToLib UP-TO-DATE
+Caching disabled for task ':bluej:copyToLib' because:
+  Build cache is disabled
+Skipping task ':bluej:copyToLib' as it is up-to-date.
+Resolve mutations for :bluej:compileTestJava (Thread[#5705,Execution worker Thread 2,5,main]) started.
+:bluej:compileTestJava (Thread[#5705,Execution worker Thread 2,5,main]) started.
+
+> Task :bluej:compileTestJava UP-TO-DATE
+Caching disabled for task ':bluej:compileTestJava' because:
+  Build cache is disabled
+Skipping task ':bluej:compileTestJava' as it is up-to-date.
+Resolve mutations for :bluej:copyLibToTestBuild (Thread[#5705,Execution worker Thread 2,5,main]) started.
+:bluej:copyLibToTestBuild (Thread[#5711,Execution worker Thread 8,5,main]) started.
+
+> Task :bluej:copyLibToTestBuild UP-TO-DATE
+Caching disabled for task ':bluej:copyLibToTestBuild' because:
+  Build cache is disabled
+Skipping task ':bluej:copyLibToTestBuild' as it is up-to-date.
+Resolve mutations for :bluej:processTestResources (Thread[#5711,Execution worker Thread 8,5,main]) started.
+:bluej:processTestResources (Thread[#5711,Execution worker Thread 8,5,main]) started.
+
+> Task :bluej:processTestResources UP-TO-DATE
+Caching disabled for task ':bluej:processTestResources' because:
+  Build cache is disabled
+Skipping task ':bluej:processTestResources' as it is up-to-date.
+Resolve mutations for :bluej:testClasses (Thread[#5711,Execution worker Thread 8,5,main]) started.
+:bluej:testClasses (Thread[#5711,Execution worker Thread 8,5,main]) started.
+
+> Task :bluej:testClasses UP-TO-DATE
+Skipping task ':bluej:testClasses' as it has no actions.
+Resolve mutations for :bluej:test (Thread[#5711,Execution worker Thread 8,5,main]) started.
+:bluej:test (Thread[#5711,Execution worker Thread 8,5,main]) started.
+Gradle Test Executor 284 started executing tests.
+Gradle Test Executor 299 started executing tests.
+Gradle Test Executor 297 started executing tests.
+Gradle Test Executor 298 started executing tests.
+Gradle Test Executor 296 started executing tests.
+Gradle Test Executor 293 started executing tests.
+Gradle Test Executor 289 started executing tests.
+Gradle Test Executor 287 started executing tests.
+Gradle Test Executor 295 started executing tests.
+Gradle Test Executor 286 started executing tests.
+Gradle Test Executor 292 started executing tests.
+Gradle Test Executor 288 started executing tests.
+Gradle Test Executor 299 finished executing tests.
+Gradle Test Executor 294 started executing tests.
+Gradle Test Executor 290 started executing tests.
+
+> Task :bluej:test
+Caching disabled for task ':bluej:test' because:
+  Build cache is disabled
+Task ':bluej:test' is not up-to-date because:
+  Value of input property 'filter.commandLineIncludePatterns' has changed for task ':bluej:test'
+:bluej:test.maxParallelForks (32) is larger than max-workers (16), forcing it to 16
+Starting process 'Gradle Test Executor 284'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath12796390351280069892txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 284'
+Starting process 'Gradle Test Executor 285'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath17625644945122594543txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 285'
+Starting process 'Gradle Test Executor 286'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath5895424668854555530txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 286'
+Starting process 'Gradle Test Executor 287'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath6768605241195408923txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 287'
+Starting process 'Gradle Test Executor 288'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath12004141623103514123txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 288'
+Starting process 'Gradle Test Executor 289'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath4426120925591035376txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 289'
+Starting process 'Gradle Test Executor 290'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath11290194485462949815txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 290'
+Starting process 'Gradle Test Executor 291'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath10101525192286039247txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 291'
+Starting process 'Gradle Test Executor 292'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath4156250089766142951txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 292'
+Starting process 'Gradle Test Executor 294'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath16085041633563859322txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 294'
+Starting process 'Gradle Test Executor 295'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath10087422026886257534txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 295'
+Starting process 'Gradle Test Executor 293'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath1897316053507164142txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 293'
+Starting process 'Gradle Test Executor 296'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath14235588456001181008txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 296'
+Starting process 'Gradle Test Executor 297'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath15328446953426612359txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 297'
+Starting process 'Gradle Test Executor 298'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath1072438863385397967txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 298'
+Starting process 'Gradle Test Executor 299'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath12704185909833410180txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 299'
+Successfully started process 'Gradle Test Executor 284'
+Successfully started process 'Gradle Test Executor 299'
+Successfully started process 'Gradle Test Executor 298'
+Successfully started process 'Gradle Test Executor 293'
+Successfully started process 'Gradle Test Executor 296'
+Successfully started process 'Gradle Test Executor 297'
+Successfully started process 'Gradle Test Executor 295'
+Successfully started process 'Gradle Test Executor 294'
+Successfully started process 'Gradle Test Executor 292'
+Successfully started process 'Gradle Test Executor 291'
+Successfully started process 'Gradle Test Executor 290'
+Successfully started process 'Gradle Test Executor 289'
+Successfully started process 'Gradle Test Executor 288'
+Successfully started process 'Gradle Test Executor 287'
+Successfully started process 'Gradle Test Executor 286'
+Successfully started process 'Gradle Test Executor 285'
+
+bluej.parser.pratt.DebugASTComparisonTest > testSpecificFailureCases STANDARD_OUT
+    Failure analysis written to: /tmp/failure_analysis.txt
+
+bluej.parser.pratt.DebugASTComparisonTest > testDetailedASTAnalysis STANDARD_OUT
+    Debug output written to: /tmp/ast_debug_output.txt
+
+bluej.parser.pratt.DebugRegistryTest > debugRegistryCounts STANDARD_OUT
+    === REGISTRY DEBUG INFO ===
+    Prefix count: 20
+    Infix count: 29
+
+    === PREFIX PARSELETS ===
+    Token 164 (NUM_DOUBLE): LiteralParselet
+    Token 163 (NUM_LONG): LiteralParselet
+    Token 162 (NUM_FLOAT): LiteralParselet
+    Token 161 (STRING_LITERAL): LiteralParselet
+    Token 160 (CHAR_LITERAL): LiteralParselet
+    Token 159 (NUM_INT): LiteralParselet
+    Token 157 (LITERAL_null): LiteralParselet
+    Token 156 (LITERAL_false): LiteralParselet
+    Token 155 (LITERAL_true): LiteralParselet
+    Token 154 (LNOT): PrefixOperatorParselet
+    Token 152 (DEC): PrefixOperatorParselet
+    Token 72 (LITERAL_super): SuperParselet
+    Token 151 (INC): PrefixOperatorParselet
+    Token 148 (MINUS): PrefixOperatorParselet
+    Token 69 (IDENT): NameParselet
+    Token 147 (PLUS): PrefixOperatorParselet
+    Token 107 (LITERAL_this): ThisParselet
+    Token 99 (UNKNOWN_99): LambdaExpressionParselet
+    Token 96 (LPAREN): GroupParselet
+    Token 175 (STRING_LITERAL_MULTILINE): LiteralParselet
+
+    === INFIX PARSELETS ===
+    Token 137 (LOR): BinaryOperatorParselet (precedence: 30)
+    Token 75 (GT): BinaryOperatorParselet (precedence: 60)
+    Token 73 (LT): BinaryOperatorParselet (precedence: 60)
+    Token 127 (MINUS_ASSIGN): BinaryOperatorParselet (precedence: 10)
+    Token 129 (DIV_ASSIGN): BinaryOperatorParselet (precedence: 10)
+    Token 128 (STAR_ASSIGN): BinaryOperatorParselet (precedence: 10)
+    Token 126 (PLUS_ASSIGN): BinaryOperatorParselet (precedence: 10)
+    Token 68 (DOT): MemberAccessParselet (precedence: 140)
+    Token 66 (LBRACK): ArrayAccessParselet (precedence: 140)
+    Token 233 (UNKNOWN_233): InOperatorParselet (precedence: 70)
+    Token 232 (UNKNOWN_232): TypeCheckParselet (precedence: 70)
+    Token 231 (UNKNOWN_231): TypeCastParselet (precedence: 120)
+    Token 230 (UNKNOWN_230): MemberAccessParselet (precedence: 140)
+    Token 229 (UNKNOWN_229): ElvisOperatorParselet (precedence: 20)
+    Token 228 (UNKNOWN_228): RangeParselet (precedence: 80)
+    Token 98 (ASSIGN): BinaryOperatorParselet (precedence: 10)
+    Token 96 (LPAREN): CallParselet (precedence: 140)
+    Token 152 (DEC): PostfixOperatorParselet (precedence: 140)
+    Token 151 (INC): PostfixOperatorParselet (precedence: 140)
+    Token 150 (MOD): BinaryOperatorParselet (precedence: 110)
+    Token 149 (DIV): BinaryOperatorParselet (precedence: 110)
+    Token 148 (MINUS): BinaryOperatorParselet (precedence: 100)
+    Token 147 (PLUS): BinaryOperatorParselet (precedence: 100)
+    Token 87 (STAR): BinaryOperatorParselet (precedence: 110)
+    Token 144 (GE): BinaryOperatorParselet (precedence: 60)
+    Token 143 (LE): BinaryOperatorParselet (precedence: 60)
+    Token 142 (EQUAL): BinaryOperatorParselet (precedence: 50)
+    Token 141 (NOT_EQUAL): BinaryOperatorParselet (precedence: 50)
+    Token 138 (LAND): BinaryOperatorParselet (precedence: 40)
+
+bluej.parser.pratt.ParseletRegistryTest > testParentDelegationInfix SKIPPED
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testIfElseStatement STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: x
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@1f97cf0d
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.ASTVisitorPatternTest > testIfStatementAST FAILED
+    java.lang.AssertionError: Should have complete if statement structure
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.ASTVisitorPatternTest.testIfStatementAST(ASTVisitorPatternTest.java:727)
+
+bluej.parser.pratt.ParseletRegistryTest > testParentDelegationPrefix SKIPPED
+
+bluej.parser.pratt.parselets.TypeCheckParseletTest > testComplexExpression STANDARD_OUT
+    DEBUG testComplexExpression - Left: TestIdentifierNode:result
+    DEBUG testComplexExpression - Left class: TestIdentifierNode
+    DEBUG testComplexExpression - Right: TestIdentifierNode:Boolean
+    DEBUG testComplexExpression - Right class: TestIdentifierNode
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryArithmetic STANDARD_OUT
+
+
+bluej.parser.pratt.parselets.TypeCheckParseletTest > testTypeCheckWithComplexType STANDARD_OUT
+    DEBUG testTypeCheckWithComplexType - Left: TestIdentifierNode:value
+    DEBUG testTypeCheckWithComplexType - Left class: TestIdentifierNode
+    DEBUG testTypeCheckWithComplexType - Right: TestIdentifierNode:List
+    DEBUG testTypeCheckWithComplexType - Right class: TestIdentifierNode
+
+bluej.parser.pratt.parselets.TypeCheckParseletTest > testBasicTypeCheck STANDARD_OUT
+    DEBUG testBasicTypeCheck - Left: TestIdentifierNode:obj
+    DEBUG testBasicTypeCheck - Left class: TestIdentifierNode
+    DEBUG testBasicTypeCheck - Right: TestIdentifierNode:String
+    DEBUG testBasicTypeCheck - Right class: TestIdentifierNode
+
+bluej.parser.pratt.parselets.TypeCheckParseletTest > testTypeCheckWithLiteral STANDARD_OUT
+    DEBUG testTypeCheckWithLiteral - Left: TestIdentifierNode:42
+    DEBUG testTypeCheckWithLiteral - Left class: TestIdentifierNode
+    DEBUG testTypeCheckWithLiteral - Right: TestIdentifierNode:Int
+    DEBUG testTypeCheckWithLiteral - Right class: TestIdentifierNode
+
+
+Gradle Test Executor 296 finished executing tests.
+Gradle Test Executor 284 finished executing tests.
+Gradle Test Executor 291 started executing tests.
+Gradle Test Executor 285 started executing tests.
+Gradle Test Executor 292 finished executing tests.
+Gradle Test Executor 286 finished executing tests.
+Gradle Test Executor 295 finished executing tests.
+Gradle Test Executor 287 finished executing tests.
+Gradle Test Executor 298 finished executing tests.
+Gradle Test Executor 293 finished executing tests.
+Gradle Test Executor 288 finished executing tests.
+Gradle Test Executor 289 finished executing tests.
+Gradle Test Executor 290 finished executing tests.
+Gradle Test Executor 297 finished executing tests.
+Gradle Test Executor 285 finished executing tests.
+Gradle Test Executor 291 finished executing tests.
+
+> Task :bluej:test
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryArithmetic STANDARD_OUT
+    === Testing: 'a + b' ===
+    Expected to succeed: true
+
+bluej.parser.pratt.SimpleASTComparisonTest > testParserSetup STANDARD_OUT
+
+    === Parser Setup Test ===
+
+bluej.parser.pratt.ParseletRegistryTest > testCopyWithParent SKIPPED
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testIfElseStatement FAILED
+    java.lang.AssertionError: Should have expected callback sequence
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.CommonParsingScenarioTest.assertCallbackSequence(CommonParsingScenarioTest.java:527)
+        at bluej.parser.pratt.integration.CommonParsingScenarioTest.testIfElseStatement(CommonParsingScenarioTest.java:266)
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testWhenExpression STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: x
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@11bd0f3b
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testForLoopStatement STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: i
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@41e1e210
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: i
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@41e1e210
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testMethodCallExpression STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: obj
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@44821a96
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotMemberAccess called with token: .
+    DEBUG: About to call delegate.gotMemberAccess() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@44821a96
+    DEBUG: SafeCallbacks.gotMemberAccess completed delegate call
+    DEBUG: SafeCallbacks.gotMemberCall called with token: method
+    DEBUG: About to call delegate.gotMemberCall() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@44821a96
+    DEBUG: SafeCallbacks.gotMemberCall completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: arg1
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@44821a96
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: arg2
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@44821a96
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testLambdaExpression STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: x
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@2accdbb5
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testSimpleBinaryExpression STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: a
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@b62d79
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: b
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@b62d79
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testComplexExpressionWithPrecedence STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: a
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@6631f5ca
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: b
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@6631f5ca
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: c
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@6631f5ca
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryArithmetic STANDARD_OUT
+      Legacy parser: Attempting to parse 'a + b'
+      Legacy parser: Config property = false
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testComplexExpressionWithPrecedence STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: d
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@6631f5ca
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+    DEBUG: SafeCallbacks.gotIdentifier called with token: e
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@6631f5ca
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testUnparseableExpression STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: a
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@5ace1ed4
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testRecoveryFromMissingBrace STANDARD_OUT
+    DEBUG: SafeCallbacks.gotIdentifier called with token: x
+    DEBUG: About to call delegate.gotIdentifier() on: bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility@1613674b
+    DEBUG: Delegate will route to SourceParser instance: class bluej.parser.pratt.integration.CallbackTestingUtility$DelegatingCallbackTestingUtility
+    DEBUG: SafeCallbacks.gotIdentifier completed delegate call
+
+bluej.parser.pratt.integration.ErrorRecoveryIntegrationTest > testBasicErrorRecoveryPlaceholder STANDARD_OUT
+    Error recovery integration concepts validated
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryArithmetic STANDARD_OUT
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a + b'
+      Pratt parser: Config property = true
+
+bluej.parser.pratt.SimpleASTComparisonTest > testParserSetup STANDARD_OUT
+    ✓ SourceParser created successfully
+    ✓ TokenOperations created successfully
+    ✓ NodeFactory created successfully
+    ✓ PrattParser created successfully
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+
+    === AST Structure Validation Test ===
+    Testing literal integer: 42
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryArithmetic STANDARD_OUT
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a - b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a - b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a - b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a * b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a * b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a * b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a / b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a / b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a / b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testIntegerLiterals STANDARD_OUT
+
+    === Testing: '42' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '42'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '42'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryOperations STANDARD_OUT
+
+    === Testing: 'a + b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a + b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a + b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testSimpleIdentifiers STANDARD_OUT
+
+    === Testing: 'a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'myVariable' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'myVariable'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'myVariable'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'this' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'this'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'this'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'super' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'super'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'super'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testUnaryOperations STANDARD_OUT
+
+    === Testing: '-a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '-a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '-a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testUnbalancedParentheses STANDARD_OUT
+
+    === Testing: '(a + b' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse '(a + b'
+      Legacy parser: Config property = false
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testErrorHandlingDuringVisitorTraversal FAILED
+    java.lang.AssertionError: Error recovery should still generate some callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testErrorHandlingDuringVisitorTraversal(ASTVisitorPatternIntegrationTest.java:208)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError: EntityResolver should process entity references
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testIntegrationWithTestableDocumentAndEntityResolver(ASTVisitorPatternIntegrationTest.java:327)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testMultipleCodeComplexityLevels FAILED
+    java.lang.AssertionError: Complexity level 0 should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testMultipleCodeComplexityLevels(ASTVisitorPatternIntegrationTest.java:169)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testParserSetup STANDARD_OUT
+    ✓ parseExpression() completed
+      Result: TestLiteralNode
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testComplexNestedStructureVisitorTraversal FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testComplexNestedStructureVisitorTraversal(ASTVisitorPatternIntegrationTest.java:138)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testBinaryOperators STANDARD_OUT
+
+    === Binary Operators Test ===
+
+    Testing: a + b
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testSimpleClassParsingWithVisitorCallbacks FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testSimpleClassParsingWithVisitorCallbacks(ASTVisitorPatternIntegrationTest.java:97)
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      AST: TestLiteralNode
+      String: TestLiteralNode[0]@0
+      ✓ Structure matches expectation
+
+    Testing literal string: "hello"
+      AST: TestLiteralNode
+      String: TestLiteralNode[0]@0
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testVisitorCallbackTimingAndOrdering FAILED
+    java.lang.AssertionError: Class start should precede field declarations
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testVisitorCallbackTimingAndOrdering(ASTVisitorPatternIntegrationTest.java:249)
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testUnbalancedParentheses STANDARD_OUT
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:1) :Unbalanced parentheses: missing '1' closing parenthesis
+      Pratt parser: Attempting to parse '(a + b'
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testTypeCastWithComplexType STANDARD_OUT
+    DEBUG testTypeCastWithComplexType - Left: TestIdentifierNode:value
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      ✓ Structure matches expectation
+
+    Testing literal boolean: true
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testTypeCastWithComplexType STANDARD_OUT
+    DEBUG testTypeCastWithComplexType - Left class: TestIdentifierNode
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testASTVisitorPatternCharacteristics FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testASTVisitorPatternCharacteristics(ASTVisitorPatternIntegrationTest.java:291)
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testUnbalancedParentheses STANDARD_OUT
+      Pratt parser: Config property = true
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:1) :Unbalanced parentheses: expected ')' to match '(' at line 1
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testAdjacentIdentifiers STANDARD_OUT
+
+    === Testing: 'a b' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse 'a b'
+      Legacy parser: Config property = false
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:3) :Invalid syntax: two operands without operator between 'a' and 'b'
+      Pratt parser: Attempting to parse 'a b'
+      Pratt parser: Config property = true
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testTypeCastWithComplexType STANDARD_OUT
+    DEBUG testTypeCastWithComplexType - Right: TestIdentifierNode:List
+    DEBUG testTypeCastWithComplexType - Right class: TestIdentifierNode
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testAdjacentIdentifiers STANDARD_OUT
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:3) :Invalid syntax: two operands without operator between parsed expression and 'b'
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testPostfixIncrement STANDARD_OUT
+
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testBasicTypeCast STANDARD_OUT
+    DEBUG testBasicTypeCast - Left: TestIdentifierNode:obj
+    DEBUG testBasicTypeCast - Left class: TestIdentifierNode
+    DEBUG testBasicTypeCast - Right: TestIdentifierNode:String
+    DEBUG testBasicTypeCast - Right class: TestIdentifierNode
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testPostfixIncrement STANDARD_OUT
+    === Testing: 'a++' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a++'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a++'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      AST: TestLiteralNode
+      String: TestLiteralNode[0]@0
+      ✓ Structure matches expectation
+
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testComparisons STANDARD_OUT
+
+    === Testing: 'a == b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a == b'
+      Legacy parser: Config property = false
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+    Testing identifier: myVar
+      AST: TestIdentifierNode
+      String: TestIdentifierNode[0]@0
+      ⚠ Expected TestNameNode, got TestIdentifierNode
+
+    Testing binary operation: a + b
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testComparisons STANDARD_OUT
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a == b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testPrefixIncrement STANDARD_OUT
+
+    === Testing: '++a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '++a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '++a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testComplexExpression STANDARD_OUT
+    DEBUG testComplexExpression - Left: TestIdentifierNode:result
+    DEBUG testComplexExpression - Left class: TestIdentifierNode
+    DEBUG testComplexExpression - Right: TestIdentifierNode:Any
+    DEBUG testComplexExpression - Right class: TestIdentifierNode
+
+bluej.parser.pratt.parselets.TypeCastParseletTest > testTypeCastWithLiteral STANDARD_OUT
+    DEBUG testTypeCastWithLiteral - Left: TestIdentifierNode:42
+    DEBUG testTypeCastWithLiteral - Left class: TestIdentifierNode
+    DEBUG testTypeCastWithLiteral - Right: TestIdentifierNode:Double
+    DEBUG testTypeCastWithLiteral - Right class: TestIdentifierNode
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testGroupedExpressions STANDARD_OUT
+
+    === Testing: '(a)' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '(a)'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '(a)'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: '(a + b)' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '(a + b)'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '(a + b)'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testFunctionCalls STANDARD_OUT
+
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      AST: TestBinaryNode
+      String: TestBinaryNode[0]@0
+      ✓ Structure matches expectation
+
+    Testing unary prefix: -x
+      AST: TestUnaryPrefixNode
+      String: TestUnaryPrefixNode[0]@0
+      ✓ Structure matches expectation
+
+    Testing unary postfix: x++
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testFunctionCalls STANDARD_OUT
+    === Testing: 'func()' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'func()'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'func()'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testMemberAccess STANDARD_OUT
+
+    === Testing: 'a.property' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a.property'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a.property'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testIncompleteExpression STANDARD_OUT
+
+    === Testing: 'a +' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse 'a +'
+      Legacy parser: Config property = false
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:3) :Expression cannot end with operator '+'
+      Pratt parser: Attempting to parse 'a +'
+      Pratt parser: Config property = true
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:3) :Missing right operand for binary operator '+'
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testParsingBehaviorComparison STANDARD_OUT
+
+    === Comparing parsing behavior for: '42' ===
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      AST: 
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testParsingBehaviorComparison STANDARD_OUT
+    Monolithic parser: success=true, tokens=1, position=1
+    Pratt parser: success=true, tokens=1, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: '"hello"' ===
+    Monolithic parser: success=true, tokens=1, position=1
+    Pratt parser: success=true, tokens=1, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: 'a' ===
+    Monolithic parser: success=true, tokens=1, position=1
+    Pratt parser: success=true, tokens=1, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: 'a + b' ===
+
+bluej.parser.pratt.MinimalASTValidationTest > testASTStructureValidation STANDARD_OUT
+      String: [0]@0
+      ⚠ Expected TestUnaryPostfixNode, got 
+
+    Testing grouped expression: (expr)
+      AST: TestIdentifierNode
+      String: TestIdentifierNode[0]@1
+      ⚠ Expected TestGroupNode, got TestIdentifierNode
+
+
+bluej.parser.pratt.MinimalASTValidationTest > testErrorHandling STANDARD_OUT
+
+    === Error Handling Test ===
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testErrorAccumulationAcrossParsings FAILED
+    java.lang.AssertionError: Error accumulation should still generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testErrorAccumulationAcrossParsings(HybridResultPatternIntegrationTest.java:191)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testSophisticatedErrorRecoveryWithCallbackIntegrity FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testSophisticatedErrorRecoveryWithCallbackIntegrity(HybridResultPatternIntegrationTest.java:319)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testDeferredCallbackEmissionWithLambdaClosures FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testDeferredCallbackEmissionWithLambdaClosures(HybridResultPatternIntegrationTest.java:143)
+
+bluej.parser.pratt.MinimalASTValidationTest > testErrorHandling STANDARD_OUT
+    ⚠ Unexpectedly succeeded: 'a +'
+    ⚠ Unexpectedly succeeded: '(unclosed'
+    ⚠ Unexpectedly succeeded: '+ + b'
+    ⚠ Unexpectedly succeeded: ''
+    Error handling: 0/4 cases handled gracefully
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testParsingBehaviorComparison STANDARD_OUT
+    Monolithic parser: success=true, tokens=3, position=3
+    Pratt parser: success=true, tokens=3, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: '-x' ===
+    Monolithic parser: success=true, tokens=2, position=2
+    Pratt parser: success=true, tokens=2, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: '(a + b)' ===
+    Monolithic parser: success=true, tokens=5, position=5
+    Pratt parser: success=true, tokens=5, AST=generated
+    Behavior match: true
+
+    === Comparing parsing behavior for: 'a +' ===
+    Monolithic parser: success=false, tokens=2, position=0
+    Pratt parser: success=false, tokens=2, AST=null
+    Behavior match: true
+
+    === Comparing parsing behavior for: '+ a' ===
+    Monolithic parser: success=true, tokens=2, position=2
+    Pratt parser: success=true, tokens=2, AST=generated
+    Behavior match: true
+
+bluej.parser.pratt.MinimalASTValidationTest > testBasicParserFunctionality STANDARD_OUT
+
+    === Basic Parser Functionality Test ===
+    ✓ Parser setup successful
+    ✓ int_literal: 42 → TestLiteralNode
+      └─ AST structure valid
+    ✓ string_literal: "test" → TestLiteralNode
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testLightweightResultObjectsWithCallbackReferences FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testLightweightResultObjectsWithCallbackReferences(HybridResultPatternIntegrationTest.java:278)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testPerformanceCharacteristicsOfHybridResultHandling FAILED
+    java.lang.AssertionError: Should generate callbacks for complexity level 0
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testPerformanceCharacteristicsOfHybridResultHandling(HybridResultPatternIntegrationTest.java:357)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testCallbackIntegrityDuringPartialFailures FAILED
+    java.lang.AssertionError: Class parsing should succeed
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testCallbackIntegrityDuringPartialFailures(HybridResultPatternIntegrationTest.java:229)
+
+bluej.parser.pratt.MinimalASTValidationTest > testBasicParserFunctionality STANDARD_OUT
+      └─ AST structure valid
+    ✓ bool_literal: true → TestLiteralNode
+      └─ AST structure valid
+    ✓ null_literal: null → TestLiteralNode
+      └─ AST structure valid
+    ✓ simple_identifier: variable → TestIdentifierNode
+      └─ AST structure unexpected
+    ✓ this_keyword: this → 
+      └─ AST structure unexpected
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testMonadicErrorHandlingWithDeferredCallbacks FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testMonadicErrorHandlingWithDeferredCallbacks(HybridResultPatternIntegrationTest.java:102)
+
+bluej.parser.pratt.MinimalASTValidationTest > testBasicParserFunctionality STANDARD_OUT
+    ✓ super_keyword: super → 
+      └─ AST structure unexpected
+    ✓ addition: a + b → TestBinaryNode
+      └─ AST structure valid
+    ✓ multiplication: x * y → TestBinaryNode
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testIntegrationWithTestableDocumentAndMonadicErrorHandling FAILED
+    java.lang.AssertionError: Entity resolver should be integrated
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testIntegrationWithTestableDocumentAndMonadicErrorHandling(HybridResultPatternIntegrationTest.java:392)
+
+bluej.parser.pratt.MinimalASTValidationTest > testBasicParserFunctionality STANDARD_OUT
+      └─ AST structure valid
+    ✓ comparison: a == b → TestBinaryNode
+      └─ AST structure valid
+    ✓ unary_minus: -x → TestUnaryPrefixNode
+      └─ AST structure valid
+    ✓ logical_not: !flag → TestUnaryPrefixNode
+      └─ AST structure valid
+    ✓ postfix_increment: i++ → 
+      └─ AST structure unexpected
+    ✓ simple_group: (expr) → TestIdentifierNode
+      └─ AST structure unexpected
+    ✓ complex_group: (a + b) * c → TestBinaryNode
+      └─ AST structure valid
+
+    Results: 15 passed, 0 failed
+    Success rate target: 70% (currently 100.0%)
+    ✓ Success rate target achieved!
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testParsingBehaviorComparison STANDARD_OUT
+
+    === Comparing parsing behavior for: '((a)' ===
+    Monolithic parser: success=false, tokens=4, position=0
+    Pratt parser: success=false, tokens=4, AST=null
+    Behavior match: true
+
+    === Comparing parsing behavior for: 'a b' ===
+    Monolithic parser: success=false, tokens=2, position=0
+    Pratt parser: success=false, tokens=2, AST=null
+    Behavior match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testIdentifiers STANDARD_OUT
+
+    === Testing: 'a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testWrongParenthesesOrder STANDARD_OUT
+
+    === Testing: ')(' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse ')('
+      Legacy parser: Config property = false
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:1) :Invalid start of expression: ')'
+      Pratt parser: Attempting to parse ')('
+      Pratt parser: Config property = true
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:1) :Unexpected token: ')'
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testOperatorWithoutOperands STANDARD_OUT
+
+    === Testing: '+' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse '+'
+      Legacy parser: Config property = false
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:1) :Expression cannot end with operator '+'
+      Pratt parser: Attempting to parse '+'
+      Pratt parser: Config property = true
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:1) :Missing operand for unary plus (+) operator
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testGrouping STANDARD_OUT
+
+    === Testing: '(a + b)' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '(a + b)'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '(a + b)'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testSimpleLiterals STANDARD_OUT
+
+    === Testing: '42' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '42'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '42'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: '"hello"' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '"hello"'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '"hello"'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'true' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'true'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'true'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'null' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'null'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'null'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testCastExpressions STANDARD_OUT
+
+    === Testing: '+a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '+a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '+a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: '-a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '-a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '-a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: '!a' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse '!a'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse '!a'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testBinaryComparison STANDARD_OUT
+
+    === Testing: 'a == b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a == b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a == b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a != b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a != b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a != b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a < b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a < b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a < b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+    === Testing: 'a > b' ===
+    Expected to succeed: true
+      Legacy parser: Attempting to parse 'a > b'
+      Legacy parser: Config property = false
+      Legacy parser: SUCCESS - no exception thrown
+      Pratt parser: Attempting to parse 'a > b'
+      Pratt parser: Config property = true
+      Pratt parser: SUCCESS - no exception thrown
+    Legacy parser result: true
+    Pratt parser result: true
+    Results match: true
+
+bluej.parser.pratt.ParserASTComparisonIntegrationTest > testTwoLiteralsWithoutOperator STANDARD_OUT
+
+    === Testing: '42 42' ===
+    Expected to succeed: false
+      Legacy parser: Attempting to parse '42 42'
+      Legacy parser: Config property = false
+      Legacy parser: FAILED - ParseFailure: Parse error: (1:4) :Invalid syntax: two operands without operator between '42' and '42'
+      Pratt parser: Attempting to parse '42 42'
+      Pratt parser: Config property = true
+      Pratt parser: FAILED - ParseFailure: Parse error: (1:4) :Invalid syntax: two operands without operator between parsed expression and '42'
+    Legacy parser result: false
+    Pratt parser result: false
+    Results match: true
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testClassesScenario FAILED
+    java.lang.AssertionError: CLASSES callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testClassesScenario(CommonParsingScenariosIntegrationTest.java:255)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testVariablesScenario FAILED
+    java.lang.AssertionError: VARIABLES callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testVariablesScenario(CommonParsingScenariosIntegrationTest.java:275)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testSafeCallbacksConcurrentAccess FAILED
+    java.lang.AssertionError: Concurrent SafeCallbacks should maintain balance
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testSafeCallbacksConcurrentAccess(CommonParsingScenariosIntegrationTest.java:242)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testExpressionsScenario FAILED
+    java.lang.AssertionError: EXPRESSIONS callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testExpressionsScenario(CommonParsingScenariosIntegrationTest.java:265)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testPerformanceCharacteristics FAILED
+    java.lang.AssertionError: Performance test callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testPerformanceCharacteristics(CommonParsingScenariosIntegrationTest.java:605)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testEnumClassWorkflow FAILED
+    java.lang.AssertionError: EnumClass callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testCommonClassPatternWorkflow(CommonParsingScenariosIntegrationTest.java:535)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testEnumClassWorkflow(CommonParsingScenariosIntegrationTest.java:520)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testMethodsScenario FAILED
+    java.lang.AssertionError: METHODS callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testMethodsScenario(CommonParsingScenariosIntegrationTest.java:260)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testTestableDocumentIntegration FAILED
+    java.lang.AssertionError: TestableDocument integration callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testTestableDocumentIntegration(CommonParsingScenariosIntegrationTest.java:662)
+
+bluej.parser.pratt.PerformanceProfilingTest > profileMemoryAllocation STANDARD_OUT
+    === Memory Allocation Analysis ===
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testSafeCallbacksAutoCloseableScopes FAILED
+    java.lang.AssertionError: SafeCallbacks should maintain callback balance
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testSafeCallbacksAutoCloseableScopes(CommonParsingScenariosIntegrationTest.java:163)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testImportsScenario FAILED
+    java.lang.AssertionError: IMPORTS callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testImportsScenario(CommonParsingScenariosIntegrationTest.java:250)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testSimpleClassWorkflow FAILED
+    java.lang.AssertionError: SimpleClass callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testCommonClassPatternWorkflow(CommonParsingScenariosIntegrationTest.java:535)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testSimpleClassWorkflow(CommonParsingScenariosIntegrationTest.java:505)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testInterfaceClassWorkflow FAILED
+    java.lang.AssertionError: InterfaceClass callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testCommonClassPatternWorkflow(CommonParsingScenariosIntegrationTest.java:535)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testInterfaceClassWorkflow(CommonParsingScenariosIntegrationTest.java:515)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testStandardBlueJWorkflow FAILED
+    java.lang.AssertionError: Standard workflow callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testStandardBlueJWorkflow(CommonParsingScenariosIntegrationTest.java:484)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testComplexClassWorkflow FAILED
+    java.lang.AssertionError: ComplexClass callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testCommonClassPatternWorkflow(CommonParsingScenariosIntegrationTest.java:535)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testComplexClassWorkflow(CommonParsingScenariosIntegrationTest.java:510)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testCombinedScenariosComprehensive FAILED
+    java.lang.AssertionError: Comprehensive scenarios should maintain callback balance
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testCombinedScenariosComprehensive(CommonParsingScenariosIntegrationTest.java:366)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testControlFlowScenario FAILED
+    java.lang.AssertionError: CONTROL_FLOW callbacks should be balanced
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testIndividualScenario(CommonParsingScenariosIntegrationTest.java:289)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testControlFlowScenario(CommonParsingScenariosIntegrationTest.java:270)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testBinaryOperators STANDARD_OUT
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      AST Match: false
+      Differences: [root: Type mismatch - expected: ParsedCUNode, actual: TestBinaryNode]
+
+    Testing: x * y
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      AST Match: false
+      Differences: [root: Type mismatch - expected: ParsedCUNode, actual: TestBinaryNode]
+
+    Testing: foo == bar
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      AST Match: false
+      Differences: [root: Type mismatch - expected: ParsedCUNode, actual: TestBinaryNode]
+
+bluej.parser.pratt.SimpleASTComparisonTest > testBasicLiterals STANDARD_OUT
+
+    === Basic Literals Test ===
+
+    Testing: 42
+      Monolithic: SUCCESS - Monolithic parser completed with AST
+        AST: ParsedCUNode[0]@0{ParsedTypeNode[TYPE]@0{TypeInnerNode[0]@17{DeclarationNode[0]@22{FieldNode[FIELD]@22, DeclarationNode[0]@27{FieldNode{...}, DeclarationNode{...}}}}}}
+      Pratt: SUCCESS - Pratt parser completed successfully
+        AST: TestLiteralNode[0]@0
+
+    Testing: "hello"
+      Monolithic: SUCCESS - Monolithic parser completed with AST
+        AST: ParsedCUNode[0]@0{ParsedTypeNode[TYPE]@0{TypeInnerNode[0]@17{DeclarationNode[0]@22{FieldNode[FIELD]@22, DeclarationNode[0]@27{FieldNode{...}, DeclarationNode{...}}}}}}
+      Pratt: SUCCESS - Pratt parser completed successfully
+        AST: TestLiteralNode[0]@0
+
+    Testing: true
+      Monolithic: SUCCESS - Monolithic parser completed with AST
+        AST: ParsedCUNode[0]@0{ParsedTypeNode[TYPE]@0{TypeInnerNode[0]@17{DeclarationNode[0]@22{FieldNode[FIELD]@22, DeclarationNode[0]@27{FieldNode{...}, DeclarationNode{...}}}}}}
+      Pratt: SUCCESS - Pratt parser completed successfully
+        AST: TestLiteralNode[0]@0
+
+    Testing: null
+      Monolithic: SUCCESS - Monolithic parser completed with AST
+        AST: ParsedCUNode[0]@0{ParsedTypeNode[TYPE]@0{TypeInnerNode[0]@17{DeclarationNode[0]@22{FieldNode[FIELD]@22, DeclarationNode[0]@27{FieldNode{...}, DeclarationNode{...}}}}}}
+      Pratt: SUCCESS - Pratt parser completed successfully
+        AST: TestLiteralNode[0]@0
+
+    Testing: myVar
+      Monolithic: SUCCESS - Monolithic parser completed with AST
+        AST: ParsedCUNode[0]@0{ParsedTypeNode[TYPE]@0{TypeInnerNode[0]@17{DeclarationNode[0]@22{FieldNode[FIELD]@22, DeclarationNode[0]@27{FieldNode{...}, DeclarationNode{...}}}}}}
+      Pratt: SUCCESS - Pratt parser completed successfully
+        AST: TestIdentifierNode[0]@0
+
+bluej.parser.pratt.SimpleASTComparisonTest > testSingleExpressionComparison STANDARD_OUT
+
+    === Single Expression Comparison Test ===
+
+    Comparing: 42
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinClassWithPropertiesPSITreeTraversal FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinClassWithPropertiesPSITreeTraversal(K2ParserIntegrationTest.java:109)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinFunctionsWithParametersAndExpressions FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinFunctionsWithParametersAndExpressions(K2ParserIntegrationTest.java:157)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError: EntityResolver should process Kotlin entity references
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testIntegrationWithTestableDocumentAndEntityResolver(K2ParserIntegrationTest.java:462)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testSingleExpressionComparison STANDARD_OUT
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      Monolithic AST: null
+      Pratt AST: TestLiteralNode[0]@0
+      ⚠ One or both expression nodes not found
+
+    Comparing: "test"
+      Monolithic: SUCCESS
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testIntegrationWithTestableDocumentAndErrorRecovery FAILED
+    java.lang.AssertionError: Entity resolver should be integrated with error recovery
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testIntegrationWithTestableDocumentAndErrorRecovery(ErrorRecoveryIntegrationTest.java:523)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testMultipleRecoveryStrategiesSkipRetrySubstitute FAILED
+    java.lang.AssertionError: Class should be processed despite errors
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testMultipleRecoveryStrategiesSkipRetrySubstitute(ErrorRecoveryIntegrationTest.java:266)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testCallbackPairingGuaranteesDuringErrorConditions FAILED
+    java.lang.AssertionError: Error recovery should process multiple methods
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testCallbackPairingGuaranteesDuringErrorConditions(ErrorRecoveryIntegrationTest.java:227)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testSingleExpressionComparison STANDARD_OUT
+      Pratt: SUCCESS
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinCoroutinesAndExtensionFunctions FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinCoroutinesAndExtensionFunctions(K2ParserIntegrationTest.java:262)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testSingleExpressionComparison STANDARD_OUT
+      Monolithic AST: null
+      Pratt AST: TestLiteralNode[0]@0
+      ⚠ One or both expression nodes not found
+
+    Comparing: myVar
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinDataClassesAndSealedClasses FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinDataClassesAndSealedClasses(K2ParserIntegrationTest.java:206)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testAutoCloseableCallbackScopesWithGuaranteedCleanup FAILED
+    java.lang.AssertionError: Class scope should be opened
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testAutoCloseableCallbackScopesWithGuaranteedCleanup(ErrorRecoveryIntegrationTest.java:106)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testTypeSafeNodeConversionAndErrorHandling FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testTypeSafeNodeConversionAndErrorHandling(K2ParserIntegrationTest.java:360)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testComprehensiveErrorTypeHandlingAndClassification FAILED
+    java.lang.AssertionError: Class should handle various error types
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testComprehensiveErrorTypeHandlingAndClassification(ErrorRecoveryIntegrationTest.java:333)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testPerformanceMonitoringDuringErrorRecoveryOperations FAILED
+    java.lang.AssertionError: Should process many methods with error recovery
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testPerformanceMonitoringDuringErrorRecoveryOperations(ErrorRecoveryIntegrationTest.java:402)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testSophisticatedErrorDetectionAndRecoveryMechanisms FAILED
+    java.lang.AssertionError: Class should be detected despite errors
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testSophisticatedErrorDetectionAndRecoveryMechanisms(ErrorRecoveryIntegrationTest.java:159)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testContinuationStrategiesWithPartialSuccess FAILED
+    java.lang.AssertionError: Main class should be processed
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testContinuationStrategiesWithPartialSuccess(ErrorRecoveryIntegrationTest.java:458)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testHighPerformancePSITreeWalking FAILED
+    java.lang.AssertionError: Large structure should generate many callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testHighPerformancePSITreeWalking(K2ParserIntegrationTest.java:307)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testK2ParserCharacteristicValidation FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testK2ParserCharacteristicValidation(K2ParserIntegrationTest.java:514)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinInteropWithJavaStructures FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinInteropWithJavaStructures(K2ParserIntegrationTest.java:412)
+
+bluej.parser.pratt.SimpleASTComparisonTest > testSingleExpressionComparison STANDARD_OUT
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      Monolithic AST: null
+      Pratt AST: TestIdentifierNode[0]@0
+      ⚠ One or both expression nodes not found
+
+    Comparing: a + b
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      Monolithic AST: null
+      Pratt AST: TestBinaryNode[0]@0
+      ⚠ One or both expression nodes not found
+
+    Comparing: obj.method()
+      Monolithic: SUCCESS
+      Pratt: SUCCESS
+      Monolithic AST: null
+      Pratt AST: [0]@0
+      ⚠ One or both expression nodes not found
+
+    Summary: 0/5 expressions matched structurally
+    Success rate: 0.0%
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Executing benchmark for strategy: DirectCallbackIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.DirectCallbackStrategyAdapter
+
+bluej.parser.pratt.parselets.ElvisOperatorParseletTest > testElvisWithLiterals STANDARD_OUT
+    DEBUG testElvisWithLiterals - Left: TestIdentifierNode:42
+    DEBUG testElvisWithLiterals - Left class: TestIdentifierNode
+    DEBUG testElvisWithLiterals - Right: Literal[id=1, offset=0-1]
+    DEBUG testElvisWithLiterals - Right class: TestLiteralNode
+
+bluej.parser.pratt.parselets.ElvisOperatorParseletTest > testBasicElvisOperator STANDARD_OUT
+    DEBUG testBasicElvisOperator - Left: TestIdentifierNode:left
+    DEBUG testBasicElvisOperator - Left class: TestIdentifierNode
+    DEBUG testBasicElvisOperator - Right: TestIdentifierNode:right
+    DEBUG testBasicElvisOperator - Right class: TestIdentifierNode
+
+bluej.parser.pratt.parselets.ElvisOperatorParseletTest > testComplexExpression STANDARD_OUT
+    DEBUG testComplexExpression - Left: TestIdentifierNode:obj
+    DEBUG testComplexExpression - Left class: TestIdentifierNode
+    DEBUG testComplexExpression - Right: Literal[id=1, offset=0-9]
+    DEBUG testComplexExpression - Right class: TestLiteralNode
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Benchmark result created successfully for: DirectCallbackIntegration
+    DEBUG: Executing benchmark for strategy: ASTVisitorPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ASTVisitorPatternAdapter
+    DEBUG: Benchmark result created successfully for: ASTVisitorPattern
+    DEBUG: Executing benchmark for strategy: LazyASTTransformation
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.LazyASTTransformationAdapter
+    DEBUG: Benchmark result created successfully for: LazyASTTransformation
+    DEBUG: Executing benchmark for strategy: HybridResultPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.HybridResultPatternAdapter
+
+bluej.parser.pratt.PerformanceProfilingTest > profileMemoryAllocation STANDARD_OUT
+    Memory allocation analysis (100 iterations):
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Benchmark result created successfully for: HybridResultPattern
+    DEBUG: Executing benchmark for strategy: K2ParserIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.K2ParserIntegrationAdapter
+
+bluej.parser.pratt.PerformanceProfilingTest > profileMemoryAllocation STANDARD_OUT
+    Memory before: 13.0 MB
+    Memory after:  27.2 MB
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Benchmark result created successfully for: K2ParserIntegration
+    DEBUG: Executing benchmark for strategy: ErrorRecoveryIntegration
+
+bluej.parser.pratt.PerformanceProfilingTest > profileMemoryAllocation STANDARD_OUT
+    Memory used:   14.2 MB
+    Per operation: 145.7 KB
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ErrorRecoveryIntegrationAdapter
+
+bluej.parser.pratt.PerformanceProfilingTest > profileMemoryAllocation STANDARD_OUT
+
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Benchmark result created successfully for: ErrorRecoveryIntegration
+    DEBUG: Executing benchmark for strategy: CommonParsingScenarios
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.CommonParsingScenariosAdapter
+
+bluej.parser.pratt.PerformanceProfilingTest > profileExpressionComplexityScaling STANDARD_OUT
+    === Expression Complexity Scaling Analysis ===
+    Testing expression complexity scaling:
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyRecommendations STANDARD_OUT
+    DEBUG: Benchmark result created successfully for: CommonParsingScenarios
+
+bluej.parser.pratt.PerformanceProfilingTest > profileExpressionComplexityScaling STANDARD_OUT
+    Format: Depth | Expression Length | Monolithic (ns) | Pratt (ns) | Ratio
+    -------|------------------|-----------------|------------|-------
+         1 |               5 |         302839 |     178364 |   0.59
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testStrategyComparison STANDARD_OUT
+    DEBUG: Executing benchmark for strategy: DirectCallbackIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.DirectCallbackStrategyAdapter
+    DEBUG: Benchmark result created successfully for: DirectCallbackIntegration
+    DEBUG: Executing benchmark for strategy: ASTVisitorPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ASTVisitorPatternAdapter
+    DEBUG: Benchmark result created successfully for: ASTVisitorPattern
+    DEBUG: Executing benchmark for strategy: LazyASTTransformation
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.LazyASTTransformationAdapter
+    DEBUG: Benchmark result created successfully for: LazyASTTransformation
+    DEBUG: Executing benchmark for strategy: HybridResultPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.HybridResultPatternAdapter
+    DEBUG: Benchmark result created successfully for: HybridResultPattern
+    DEBUG: Executing benchmark for strategy: K2ParserIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.K2ParserIntegrationAdapter
+    DEBUG: Benchmark result created successfully for: K2ParserIntegration
+    DEBUG: Executing benchmark for strategy: ErrorRecoveryIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ErrorRecoveryIntegrationAdapter
+    DEBUG: Benchmark result created successfully for: ErrorRecoveryIntegration
+    DEBUG: Executing benchmark for strategy: CommonParsingScenarios
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.CommonParsingScenariosAdapter
+    DEBUG: Benchmark result created successfully for: CommonParsingScenarios
+
+bluej.parser.pratt.PerformanceProfilingTest > profileExpressionComplexityScaling STANDARD_OUT
+         2 |              17 |          70957 |     131252 |   1.85
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testAllReportingFormats STANDARD_OUT
+    DEBUG: Executing benchmark for strategy: DirectCallbackIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.DirectCallbackStrategyAdapter
+    DEBUG: Benchmark result created successfully for: DirectCallbackIntegration
+    DEBUG: Executing benchmark for strategy: ASTVisitorPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ASTVisitorPatternAdapter
+    DEBUG: Benchmark result created successfully for: ASTVisitorPattern
+    DEBUG: Executing benchmark for strategy: LazyASTTransformation
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.LazyASTTransformationAdapter
+    DEBUG: Benchmark result created successfully for: LazyASTTransformation
+    DEBUG: Executing benchmark for strategy: HybridResultPattern
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.HybridResultPatternAdapter
+    DEBUG: Benchmark result created successfully for: HybridResultPattern
+    DEBUG: Executing benchmark for strategy: K2ParserIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.K2ParserIntegrationAdapter
+    DEBUG: Benchmark result created successfully for: K2ParserIntegration
+    DEBUG: Executing benchmark for strategy: ErrorRecoveryIntegration
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.ErrorRecoveryIntegrationAdapter
+    DEBUG: Benchmark result created successfully for: ErrorRecoveryIntegration
+    DEBUG: Executing benchmark for strategy: CommonParsingScenarios
+    DEBUG: Strategy class: bluej.parser.pratt.integration.benchmark.adapters.CommonParsingScenariosAdapter
+    DEBUG: Benchmark result created successfully for: CommonParsingScenarios
+
+bluej.parser.pratt.PerformanceProfilingTest > profileExpressionComplexityScaling STANDARD_OUT
+         3 |              41 |         207407 |     235916 |   1.14
+         4 |              89 |         172452 |     356382 |   2.07
+         5 |             185 |         182188 |     246607 |   1.35
+         6 |             377 |         470494 |     429660 |   0.91
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testCompleteFrameworkExecution FAILED
+    java.lang.AssertionError: Should have positive memory usage: DirectCallbackIntegration_SIMPLE
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest.validateResultConsistency(ComprehensiveFrameworkTest.java:459)
+        at bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest.testCompleteFrameworkExecution(ComprehensiveFrameworkTest.java:148)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testDeferredComputationReducingInitialParsingOverhead FAILED
+    java.lang.AssertionError: Lazy evaluation should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testDeferredComputationReducingInitialParsingOverhead(LazyASTTransformationIntegrationTest.java:128)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testPerformanceCharacteristicsVaryingByCacheEffectiveness FAILED
+    java.lang.AssertionError: Test case 0 should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testPerformanceCharacteristicsVaryingByCacheEffectiveness(LazyASTTransformationIntegrationTest.java:371)
+
+bluej.parser.pratt.PerformanceProfilingTest > profileExpressionComplexityScaling STANDARD_OUT
+         7 |             761 |         475098 |     422717 |   0.89
+
+
+bluej.parser.pratt.PerformanceProfilingTest > profileRecursiveCallDepth STANDARD_OUT
+    === Recursive Call Depth Analysis ===
+    Testing different nesting patterns:
+    Pattern           | Expression Length | Parse Time (ns) | Notes
+    ------------------|-------------------|-----------------|-------
+    Left Associative |               25 |         143696 | SLOW
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testMemoryEfficiencyThroughLazyEvaluationPatterns FAILED
+    java.lang.AssertionError: Should generate callbacks for large structure
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testMemoryEfficiencyThroughLazyEvaluationPatterns(LazyASTTransformationIntegrationTest.java:176)
+
+bluej.parser.pratt.PerformanceProfilingTest > profileRecursiveCallDepth STANDARD_OUT
+    Right Associative |               23 |         181143 | SLOW
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testConcurrentLazyEvaluationWithThreadSafety FAILED
+    java.lang.AssertionError: Concurrent parsing should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testConcurrentLazyEvaluationWithThreadSafety(LazyASTTransformationIntegrationTest.java:487)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testComplexCacheManagementWithHitAndMissScenarios FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testComplexCacheManagementWithHitAndMissScenarios(LazyASTTransformationIntegrationTest.java:244)
+
+bluej.parser.pratt.PerformanceProfilingTest > profileRecursiveCallDepth STANDARD_OUT
+    Balanced         |               89 |         120324 | SLOW
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testTwoPhaseParsingWithInitialSetupAndLazyEvaluation FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testTwoPhaseParsingWithInitialSetupAndLazyEvaluation(LazyASTTransformationIntegrationTest.java:298)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testIntegrationWithTestableDocumentAndLazyEvaluation FAILED
+    java.lang.AssertionError: Entity resolver should be integrated with lazy evaluation
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testIntegrationWithTestableDocumentAndLazyEvaluation(LazyASTTransformationIntegrationTest.java:529)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testOnDemandCallbackExecutionPatterns FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testOnDemandCallbackExecutionPatterns(LazyASTTransformationIntegrationTest.java:422)
+
+bluej.parser.pratt.PerformanceProfilingTest > profileRecursiveCallDepth STANDARD_OUT
+    Deep Nested      |               17 |          96449 | Medium
+
+
+bluej.parser.pratt.PerformanceProfilingTest > profileParseletDispatchOverhead STANDARD_OUT
+    === Parselet Dispatch Overhead Analysis ===
+    Measuring parselet dispatch performance:
+    Expression Type      | Direct Pratt (ns) | Via Adapter (ns) | Overhead
+    --------------------|--------------------|-------------------|----------
+    Literal             |             58431 |            22724 |    0.39x
+    Identifier          |             36611 |            23980 |    0.65x
+    Binary Op           |             40727 |            24634 |    0.60x
+    Binary Op           |             67610 |            58598 |    0.87x
+    Binary Op           |            107657 |            70896 |    0.66x
+    Grouping            |             46897 |            92807 |    1.98x
+    Member Access       |             41208 |            32428 |    0.79x
+    Function Call       |             32367 |            27756 |    0.86x
+
+
+bluej.parser.pratt.PerformanceProfilingTest > profileComponentIsolation SKIPPED
+
+Gradle Test Executor 294 finished executing tests.
+
+> Task :bluej:test FAILED
+
+555 tests completed, 59 failed, 4 skipped
+Finished generating test XML results (0.024 secs) into: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/test-results/test
+Generating HTML test report...
+Finished generating test html results (0.014 secs) into: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/reports/tests/test
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bluej:test'.
+> There were failing tests. See the report at: file:///home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 6s
+23 actionable tasks: 6 executed, 17 up-to-date
+Some of the file system contents retained in the virtual file system are on file systems that Gradle doesn't support watching. The relevant state was discarded to ensure changes to these locations are properly detected. You can override this by explicitly enabling file system watching.

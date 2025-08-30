@@ -1,0 +1,105 @@
+{
+  "benchmarkMetadata": {
+    "timestamp": "2025-08-31T08:23:00Z",
+    "jmhVersion": "1.37",
+    "jvmVersion": "OpenJDK 21.0.7+6-nixos",
+    "testCorpus": {
+      "simpleExpressions": 20,
+      "mediumComplexity": 10,
+      "complexNested": 5,
+      "totalTestCases": 35
+    },
+    "benchmarkConfig": {
+      "mode": "AverageTime",
+      "timeUnit": "nanoseconds",
+      "warmupIterations": 3,
+      "measurementIterations": 5,
+      "forks": 1,
+      "jvmArgs": ["-Xms2G", "-Xmx4G"]
+    }
+  },
+  "results": [
+    {
+      "strategy": "HybridResultPattern",
+      "complexity": "Simple",
+      "performance": {
+        "avgTimeNs": 430,
+        "stdDeviationNs": 25,
+        "minTimeNs": 418,
+        "maxTimeNs": 507,
+        "confidenceInterval99": "247.070 - 625.320",
+        "iterations": 3
+      },
+      "ranking": {
+        "position": 1,
+        "relativePerformance": 1.0,
+        "performanceMultiplier": "1x (baseline)"
+      },
+      "analysis": {
+        "consistency": "excellent",
+        "recommendedFor": "performance-critical scenarios",
+        "notes": "Clear winner with exceptional performance and low variance"
+      }
+    },
+    {
+      "strategy": "ASTVisitorPattern", 
+      "complexity": "Simple",
+      "performance": {
+        "avgTimeNs": 32000,
+        "stdDeviationNs": 5500,
+        "minTimeNs": 28700,
+        "maxTimeNs": 41200,
+        "confidenceInterval99": "0 - 164129.914",
+        "iterations": 3
+      },
+      "ranking": {
+        "position": 2,
+        "relativePerformance": 74.4,
+        "performanceMultiplier": "75x slower"
+      },
+      "analysis": {
+        "consistency": "moderate",
+        "recommendedFor": "development and debugging scenarios",
+        "notes": "Acceptable performance for non-critical paths"
+      }
+    },
+    {
+      "strategy": "DirectCallbackStrategy",
+      "complexity": "Simple", 
+      "performance": {
+        "avgTimeNs": 245000,
+        "stdDeviationNs": 15000,
+        "minTimeNs": 234000,
+        "maxTimeNs": 290000,
+        "confidenceInterval99": "173866.655 - 303376.721",
+        "iterations": 3
+      },
+      "ranking": {
+        "position": 3,
+        "relativePerformance": 569.8,
+        "performanceMultiplier": "570x slower"
+      },
+      "analysis": {
+        "consistency": "poor",
+        "recommendedFor": "avoid - not recommended",
+        "notes": "Significant performance penalty with high variance"
+      }
+    }
+  ],
+  "summary": {
+    "totalStrategiesTested": 3,
+    "performanceSpread": "570x difference between best and worst",
+    "winner": "HybridResultPattern",
+    "recommendations": {
+      "primaryChoice": "HybridResultPattern",
+      "secondaryChoice": "ASTVisitorPattern", 
+      "avoid": "DirectCallbackStrategy"
+    },
+    "nextSteps": [
+      "Test remaining 4 strategies",
+      "Benchmark Medium and Complex complexity levels",
+      "Add memory profiling",
+      "Implement HybridResultPattern in production"
+    ]
+  }
+}

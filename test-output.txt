@@ -1,0 +1,717 @@
+Initialized native services in: /home/jaen/.gradle/native
+Initialized jansi services in: /home/jaen/.gradle/native
+Received JVM installation metadata from '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk': {JAVA_HOME=/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk, JAVA_VERSION=21.0.7, JAVA_VENDOR=N/A, RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=21.0.7+6-nixos, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=21.0.7+6-nixos, VM_VENDOR=Oracle Corporation, OS_ARCH=amd64}
+The client will now receive all logging from the daemon (pid: 1311294). The daemon log file: /home/jaen/.gradle/daemon/8.5/daemon-1311294.out.log
+Starting 43rd build in daemon [uptime: 2 hrs 13 mins 56.227 secs, performance: 99%, GC rate: 0.00/s, heap usage: 22% of 512 MiB, non-heap usage: 22% of 384 MiB]
+Using 16 worker leases.
+Not watching /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot since the file system is not supported
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/settings.gradle'.
+Projects loaded. Root project using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/build.gradle'.
+Included projects: [root project 'bluej-greenfoot', project ':anns-threadchecker', project ':bluej', project ':boot', project ':greenfoot', project ':lang-stride', project ':threadchecker']
+
+> Configure project :
+Evaluating root project 'bluej-greenfoot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/build.gradle'.
+
+> Configure project :anns-threadchecker
+Evaluating project ':anns-threadchecker' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/anns-threadchecker/build.gradle'.
+
+> Configure project :bluej
+Evaluating project ':bluej' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :boot
+Evaluating project ':boot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :greenfoot
+Evaluating project ':greenfoot' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/greenfoot/build.gradle'.
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=linux
+os.detected.arch=x86_64
+os.detected.bitness=64
+os.detected.version=6.16
+os.detected.version.major=6
+os.detected.version.minor=16
+os.detected.release=nixos
+os.detected.release.version=25.11
+os.detected.release.like.nixos=true
+os.detected.release.like.=true
+os.detected.classifier=linux-x86_64
+
+> Configure project :lang-stride
+Evaluating project ':lang-stride' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/lang-stride/build.gradle'.
+
+> Configure project :threadchecker
+Evaluating project ':threadchecker' using build file '/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/threadchecker/build.gradle'.
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Tasks to be executed: [task ':anns-threadchecker:compileJava', task ':anns-threadchecker:processResources', task ':anns-threadchecker:classes', task ':anns-threadchecker:jar', task ':anns-threadchecker:compileTestJava', task ':anns-threadchecker:processTestResources', task ':anns-threadchecker:testClasses', task ':anns-threadchecker:test', task ':threadchecker:compileJava', task ':threadchecker:processResources', task ':threadchecker:classes', task ':threadchecker:jar', task ':boot:compileJava', task ':boot:processResources', task ':boot:classes', task ':boot:compileSplashJava', task ':boot:processSplashResources', task ':boot:splashClasses', task ':boot:drawBlueJSplashVersion', task ':boot:drawBlueJSplashVersion2x', task ':boot:drawGreenfootSplashVersion', task ':boot:drawGreenfootSplashVersion2x', task ':boot:updateVersionNumber', task ':boot:jar', task ':lang-stride:compileJava', task ':bluej:compileJava', task ':bluej:blueJCoreJar', task ':bluej:processResources', task ':bluej:classes', task ':bluej:jar', task ':bluej:recordCommitID', task ':lang-stride:processResources', task ':lang-stride:classes', task ':lang-stride:jar', task ':bluej:copyToLib', task ':bluej:compileTestJava', task ':bluej:copyLibToTestBuild', task ':bluej:processTestResources', task ':bluej:testClasses', task ':bluej:test', task ':boot:compileTestJava', task ':boot:processTestResources', task ':boot:testClasses', task ':boot:test', task ':greenfoot:compileJava', task ':greenfoot:greenfootJar', task ':greenfoot:processResources', task ':greenfoot:classes', task ':greenfoot:copyGreenfootIcon1', task ':greenfoot:copyGreenfootIcon2', task ':greenfoot:copyImagelibToBuild', task ':greenfoot:copyLibToBuild', task ':greenfoot:jar', task ':greenfoot:copyToLib', task ':greenfoot:compileTestJava', task ':greenfoot:processTestResources', task ':greenfoot:testClasses', task ':greenfoot:test', task ':lang-stride:compileTestJava', task ':lang-stride:processTestResources', task ':lang-stride:testClasses', task ':lang-stride:test', task ':threadchecker:compileTestJava', task ':threadchecker:processTestResources', task ':threadchecker:testClasses', task ':threadchecker:test']
+Tasks that were excluded: []
+Resolve mutations for :anns-threadchecker:compileJava (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:compileJava (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:compileJava UP-TO-DATE
+Caching disabled for task ':anns-threadchecker:compileJava' because:
+  Build cache is disabled
+Skipping task ':anns-threadchecker:compileJava' as it is up-to-date.
+work action resolve main (project :anns-threadchecker) (Thread[#7992,Execution worker,5,main]) started.
+Resolve mutations for :anns-threadchecker:processResources (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:processResources (Thread[#8000,Execution worker Thread 9,5,main]) started.
+
+> Task :anns-threadchecker:processResources NO-SOURCE
+Skipping task ':anns-threadchecker:processResources' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:classes (Thread[#8000,Execution worker Thread 9,5,main]) started.
+:anns-threadchecker:classes (Thread[#8000,Execution worker Thread 9,5,main]) started.
+
+> Task :anns-threadchecker:classes UP-TO-DATE
+Skipping task ':anns-threadchecker:classes' as it has no actions.
+Resolve mutations for :anns-threadchecker:jar (Thread[#8000,Execution worker Thread 9,5,main]) started.
+:anns-threadchecker:jar (Thread[#8000,Execution worker Thread 9,5,main]) started.
+
+> Task :anns-threadchecker:jar UP-TO-DATE
+Caching disabled for task ':anns-threadchecker:jar' because:
+  Build cache is disabled
+Skipping task ':anns-threadchecker:jar' as it is up-to-date.
+work action resolve anns-threadchecker.jar (project :anns-threadchecker) (Thread[#8000,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :anns-threadchecker:compileTestJava (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:compileTestJava (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:compileTestJava NO-SOURCE
+Skipping task ':anns-threadchecker:compileTestJava' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:processTestResources (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:processTestResources (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:processTestResources NO-SOURCE
+Skipping task ':anns-threadchecker:processTestResources' as it has no source files and no previous output files.
+Resolve mutations for :anns-threadchecker:testClasses (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:testClasses (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:testClasses UP-TO-DATE
+Skipping task ':anns-threadchecker:testClasses' as it has no actions.
+Resolve mutations for :anns-threadchecker:test (Thread[#7992,Execution worker,5,main]) started.
+:anns-threadchecker:test (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :anns-threadchecker:test NO-SOURCE
+Skipping task ':anns-threadchecker:test' as it has no source files and no previous output files.
+Resolve mutations for :threadchecker:compileJava (Thread[#7992,Execution worker,5,main]) started.
+:threadchecker:compileJava (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :threadchecker:compileJava UP-TO-DATE
+Caching disabled for task ':threadchecker:compileJava' because:
+  Build cache is disabled
+Skipping task ':threadchecker:compileJava' as it is up-to-date.
+work action resolve main (project :threadchecker) (Thread[#8004,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :threadchecker:processResources (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:threadchecker:processResources (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:processResources UP-TO-DATE
+Caching disabled for task ':threadchecker:processResources' because:
+  Build cache is disabled
+Skipping task ':threadchecker:processResources' as it is up-to-date.
+Resolve mutations for :threadchecker:classes (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:threadchecker:classes (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:classes UP-TO-DATE
+Skipping task ':threadchecker:classes' as it has no actions.
+Resolve mutations for :threadchecker:jar (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:threadchecker:jar (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :threadchecker:jar UP-TO-DATE
+Caching disabled for task ':threadchecker:jar' because:
+  Build cache is disabled
+Skipping task ':threadchecker:jar' as it is up-to-date.
+work action resolve threadchecker.jar (project :threadchecker) (Thread[#8004,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :boot:compileJava (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:compileJava (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:compileJava UP-TO-DATE
+Caching disabled for task ':boot:compileJava' because:
+  Build cache is disabled
+Skipping task ':boot:compileJava' as it is up-to-date.
+Resolve mutations for :boot:processResources (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:processResources (Thread[#8000,Execution worker Thread 9,5,main]) started.
+
+> Task :boot:processResources NO-SOURCE
+Deleting stale output file: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/main
+Skipping task ':boot:processResources' as it has no source files and no previous output files.
+Resolve mutations for :boot:classes (Thread[#8000,Execution worker Thread 9,5,main]) started.
+:boot:classes (Thread[#8001,Execution worker Thread 10,5,main]) started.
+
+> Task :boot:classes UP-TO-DATE
+Skipping task ':boot:classes' as it has no actions.
+Resolve mutations for :boot:compileSplashJava (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:compileSplashJava (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:compileSplashJava UP-TO-DATE
+Caching disabled for task ':boot:compileSplashJava' because:
+  Build cache is disabled
+Skipping task ':boot:compileSplashJava' as it is up-to-date.
+Resolve mutations for :boot:processSplashResources (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:processSplashResources (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:processSplashResources NO-SOURCE
+Skipping task ':boot:processSplashResources' as it has no source files and no previous output files.
+Resolve mutations for :boot:splashClasses (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:splashClasses (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:splashClasses UP-TO-DATE
+Skipping task ':boot:splashClasses' as it has no actions.
+Resolve mutations for :boot:drawBlueJSplashVersion (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:drawBlueJSplashVersion (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawBlueJSplashVersion
+Caching disabled for task ':boot:drawBlueJSplashVersion' because:
+  Build cache is disabled
+Task ':boot:drawBlueJSplashVersion' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../bluej/resources/unversioned-bluej-splash.png 5.5.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 16 215 114 build/resources/main/bluej/gen-bluej-splash.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawBlueJSplashVersion2x (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:drawBlueJSplashVersion2x (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawBlueJSplashVersion2x
+Caching disabled for task ':boot:drawBlueJSplashVersion2x' because:
+  Build cache is disabled
+Task ':boot:drawBlueJSplashVersion2x' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../bluej/resources/unversioned-bluej-splash@2x.png 5.5.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 32 430 228 build/resources/main/bluej/gen-bluej-splash@2x.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawGreenfootSplashVersion (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:drawGreenfootSplashVersion (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawGreenfootSplashVersion
+Caching disabled for task ':boot:drawGreenfootSplashVersion' because:
+  Build cache is disabled
+Task ':boot:drawGreenfootSplashVersion' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../greenfoot/resources/images/greenfoot-splash.png 3.9.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 16 165 145 build/resources/main/bluej/gen-greenfoot-splash.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:drawGreenfootSplashVersion2x (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:drawGreenfootSplashVersion2x (Thread[#8004,Execution worker Thread 13,5,main]) started.
+
+> Task :boot:drawGreenfootSplashVersion2x
+Caching disabled for task ':boot:drawGreenfootSplashVersion2x' because:
+  Build cache is disabled
+Task ':boot:drawGreenfootSplashVersion2x' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -cp /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/classes/java/splash:/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/boot/build/resources/splash DrawVersionOnSplash ../greenfoot/resources/images/greenfoot-splash@2x.png 3.9.0 ../bluej/lib/fonts/SourceSansPro-Bold.ttf 32 330 290 build/resources/main/bluej/gen-greenfoot-splash@2x.png
+Successfully started process 'command '/nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java''
+Resolve mutations for :boot:updateVersionNumber (Thread[#8004,Execution worker Thread 13,5,main]) started.
+:boot:updateVersionNumber (Thread[#7993,Execution worker Thread 2,5,main]) started.
+
+> Task :boot:updateVersionNumber
+Skipping task ':boot:updateVersionNumber' as it has no actions.
+Resolve mutations for :boot:jar (Thread[#7993,Execution worker Thread 2,5,main]) started.
+:boot:jar (Thread[#7993,Execution worker Thread 2,5,main]) started.
+
+> Task :boot:jar UP-TO-DATE
+Caching disabled for task ':boot:jar' because:
+  Build cache is disabled
+Skipping task ':boot:jar' as it is up-to-date.
+work action resolve boot.jar (project :boot) (Thread[#7993,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :lang-stride:compileJava (Thread[#8006,Execution worker Thread 15,5,main]) started.
+:lang-stride:compileJava (Thread[#8006,Execution worker Thread 15,5,main]) started.
+
+> Task :lang-stride:compileJava UP-TO-DATE
+Caching disabled for task ':lang-stride:compileJava' because:
+  Build cache is disabled
+Skipping task ':lang-stride:compileJava' as it is up-to-date.
+work action resolve main (project :lang-stride) (Thread[#8006,Execution worker Thread 15,5,main]) started.
+Resolve mutations for :bluej:compileJava (Thread[#8006,Execution worker Thread 15,5,main]) started.
+:bluej:compileJava (Thread[#8006,Execution worker Thread 15,5,main]) started.
+
+> Task :bluej:compileJava UP-TO-DATE
+Caching disabled for task ':bluej:compileJava' because:
+  Build cache is disabled
+Skipping task ':bluej:compileJava' as it is up-to-date.
+work action resolve main (project :bluej) (Thread[#8006,Execution worker Thread 15,5,main]) started.
+Resolve mutations for :bluej:blueJCoreJar (Thread[#8006,Execution worker Thread 15,5,main]) started.
+:bluej:blueJCoreJar (Thread[#8005,Execution worker Thread 14,5,main]) started.
+
+> Task :bluej:blueJCoreJar UP-TO-DATE
+Caching disabled for task ':bluej:blueJCoreJar' because:
+  Build cache is disabled
+Skipping task ':bluej:blueJCoreJar' as it is up-to-date.
+Resolve mutations for :bluej:processResources (Thread[#8005,Execution worker Thread 14,5,main]) started.
+:bluej:processResources (Thread[#8005,Execution worker Thread 14,5,main]) started.
+
+> Task :bluej:processResources NO-SOURCE
+Skipping task ':bluej:processResources' as it has no source files and no previous output files.
+Resolve mutations for :bluej:classes (Thread[#8005,Execution worker Thread 14,5,main]) started.
+:bluej:classes (Thread[#8003,Execution worker Thread 12,5,main]) started.
+
+> Task :bluej:classes UP-TO-DATE
+Skipping task ':bluej:classes' as it has no actions.
+Resolve mutations for :bluej:jar (Thread[#8003,Execution worker Thread 12,5,main]) started.
+:bluej:jar (Thread[#8003,Execution worker Thread 12,5,main]) started.
+
+> Task :bluej:jar UP-TO-DATE
+Caching disabled for task ':bluej:jar' because:
+  Build cache is disabled
+Skipping task ':bluej:jar' as it is up-to-date.
+work action resolve bluej.jar (project :bluej) (Thread[#8003,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :bluej:recordCommitID (Thread[#8003,Execution worker Thread 12,5,main]) started.
+:bluej:recordCommitID (Thread[#8003,Execution worker Thread 12,5,main]) started.
+
+> Task :bluej:recordCommitID
+Caching disabled for task ':bluej:recordCommitID' because:
+  Build cache is disabled
+Task ':bluej:recordCommitID' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Starting process 'command 'git''. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: git rev-parse --short=8 HEAD
+Successfully started process 'command 'git''
+Resolve mutations for :lang-stride:processResources (Thread[#8003,Execution worker Thread 12,5,main]) started.
+:lang-stride:processResources (Thread[#7996,Execution worker Thread 5,5,main]) started.
+
+> Task :lang-stride:processResources NO-SOURCE
+Skipping task ':lang-stride:processResources' as it has no source files and no previous output files.
+Resolve mutations for :lang-stride:classes (Thread[#7996,Execution worker Thread 5,5,main]) started.
+:lang-stride:classes (Thread[#7991,included builds,5,main]) started.
+
+> Task :lang-stride:classes UP-TO-DATE
+Skipping task ':lang-stride:classes' as it has no actions.
+Resolve mutations for :lang-stride:jar (Thread[#7991,included builds,5,main]) started.
+:lang-stride:jar (Thread[#7991,included builds,5,main]) started.
+
+> Task :lang-stride:jar UP-TO-DATE
+Caching disabled for task ':lang-stride:jar' because:
+  Build cache is disabled
+Skipping task ':lang-stride:jar' as it is up-to-date.
+work action resolve lang-stride.jar (project :lang-stride) (Thread[#7991,included builds,5,main]) started.
+Resolve mutations for :bluej:copyToLib (Thread[#7992,Execution worker,5,main]) started.
+:bluej:copyToLib (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :bluej:copyToLib UP-TO-DATE
+Caching disabled for task ':bluej:copyToLib' because:
+  Build cache is disabled
+Skipping task ':bluej:copyToLib' as it is up-to-date.
+Resolve mutations for :bluej:compileTestJava (Thread[#7992,Execution worker,5,main]) started.
+:bluej:compileTestJava (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :bluej:compileTestJava UP-TO-DATE
+Caching disabled for task ':bluej:compileTestJava' because:
+  Build cache is disabled
+Skipping task ':bluej:compileTestJava' as it is up-to-date.
+Resolve mutations for :bluej:copyLibToTestBuild (Thread[#7992,Execution worker,5,main]) started.
+:bluej:copyLibToTestBuild (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :bluej:copyLibToTestBuild UP-TO-DATE
+Caching disabled for task ':bluej:copyLibToTestBuild' because:
+  Build cache is disabled
+Skipping task ':bluej:copyLibToTestBuild' as it is up-to-date.
+Resolve mutations for :bluej:processTestResources (Thread[#7992,Execution worker,5,main]) started.
+:bluej:processTestResources (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :bluej:processTestResources UP-TO-DATE
+Caching disabled for task ':bluej:processTestResources' because:
+  Build cache is disabled
+Skipping task ':bluej:processTestResources' as it is up-to-date.
+Resolve mutations for :bluej:testClasses (Thread[#7992,Execution worker,5,main]) started.
+:bluej:testClasses (Thread[#7992,Execution worker,5,main]) started.
+
+> Task :bluej:testClasses UP-TO-DATE
+Skipping task ':bluej:testClasses' as it has no actions.
+Resolve mutations for :bluej:test (Thread[#8001,Execution worker Thread 10,5,main]) started.
+:bluej:test (Thread[#8001,Execution worker Thread 10,5,main]) started.
+Gradle Test Executor 416 started executing tests.
+Gradle Test Executor 428 started executing tests.
+Gradle Test Executor 426 started executing tests.
+Gradle Test Executor 422 started executing tests.
+Gradle Test Executor 427 started executing tests.
+Gradle Test Executor 425 started executing tests.
+Gradle Test Executor 428 finished executing tests.
+Gradle Test Executor 424 started executing tests.
+Gradle Test Executor 423 started executing tests.
+Gradle Test Executor 421 started executing tests.
+Gradle Test Executor 414 started executing tests.
+Gradle Test Executor 417 started executing tests.
+Gradle Test Executor 426 finished executing tests.
+Gradle Test Executor 427 finished executing tests.
+Gradle Test Executor 422 finished executing tests.
+Gradle Test Executor 425 finished executing tests.
+Gradle Test Executor 416 finished executing tests.
+Gradle Test Executor 419 started executing tests.
+Gradle Test Executor 423 finished executing tests.
+Gradle Test Executor 413 started executing tests.
+Gradle Test Executor 420 started executing tests.
+Gradle Test Executor 415 started executing tests.
+
+> Task :bluej:test
+Caching disabled for task ':bluej:test' because:
+  Build cache is disabled
+Task ':bluej:test' is not up-to-date because:
+  Task has failed previously.
+:bluej:test.maxParallelForks (32) is larger than max-workers (16), forcing it to 16
+Starting process 'Gradle Test Executor 416'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath4773649867502783456txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 416'
+Starting process 'Gradle Test Executor 418'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath7109470224225188492txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 418'
+Starting process 'Gradle Test Executor 419'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath11181471364658835588txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 419'
+Starting process 'Gradle Test Executor 415'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath2976044476202062639txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 415'
+Starting process 'Gradle Test Executor 420'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath33872055525138679txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 420'
+Starting process 'Gradle Test Executor 417'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath356052753082745457txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 417'
+Starting process 'Gradle Test Executor 413'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath273191803441139364txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 413'
+Starting process 'Gradle Test Executor 414'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath1712766880506009413txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 414'
+Starting process 'Gradle Test Executor 421'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath3700299857904401130txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 421'
+Starting process 'Gradle Test Executor 423'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath18156856522637578625txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 423'
+Starting process 'Gradle Test Executor 424'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath7061458817966328103txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 424'
+Starting process 'Gradle Test Executor 422'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath13796879489707313092txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 422'
+Starting process 'Gradle Test Executor 425'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath16976368126626808349txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 425'
+Starting process 'Gradle Test Executor 426'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath1659840864932781986txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 426'
+Starting process 'Gradle Test Executor 427'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath14246322711820428672txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 427'
+Starting process 'Gradle Test Executor 428'. Working directory: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej Command: /nix/store/17f1yry61p2y1a0hcl1mq55nsw7d8y7q-openjdk-21.0.7+6/lib/openjdk/bin/java -Dglass.platform=Monocle -Dheadless.geometry=1920x1200-32 -Djava.awt.headless=true -Dmonocle.platform=Headless -Dorg.gradle.internal.worker.tmpdir=/home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/tmp/test/work -Dorg.gradle.native=false -Dprism.order=sw -Dprism.text=t2k -Dtestfx.headless=true -Dtestfx.robot=glass --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED @/home/jaen/.gradle/.tmp/gradle-worker-classpath9079601469772201964txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 428'
+Successfully started process 'Gradle Test Executor 416'
+Successfully started process 'Gradle Test Executor 428'
+Successfully started process 'Gradle Test Executor 422'
+Successfully started process 'Gradle Test Executor 426'
+Successfully started process 'Gradle Test Executor 427'
+Successfully started process 'Gradle Test Executor 425'
+Successfully started process 'Gradle Test Executor 424'
+Successfully started process 'Gradle Test Executor 423'
+Successfully started process 'Gradle Test Executor 421'
+Successfully started process 'Gradle Test Executor 414'
+Successfully started process 'Gradle Test Executor 417'
+Successfully started process 'Gradle Test Executor 413'
+Successfully started process 'Gradle Test Executor 420'
+Successfully started process 'Gradle Test Executor 415'
+Successfully started process 'Gradle Test Executor 419'
+Successfully started process 'Gradle Test Executor 418'
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinClassWithPropertiesPSITreeTraversal FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinClassWithPropertiesPSITreeTraversal(K2ParserIntegrationTest.java:109)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinFunctionsWithParametersAndExpressions FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinFunctionsWithParametersAndExpressions(K2ParserIntegrationTest.java:157)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError: EntityResolver should process Kotlin entity references
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testIntegrationWithTestableDocumentAndEntityResolver(K2ParserIntegrationTest.java:462)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinCoroutinesAndExtensionFunctions FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinCoroutinesAndExtensionFunctions(K2ParserIntegrationTest.java:262)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinDataClassesAndSealedClasses FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinDataClassesAndSealedClasses(K2ParserIntegrationTest.java:206)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testTypeSafeNodeConversionAndErrorHandling FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testTypeSafeNodeConversionAndErrorHandling(K2ParserIntegrationTest.java:360)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testHighPerformancePSITreeWalking FAILED
+    java.lang.AssertionError: Large structure should generate many callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testHighPerformancePSITreeWalking(K2ParserIntegrationTest.java:307)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testK2ParserCharacteristicValidation FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testK2ParserCharacteristicValidation(K2ParserIntegrationTest.java:514)
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinInteropWithJavaStructures FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest.testKotlinInteropWithJavaStructures(K2ParserIntegrationTest.java:412)
+
+bluej.parser.pratt.integration.ErrorRecoveryIntegrationTest > testBasicErrorRecoveryPlaceholder STANDARD_OUT
+    Error recovery integration concepts validated
+
+Gradle Test Executor 424 finished executing tests.
+Gradle Test Executor 421 finished executing tests.
+Gradle Test Executor 418 started executing tests.
+Gradle Test Executor 417 finished executing tests.
+Gradle Test Executor 414 finished executing tests.
+Gradle Test Executor 419 finished executing tests.
+Gradle Test Executor 420 finished executing tests.
+Gradle Test Executor 415 finished executing tests.
+Gradle Test Executor 413 finished executing tests.
+Gradle Test Executor 418 finished executing tests.
+
+> Task :bluej:test FAILED
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testErrorAccumulationAcrossParsings FAILED
+    java.lang.AssertionError: Error accumulation should still generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testErrorAccumulationAcrossParsings(HybridResultPatternIntegrationTest.java:191)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testSophisticatedErrorRecoveryWithCallbackIntegrity FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testSophisticatedErrorRecoveryWithCallbackIntegrity(HybridResultPatternIntegrationTest.java:319)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testDeferredCallbackEmissionWithLambdaClosures FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testDeferredCallbackEmissionWithLambdaClosures(HybridResultPatternIntegrationTest.java:143)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testLightweightResultObjectsWithCallbackReferences FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testLightweightResultObjectsWithCallbackReferences(HybridResultPatternIntegrationTest.java:278)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testPerformanceCharacteristicsOfHybridResultHandling FAILED
+    java.lang.AssertionError: Should generate callbacks for complexity level 0
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testPerformanceCharacteristicsOfHybridResultHandling(HybridResultPatternIntegrationTest.java:357)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testCallbackIntegrityDuringPartialFailures FAILED
+    java.lang.AssertionError: Class parsing should succeed
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testCallbackIntegrityDuringPartialFailures(HybridResultPatternIntegrationTest.java:229)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testMonadicErrorHandlingWithDeferredCallbacks FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testMonadicErrorHandlingWithDeferredCallbacks(HybridResultPatternIntegrationTest.java:102)
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testIntegrationWithTestableDocumentAndMonadicErrorHandling FAILED
+    java.lang.AssertionError: Entity resolver should be integrated
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest.testIntegrationWithTestableDocumentAndMonadicErrorHandling(HybridResultPatternIntegrationTest.java:392)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testIntegrationWithTestableDocumentAndErrorRecovery FAILED
+    java.lang.AssertionError: Entity resolver should be integrated with error recovery
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testIntegrationWithTestableDocumentAndErrorRecovery(ErrorRecoveryIntegrationTest.java:523)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testMultipleRecoveryStrategiesSkipRetrySubstitute FAILED
+    java.lang.AssertionError: Class should be processed despite errors
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testMultipleRecoveryStrategiesSkipRetrySubstitute(ErrorRecoveryIntegrationTest.java:266)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testCallbackPairingGuaranteesDuringErrorConditions FAILED
+    java.lang.AssertionError: Error recovery should process multiple methods
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testCallbackPairingGuaranteesDuringErrorConditions(ErrorRecoveryIntegrationTest.java:227)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testAutoCloseableCallbackScopesWithGuaranteedCleanup FAILED
+    java.lang.AssertionError: Class scope should be opened
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testAutoCloseableCallbackScopesWithGuaranteedCleanup(ErrorRecoveryIntegrationTest.java:106)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testComprehensiveErrorTypeHandlingAndClassification FAILED
+    java.lang.AssertionError: Class should handle various error types
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testComprehensiveErrorTypeHandlingAndClassification(ErrorRecoveryIntegrationTest.java:333)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testPerformanceMonitoringDuringErrorRecoveryOperations FAILED
+    java.lang.AssertionError: Should process many methods with error recovery
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testPerformanceMonitoringDuringErrorRecoveryOperations(ErrorRecoveryIntegrationTest.java:402)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testErrorHandlingDuringVisitorTraversal FAILED
+    java.lang.AssertionError: Error recovery should still generate some callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testErrorHandlingDuringVisitorTraversal(ASTVisitorPatternIntegrationTest.java:208)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError: EntityResolver should process entity references
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testIntegrationWithTestableDocumentAndEntityResolver(ASTVisitorPatternIntegrationTest.java:327)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testMultipleCodeComplexityLevels FAILED
+    java.lang.AssertionError: Complexity level 0 should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testMultipleCodeComplexityLevels(ASTVisitorPatternIntegrationTest.java:169)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testSophisticatedErrorDetectionAndRecoveryMechanisms FAILED
+    java.lang.AssertionError: Class should be detected despite errors
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testSophisticatedErrorDetectionAndRecoveryMechanisms(ErrorRecoveryIntegrationTest.java:159)
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testContinuationStrategiesWithPartialSuccess FAILED
+    java.lang.AssertionError: Main class should be processed
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest.testContinuationStrategiesWithPartialSuccess(ErrorRecoveryIntegrationTest.java:458)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testComplexNestedStructureVisitorTraversal FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testComplexNestedStructureVisitorTraversal(ASTVisitorPatternIntegrationTest.java:138)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testSimpleClassParsingWithVisitorCallbacks FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testSimpleClassParsingWithVisitorCallbacks(ASTVisitorPatternIntegrationTest.java:97)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testVisitorCallbackTimingAndOrdering FAILED
+    java.lang.AssertionError: Class start should precede field declarations
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testVisitorCallbackTimingAndOrdering(ASTVisitorPatternIntegrationTest.java:249)
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testASTVisitorPatternCharacteristics FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest.testASTVisitorPatternCharacteristics(ASTVisitorPatternIntegrationTest.java:291)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testDeferredComputationReducingInitialParsingOverhead FAILED
+    java.lang.AssertionError: Lazy evaluation should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testDeferredComputationReducingInitialParsingOverhead(LazyASTTransformationIntegrationTest.java:128)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testPerformanceCharacteristicsVaryingByCacheEffectiveness FAILED
+    java.lang.AssertionError: Test case 0 should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testPerformanceCharacteristicsVaryingByCacheEffectiveness(LazyASTTransformationIntegrationTest.java:371)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testMemoryEfficiencyThroughLazyEvaluationPatterns FAILED
+    java.lang.AssertionError: Should generate callbacks for large structure
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testMemoryEfficiencyThroughLazyEvaluationPatterns(LazyASTTransformationIntegrationTest.java:176)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testConcurrentLazyEvaluationWithThreadSafety FAILED
+    java.lang.AssertionError: Concurrent parsing should generate callbacks
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testConcurrentLazyEvaluationWithThreadSafety(LazyASTTransformationIntegrationTest.java:487)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testComplexCacheManagementWithHitAndMissScenarios FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testComplexCacheManagementWithHitAndMissScenarios(LazyASTTransformationIntegrationTest.java:244)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testTwoPhaseParsingWithInitialSetupAndLazyEvaluation FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testTwoPhaseParsingWithInitialSetupAndLazyEvaluation(LazyASTTransformationIntegrationTest.java:298)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testIntegrationWithTestableDocumentAndLazyEvaluation FAILED
+    java.lang.AssertionError: Entity resolver should be integrated with lazy evaluation
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testIntegrationWithTestableDocumentAndLazyEvaluation(LazyASTTransformationIntegrationTest.java:529)
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testOnDemandCallbackExecutionPatterns FAILED
+    java.lang.AssertionError
+        at org.junit.Assert.fail(Assert.java:87)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at org.junit.Assert.assertTrue(Assert.java:53)
+        at bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest.testOnDemandCallbackExecutionPatterns(LazyASTTransformationIntegrationTest.java:422)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testPerformanceCharacteristics FAILED
+    java.lang.AssertionError: Execution time variance should be reasonable
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testPerformanceCharacteristics(CommonParsingScenariosIntegrationTest.java:616)
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testTestableDocumentIntegration FAILED
+    java.lang.AssertionError: EntityResolver should have resolved entities
+        at org.junit.Assert.fail(Assert.java:89)
+        at org.junit.Assert.assertTrue(Assert.java:42)
+        at bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest.testTestableDocumentIntegration(CommonParsingScenariosIntegrationTest.java:666)
+
+85 tests completed, 42 failed
+Finished generating test XML results (0.002 secs) into: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/test-results/test
+Generating HTML test report...
+Finished generating test html results (0.004 secs) into: /home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/reports/tests/test
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bluej:test'.
+> There were failing tests. See the report at: file:///home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 4s
+23 actionable tasks: 6 executed, 17 up-to-date
+Some of the file system contents retained in the virtual file system are on file systems that Gradle doesn't support watching. The relevant state was discarded to ensure changes to these locations are properly detected. You can override this by explicitly enabling file system watching.

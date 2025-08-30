@@ -1,0 +1,198 @@
+> Task :anns-threadchecker:compileJava UP-TO-DATE
+> Task :anns-threadchecker:processResources NO-SOURCE
+> Task :anns-threadchecker:classes UP-TO-DATE
+> Task :anns-threadchecker:jar UP-TO-DATE
+> Task :anns-threadchecker:compileTestJava NO-SOURCE
+> Task :anns-threadchecker:processTestResources NO-SOURCE
+> Task :anns-threadchecker:testClasses UP-TO-DATE
+> Task :anns-threadchecker:test NO-SOURCE
+> Task :threadchecker:compileJava UP-TO-DATE
+> Task :threadchecker:processResources UP-TO-DATE
+> Task :threadchecker:classes UP-TO-DATE
+> Task :threadchecker:jar UP-TO-DATE
+> Task :boot:compileJava UP-TO-DATE
+> Task :boot:processResources NO-SOURCE
+> Task :boot:classes UP-TO-DATE
+> Task :boot:compileSplashJava UP-TO-DATE
+> Task :boot:processSplashResources NO-SOURCE
+> Task :boot:splashClasses UP-TO-DATE
+> Task :boot:drawBlueJSplashVersion
+> Task :boot:drawBlueJSplashVersion2x
+> Task :boot:drawGreenfootSplashVersion
+> Task :boot:drawGreenfootSplashVersion2x
+> Task :boot:updateVersionNumber
+> Task :boot:jar UP-TO-DATE
+> Task :lang-stride:compileJava UP-TO-DATE
+> Task :bluej:compileJava UP-TO-DATE
+> Task :bluej:blueJCoreJar UP-TO-DATE
+> Task :bluej:processResources NO-SOURCE
+> Task :bluej:classes UP-TO-DATE
+> Task :bluej:jar UP-TO-DATE
+> Task :bluej:recordCommitID
+> Task :lang-stride:processResources NO-SOURCE
+> Task :lang-stride:classes UP-TO-DATE
+> Task :lang-stride:jar UP-TO-DATE
+> Task :bluej:copyToLib UP-TO-DATE
+> Task :bluej:compileTestJava UP-TO-DATE
+> Task :bluej:copyLibToTestBuild UP-TO-DATE
+> Task :bluej:processTestResources UP-TO-DATE
+> Task :bluej:testClasses UP-TO-DATE
+
+> Task :bluej:test
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testDeferredComputationReducingInitialParsingOverhead FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:129
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testPerformanceCharacteristicsVaryingByCacheEffectiveness FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:372
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testMemoryEfficiencyThroughLazyEvaluationPatterns FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:177
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testConcurrentLazyEvaluationWithThreadSafety FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:488
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testComplexCacheManagementWithHitAndMissScenarios FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:245
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testTwoPhaseParsingWithInitialSetupAndLazyEvaluation FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:299
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testIntegrationWithTestableDocumentAndLazyEvaluation FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:530
+
+bluej.parser.pratt.integration.e2e.LazyASTTransformationIntegrationTest > testOnDemandCallbackExecutionPatterns FAILED
+    java.lang.AssertionError at LazyASTTransformationIntegrationTest.java:423
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testErrorHandlingDuringVisitorTraversal FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:209
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:328
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testMultipleCodeComplexityLevels FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:170
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testComplexNestedStructureVisitorTraversal FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:139
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testSimpleClassParsingWithVisitorCallbacks FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:98
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testVisitorCallbackTimingAndOrdering FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:250
+
+bluej.parser.pratt.integration.e2e.ASTVisitorPatternIntegrationTest > testASTVisitorPatternCharacteristics FAILED
+    java.lang.AssertionError at ASTVisitorPatternIntegrationTest.java:292
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinClassWithPropertiesPSITreeTraversal FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:110
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinFunctionsWithParametersAndExpressions FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:158
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testIntegrationWithTestableDocumentAndEntityResolver FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:463
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinCoroutinesAndExtensionFunctions FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:263
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinDataClassesAndSealedClasses FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:207
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testTypeSafeNodeConversionAndErrorHandling FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:361
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testHighPerformancePSITreeWalking FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:308
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testK2ParserCharacteristicValidation FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:515
+
+bluej.parser.pratt.integration.e2e.K2ParserIntegrationTest > testKotlinInteropWithJavaStructures FAILED
+    java.lang.AssertionError at K2ParserIntegrationTest.java:413
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testErrorAccumulationAcrossParsings FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:192
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testSophisticatedErrorRecoveryWithCallbackIntegrity FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:320
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testDeferredCallbackEmissionWithLambdaClosures FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:144
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testPerformanceCharacteristics FAILED
+    java.lang.AssertionError at CommonParsingScenariosIntegrationTest.java:616
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testLightweightResultObjectsWithCallbackReferences FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:279
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testPerformanceCharacteristicsOfHybridResultHandling FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:358
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testCallbackIntegrityDuringPartialFailures FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:230
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testMonadicErrorHandlingWithDeferredCallbacks FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:103
+
+bluej.parser.pratt.integration.e2e.HybridResultPatternIntegrationTest > testIntegrationWithTestableDocumentAndMonadicErrorHandling FAILED
+    java.lang.AssertionError at HybridResultPatternIntegrationTest.java:393
+
+bluej.parser.pratt.integration.e2e.CommonParsingScenariosIntegrationTest > testTestableDocumentIntegration FAILED
+    java.lang.AssertionError at CommonParsingScenariosIntegrationTest.java:666
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testIntegrationWithTestableDocumentAndErrorRecovery FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:524
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testMultipleRecoveryStrategiesSkipRetrySubstitute FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:267
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testCallbackPairingGuaranteesDuringErrorConditions FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:228
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testAutoCloseableCallbackScopesWithGuaranteedCleanup FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:107
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testComprehensiveErrorTypeHandlingAndClassification FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:334
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testPerformanceMonitoringDuringErrorRecoveryOperations FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:403
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testSophisticatedErrorDetectionAndRecoveryMechanisms FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:160
+
+bluej.parser.pratt.integration.e2e.ErrorRecoveryIntegrationTest > testContinuationStrategiesWithPartialSuccess FAILED
+    java.lang.AssertionError at ErrorRecoveryIntegrationTest.java:459
+
+bluej.parser.pratt.integration.CommonParsingScenarioTest > testIfElseStatement FAILED
+    java.lang.AssertionError at CommonParsingScenarioTest.java:527
+
+bluej.parser.pratt.integration.benchmark.ComprehensiveFrameworkTest > testCompleteFrameworkExecution FAILED
+    java.lang.AssertionError at ComprehensiveFrameworkTest.java:459
+
+bluej.parser.pratt.integration.ASTVisitorPatternTest > testIfStatementAST FAILED
+    java.lang.AssertionError at ASTVisitorPatternTest.java:727
+
+555 tests completed, 45 failed, 4 skipped
+
+> Task :bluej:test FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bluej:test'.
+> There were failing tests. See the report at: file:///home/jaen/Projects/scratchpad/work/jetbrains/bluej2/repos/BlueJ-Greenfoot/bluej/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 7s
+23 actionable tasks: 6 executed, 17 up-to-date
