@@ -124,4 +124,141 @@ public interface CallbackDelegate {
     // Annotation and other callbacks - used by test parsing scenarios
     void gotAnnotation(List<LocatableToken> name, boolean hasParams);
     void determinedForLoop(boolean forEach, boolean hasInit);
+    
+    // ==================== Additional Missing Methods ====================
+    
+    // Modifier and declaration callbacks
+    void modifiersConsumed();
+    void reachedCUstate(int i);
+    void endDecl(LocatableToken token);
+    
+    // While loop callbacks
+    void beginWhileLoop(LocatableToken token);
+    void beginWhileLoopBody(LocatableToken token);
+    void endWhileLoopBody(LocatableToken token, boolean included);
+    void endWhileLoop(LocatableToken token, boolean included);
+    
+    // Do-while loop callbacks
+    void beginDoWhile(LocatableToken token);
+    void beginDoWhileBody(LocatableToken token);
+    void endDoWhileBody(LocatableToken token, boolean included);
+    void endDoWhile(LocatableToken token, boolean included);
+    
+    // Try-catch callbacks
+    void beginTryCatchSmt(LocatableToken token, boolean hasResource);
+    void beginTryBlock(LocatableToken token);
+    void endTryBlock(LocatableToken token, boolean included);
+    void endTryCatchStmt(LocatableToken token, boolean included);
+    void gotCatchFinally(LocatableToken token);
+    void gotMultiCatch(LocatableToken token);
+    void gotCatchVarName(LocatableToken token);
+    
+    // Synchronized block callbacks
+    void beginSynchronizedBlock(LocatableToken token);
+    void endSynchronizedBlock(LocatableToken token, boolean included);
+    
+    // Expression and operator callbacks
+    void gotExprNew(LocatableToken token);
+    void endExprNew(LocatableToken token, boolean included);
+    void gotUnaryOperator(LocatableToken token);
+    void gotQuestionOperator(LocatableToken token);
+    void gotQuestionColon(LocatableToken token);
+    void gotInstanceOfOperator(LocatableToken token);
+    void gotInstanceOfVar(LocatableToken token);
+    void gotArrayElementAccess();
+    void gotPostOperator(LocatableToken token);
+    void gotClassLiteral(LocatableToken token);
+    void gotPrimitiveTypeLiteral(LocatableToken token);
+    void gotConstructorCall(LocatableToken token);
+    void gotDotEOF(LocatableToken token);
+    void gotTypeCast(List<LocatableToken> tokens);
+    
+    // Array callbacks
+    void beginArrayInitList(LocatableToken token);
+    void endArrayInitList(LocatableToken token);
+    void gotArrayDeclarator();
+    void gotNewArrayDeclarator(boolean withDimension);
+    
+    // Anonymous class callbacks
+    void beginAnonClassBody(LocatableToken token, boolean isEnumMember);
+    void endAnonClassBody(LocatableToken token, boolean included);
+    
+    // Statement block callbacks
+    void beginStmtblockBody(LocatableToken token);
+    void endStmtblockBody(LocatableToken token, boolean included);
+    
+    // Initializer block callbacks
+    void beginInitBlock(LocatableToken first, LocatableToken lcurly);
+    void endInitBlock(LocatableToken rcurly, boolean included);
+    
+    // Type definition extends/implements/permits callbacks
+    void beginTypeDefImplements(LocatableToken implementsToken);
+    void endTypeDefImplements();
+    void beginTypeDefPermits(LocatableToken permitsToken);
+    void endTypeDefPermits();
+    
+    // Variable declaration callbacks
+    void beginVariableDecl(LocatableToken first);
+    void gotVariableDecl(LocatableToken first, LocatableToken idToken, boolean inited);
+    void gotSubsequentVar(LocatableToken first, LocatableToken idToken, boolean inited);
+    void endVariable(LocatableToken token, boolean included);
+    void endVariableDecls(LocatableToken token, boolean included);
+    
+    // For loop initialization callbacks
+    void beginForInitDecl(LocatableToken first);
+    void gotForInit(LocatableToken first, LocatableToken idToken);
+    void gotSubsequentForInit(LocatableToken first, LocatableToken idToken, boolean initFollows);
+    void endForInit(LocatableToken token, boolean included);
+    void endForInitDecls(LocatableToken token, boolean included);
+    
+    // Field declaration callbacks
+    void beginFieldDeclarations(LocatableToken first);
+    void gotField(LocatableToken first, LocatableToken idToken, boolean initExpressionFollows);
+    void gotSubsequentField(LocatableToken first, LocatableToken idToken, boolean initFollows);
+    void endField(LocatableToken token, boolean included);
+    void endFieldDeclarations(LocatableToken token, boolean included);
+    
+    // Constructor callbacks
+    void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken);
+    
+    // Type parameter callbacks
+    void gotTypeParam(LocatableToken idToken);
+    void gotTypeParamBound(List<LocatableToken> tokens);
+    void gotMethodTypeParamsBegin();
+    void endMethodTypeParams();
+    
+    // Throws clause callbacks
+    void beginThrows(LocatableToken token);
+    void endThrows();
+    
+    // Identifier and compound access callbacks
+    void gotIdentifierEOF(LocatableToken token);
+    void gotMemberAccessEOF(LocatableToken token);
+    void gotCompoundIdent(LocatableToken token);
+    void gotCompoundComponent(LocatableToken token);
+    void completeCompoundValue(LocatableToken token);
+    void completeCompoundValueEOF(LocatableToken token);
+    void completeCompoundClass(LocatableToken token);
+    void gotArrayTypeIdentifier(LocatableToken token);
+    void gotParentIdentifier(LocatableToken token);
+    
+    // Statement callbacks
+    void gotThrow(LocatableToken token);
+    void gotBreakContinue(LocatableToken keywordToken, LocatableToken labelToken);
+    void gotReturnStatement(boolean hasValue);
+    void gotYieldStatement();
+    void gotEmptyStatement();
+    void gotAssert();
+    void gotTopLevelDecl(LocatableToken token);
+    void gotInnerType(LocatableToken start);
+    
+    // Lambda parameter callbacks
+    void gotLambdaFormalParam();
+    void gotLambdaFormalType(List<LocatableToken> type);
+    void beginFormalParameter(LocatableToken token);
+    
+    // Record parameter callbacks
+    void beginRecordParameters(LocatableToken parenToken);
+    void gotRecordParameter(LocatableToken first, LocatableToken idToken, LocatableToken varargsToken);
+    void endRecordParameters(LocatableToken closeParen);
 }

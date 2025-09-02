@@ -62,6 +62,14 @@ public class KotlinParser implements ParserBehavior
         this.parser = parser;
     }
 
+    /**
+     * Gets the CallbackDelegate from the SourceParser for making callback calls.
+     * This provides clean access to the callback interface while maintaining backward compatibility.
+     */
+    private CallbackDelegate getCallbackDelegate() {
+        return parser.getCallbackDelegate();
+    }
+
     public final JavaTokenFilter getTokenStream()
     {
         return parser.getTokenStream();
@@ -158,7 +166,7 @@ public class KotlinParser implements ParserBehavior
             }
             state = parseCUpart(state);
         }
-        parser.finishedCU(state);
+        getCallbackDelegate().finishedCU(state);
     }
 
     /**
@@ -210,16 +218,16 @@ public class KotlinParser implements ParserBehavior
                 error("Only one 'package' statement is allowed", token);
             }
             token = parsePackageStmt(token);
-            parser.reachedCUstate(1); state = 1;
+            getCallbackDelegate().reachedCUstate(1); state = 1;
         }
         else if (at(token,JavaTokenTypes.LITERAL_import)) {
             parseImportStatement(token);
-            parser.reachedCUstate(1); state = 1;
+            getCallbackDelegate().reachedCUstate(1); state = 1;
         }
         else if (isModifier(token) || isTypeDeclarator(token)) {
             // optional: class/interface/enum
-            parser.gotTopLevelDecl(token);
-            parser.gotDeclBegin(token);
+            getCallbackDelegate().gotTopLevelDecl(token);
+            getCallbackDelegate().gotDeclBegin(token);
             getTokenStream().pushBack(token);
             parseModifiers();
             parseTypeDef(token);
