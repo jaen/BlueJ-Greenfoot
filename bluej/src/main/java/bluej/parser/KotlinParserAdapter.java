@@ -529,9 +529,11 @@ public class KotlinParserAdapter implements ParserBehavior {
     private class ThreadSafeNodeFactory implements NodeFactory {
 
         private final SourceParser parser;
+        private final CallbackDelegate callbackDelegate;
 
         ThreadSafeNodeFactory(SourceParser parser) {
             this.parser = parser;
+            this.callbackDelegate = parser != null ? parser.getCallbackDelegate() : null;
         }
 
         @Override
@@ -623,16 +625,23 @@ public class KotlinParserAdapter implements ParserBehavior {
 
         @Override
         public void reportError(String message, LocatableToken token) {
-            // Report error through the pratt parser's error handling mechanism
-            // Since SourceParser doesn't have direct error reporting, we delegate to the pratt parser
-            if (prattParser != null) {
-                prattParser.error(message, token);
+            // Report error through the SourceParser, which properly integrates with CallbackDelegate
+            // This ensures consistent error handling across the parsing system
+            if (parser != null) {
+                if (token != null) {
+                    parser.error(message, token.getLine(), token.getColumn(), token.getEndLine(), token.getEndColumn());
+                } else {
+                    // Fallback for errors without token location
+                    parser.error(message, 0, 0, 0, 0);
+                }
             }
         }
 
         @Override
         public boolean hasErrors() {
             // Check if the pratt parser has reported any errors
+            // This delegates to the PrattParser's error tracking since NodeFactory errors
+            // should be coordinated with the main parser's error state
             return prattParser != null && prattParser.hasErrors();
         }
     }
