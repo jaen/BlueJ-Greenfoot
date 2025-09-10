@@ -2,64 +2,31 @@ package bluej.utility;
 
 import bluej.utility.javafx.BetterVBox;
 import bluej.utility.javafx.HangingFlowPane;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import org.junit.Rule;
+import javafx.stage.Stage;
 import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.testfx.framework.junit.ApplicationTest;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
  * Tests the HangingFlowPane class, specifically its layout algorithm.
  */
-public class TestHangingFlowPane
+public class TestHangingFlowPane extends ApplicationTest
 {
-    // Need to run tests on FX thread:
-    @Rule
-    public TestRule runOnFXThreadRule = new TestRule() {
-        boolean initialised = false;
-        @Override public Statement apply(Statement base, Description d) {
-            if (!initialised)
-            {
-                // Initialise JavaFX:
-                new JFXPanel();
-                initialised = true;
-            }
-            return new Statement() {
-                @Override public void evaluate() throws Throwable {
-                    // Run on FX thread, rethrow any exceptions back on this thread:
-                    CompletableFuture<Throwable> thrown = new CompletableFuture<>();
-                    Platform.runLater(() -> {
-                        try
-                        {
-                            base.evaluate();
-                            thrown.complete(null);
-                        } catch (Throwable throwable)
-                        {
-                            thrown.complete(throwable);
-                        }
-                    });
-                    Throwable t = thrown.get();
-                    if (t != null)
-                        throw t;
-                }
-            };
-        }
-
-    };
+    @Override
+    public void start(Stage stage) throws Exception {
+        super.start(stage);
+        // TestFX handles JavaFX initialization automatically
+    }
 
     /**
      * Helper class for testing: a Node with a fixed size.
@@ -182,7 +149,7 @@ public class TestHangingFlowPane
             this.expectedX = expectedX;
             this.node = new FixedSizeNode(width, height, baseline);
         }
-        
+
         Node getNode()
         {
             return node;
@@ -211,7 +178,7 @@ public class TestHangingFlowPane
         HangingFlowPane.setBreakBefore(tni.getNode(), false);
         return tni;
     }
-    
+
     // Shorthand for Arrays.asList
     private <T> List<T> l(T... xs)
     {
@@ -221,7 +188,7 @@ public class TestHangingFlowPane
 
     /**
      * Tests given nodes on a flow pane with width 500
-     * @param hang The amount of hanging indent on lines after the first. 
+     * @param hang The amount of hanging indent on lines after the first.
      * @param nodes The list of lists is a list of expected rows.  These are flattened
      *              and passed to the HangingFLowPane, then we check if we get back the rows
      *              we expected.
@@ -332,7 +299,7 @@ public class TestHangingFlowPane
         assertLayout(n2, 90, 40 + 10, 80, 50);
         assertLayout(n3, 0, 40 + 60, 70, 70);
     }
-    
+
     @Test
     public void testNoBreak()
     {
@@ -341,7 +308,7 @@ public class TestHangingFlowPane
             // The 100 should fit above, but the trailing no-break forces on to new row:
             l(n(100, 0), nb(200, 100))
         ));
-        
+
         testRows500(20, l(
             l(n(300, 0)),
             // Would fit above, but no break drags it down:
@@ -361,7 +328,7 @@ public class TestHangingFlowPane
             l(nb(400, 0))
         ));
     }
-    
+
     @Test
     public void testHeight()
     {
@@ -379,9 +346,9 @@ public class TestHangingFlowPane
         checkHeight(50, n(300, 0), n(198, 300), n(1, 498));
         checkHeight(50, n(300, 0), n(199, 300), n(1, 499));
         checkHeight(100, n(300, 0), n(200, 300), n(1, 0));
-        
+
     }
-    
+
     // Makes the computePrefHeight method public
     private static class TestBetterVBox extends BetterVBox
     {

@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 1999-2009,2010,2011,2012,2013,2014,2019,2020,2022,2024  Michael Kolling and John Rosenberg
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -77,10 +77,10 @@ public class TextParser extends SourceParser
     private EntityResolver resolver;
     private JavaEntity accessType;
     private boolean staticAccess;
-    
+
     protected Stack<JavaEntity> valueStack = new Stack<JavaEntity>();
     private int arrayCount = 0;
-    
+
     /** A class to represent operators, possibly associated with a token */
     protected class Operator
     {
@@ -90,37 +90,37 @@ public class TextParser extends SourceParser
         int getType() { return type; }
         LocatableToken getToken() { return token; }
     }
-    
+
     protected Stack<Operator> operatorStack = new Stack<Operator>();
-    
+
     /** A stack of type argument lists - one list for each method call on the operator stack */
     protected Stack<List<LocatableToken>> typeArgStack = new Stack<List<LocatableToken>>();
-    
+
     /*
      * Make up some operators - only for cases where there is not a token
      * type we could use, or for where the token is ambiguos:
      */
-    
+
     private static final int CAST_OPERATOR = JavaTokenTypes.INVALID + 1;
     private static final int BAD_CAST_OPERATOR = CAST_OPERATOR + 1;
     private static final int PAREN_OPERATOR = BAD_CAST_OPERATOR + 1;
     private static final int MEMBER_CALL_OP = PAREN_OPERATOR + 1;
     private static final int METHOD_CALL_OP = MEMBER_CALL_OP + 1;
     private static final int CONSTRUCTOR_CALL_OP = METHOD_CALL_OP + 1;
-    
+
     private static final int UNARY_PLUS_OP = CONSTRUCTOR_CALL_OP + 1;
     private static final int UNARY_MINUS_OP = UNARY_PLUS_OP + 1;
-    
+
     /*
      * Parse states - mainly so we know what to do with a type specification
      * when we seen one:
      */
-    
+
     private static final int STATE_NONE = 0;
     private static final int STATE_NEW = 1;  // just saw "new"
     private static final int STATE_NEW_ARGS = 2;  // expecting "new" arguments or array dimensions
     private static final int STATE_INSTANCEOF = 3;  // just saw "instanceof", expecting type
-    
+
     private int state = STATE_NONE;
 
     /** Arguments for a method or constructor call are added to the list at the top of this stack */
@@ -142,7 +142,7 @@ public class TextParser extends SourceParser
         this.accessType = accessType;
         this.staticAccess = staticAccess;
     }
-    
+
     /**
      * Construct a text parser for parsing an expression, where the expression is located
      * at a particular line and column in the source.
@@ -162,7 +162,7 @@ public class TextParser extends SourceParser
         this.accessType = accessType;
         this.staticAccess = staticAccess;
     }
-    
+
     /**
      * Construct a text parser for parsing an expression which is represented in a String.
      * 
@@ -175,7 +175,7 @@ public class TextParser extends SourceParser
     {
         this(resolver, new StringReader(s), accessType, staticAccess);
     }
-    
+
     /**
      * Check whether the parsed expression ended at the end of the input.
      *  
@@ -186,7 +186,7 @@ public class TextParser extends SourceParser
     {
         return getTokenStream().LA(1).getType() == JavaTokenTypes.EOF;
     }
-    
+
     /**
      * Get the type of the parsed expression. If the type is unknown or an error occurred,
      * returns {@code null}.
@@ -199,7 +199,7 @@ public class TextParser extends SourceParser
         }
         return valueStack.pop();
     }
-    
+
     /**
      * Pop an item from the value stack. If there are no values to pop, supply an error entity.
      */
@@ -210,7 +210,7 @@ public class TextParser extends SourceParser
         }
         return new ErrorEntity();
     }
-    
+
     /**
      * Get the precedence level for a given operator type.
      */
@@ -273,10 +273,10 @@ public class TextParser extends SourceParser
             return 20;
         default:
         }
-        
+
         return -1;
     }
-    
+
     /** 
      * Process all on-stack operators with a higher precedence than that given
      */
@@ -291,7 +291,7 @@ public class TextParser extends SourceParser
             processOperator(top);
         }
     }
-    
+
     /**
      * Process an operator, take the operands from the value stack and leave the result on the
      * stack.
@@ -299,10 +299,10 @@ public class TextParser extends SourceParser
     private void processOperator(Operator operator)
     {
         int tokenType = operator.getType();
-        
+
         JavaEntity arg1;
         JavaEntity arg2;
-        
+
         switch (tokenType) {
         case JavaTokenTypes.PLUS:
         case JavaTokenTypes.MINUS:
@@ -366,14 +366,14 @@ public class TextParser extends SourceParser
     {
         // Conversions allowed are specified in JLS 3rd ed. 5.5.
         // But see: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7029688
-        
+
         ValueEntity varg1 = popValueStack().resolveAsValue(); // value being cast
         TypeEntity castType = popValueStack().resolveAsType();  // cast-to type
         if (varg1 == null || castType == null) {
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         if (ValueEntity.isConstant(varg1)) {
             JavaType jctype = castType.getType();
             if (jctype.isIntegralType()) {
@@ -415,7 +415,7 @@ public class TextParser extends SourceParser
                     valueStack.push(new ErrorEntity());
                     return;
                 }
-                
+
                 valueStack.push(new ConstantIntValue(null, jctype, ival));
                 return;
             }
@@ -431,11 +431,11 @@ public class TextParser extends SourceParser
                     valueStack.push(new ErrorEntity());
                     return;
                 }
-                
+
                 if (jctype.typeIs(JavaType.JT_FLOAT)) {
                     dval = (float) dval;
                 }
-                
+
                 valueStack.push(new ConstantFloatValue(jctype, dval));
                 return;
             }
@@ -450,23 +450,23 @@ public class TextParser extends SourceParser
                 return;
             }
         }
-        
+
         // Argument is not a constant, or cast is to a type that won't result in
         // a constant.
-        
+
         JavaType argType = varg1.getType();
         JavaType jctype = castType.getType();
-        
+
         if (argType.isPrimitive() && ! jctype.isPrimitive()) {
             if (argType.typeIs(JavaType.JT_NULL)) {
                 valueStack.push(new ValueEntity(jctype));
                 return;
             }
-            
+
             // The only remaining allowable case is a boxing conversion.
-            
+
             String jctypeStr = jctype.toString();
-            
+
             if (argType.typeIs(JavaType.JT_BOOLEAN) && jctypeStr.equals("java.lang.Boolean")
                     || argType.typeIs(JavaType.JT_CHAR) && jctypeStr.equals("java.lang.Character")
                     || argType.typeIs(JavaType.JT_BYTE) && jctypeStr.equals("java.lang.Byte")
@@ -482,9 +482,9 @@ public class TextParser extends SourceParser
             }
             return;
         }
-        
+
         JavaType argUnboxed = TextAnalyzer.unBox(argType);
-        
+
         if (argUnboxed.isNumeric() && jctype.isNumeric()) {
             // Widening or narrowing primitive conversion - allowed.
             // NOTE: The JLS doesn't actually allow the case where the argument type is a
@@ -495,7 +495,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ValueEntity(jctype));
             return;
         }
-        
+
         if (jctype.isPrimitive()) {
             // Note the numeric cases are handled above.
             if (jctype.typeIs(JavaType.JT_BOOLEAN) && argUnboxed.typeIs(JavaType.JT_BOOLEAN)) {
@@ -506,26 +506,26 @@ public class TextParser extends SourceParser
             }
             return;
         }
-        
+
         // TODO check operand can be cast to this type - widening or narrowing
         //      reference conversion.
         valueStack.push(new ValueEntity(jctype));
     }
-    
+
     @Override
     protected void gotArrayElementAccess()
     {
         JavaEntity index = popValueStack();
         processHigherPrecedence(getPrecedence(JavaTokenTypes.DOT) - 1); // Process DOT precedence and higher
         JavaEntity array = popValueStack();
-        
+
         index = index.resolveAsValue();
         array = array.resolveAsValue();
         if (index == null || array == null) {
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         JavaType componentType = array.getType().getArrayComponent();
         if (componentType == null) {
             valueStack.push(new ErrorEntity());
@@ -534,7 +534,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ValueEntity(componentType));
         }
     }
-    
+
     private void processNewOperator(Operator token)
     {
         if (! argumentStack.isEmpty()) {
@@ -546,7 +546,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     /**
      * Process the "member call operator".
      */
@@ -558,7 +558,7 @@ public class TextParser extends SourceParser
         JavaEntity target = popValueStack();
         JavaEntity vtarget = target.resolveAsValue();
         GenTypeSolid targetType;
-        
+
         if (vtarget != null) {
             GenTypeSolid stype = vtarget.getType().asSolid();
             if (stype == null) {
@@ -583,7 +583,7 @@ public class TextParser extends SourceParser
             }
             targetType = stype;
         }
-        
+
         if (op.getToken().getType() == JavaTokenTypes.IDENT) {
             processMethodCall(targetType, op.getToken().getText(), typeArgStack.pop());
         }
@@ -591,7 +591,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     private void processMethodCall(Operator op)
     {
         if (op.getToken().getType() == JavaTokenTypes.IDENT) {
@@ -602,7 +602,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     private void processMethodCall(GenTypeSolid targetType, String methodName, List<LocatableToken> typeArgTokens)
     {
         GenTypeClass accessClass = accessType.getType().asClass();
@@ -610,7 +610,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         // Gather the argument types.
         List<JavaEntity> argList = argumentStack.pop();
         JavaType [] argTypes = new JavaType[argList.size()];
@@ -633,7 +633,7 @@ public class TextParser extends SourceParser
                 valueStack.push(new ErrorEntity());
                 return;
             }
-            
+
             typeArgs = new ArrayList<GenTypeParameter>(typeArgEnts.size());
             for (TypeArgumentEntity typeArgEnt : typeArgEnts) {
                 GenTypeParameter targType = typeArgEnt.getType();
@@ -654,7 +654,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         // JLS 3rd ed. 15.12.2.5. We already have a list of the maximally specific methods:
         // - if one or more methods have non override-equivalent signatures, the call is ambiguous
         // - otherwise, if there is exactly one non-abstract method, choose that one;
@@ -671,7 +671,7 @@ public class TextParser extends SourceParser
             nonAbstractMethod = first;
         }
         mostSpecificMethod = first;
-        
+
         if (suitable.size() > 1) {
             List<GenTypeDeclTpar> tpars = first.method.getTparTypes();
             List<JavaType> paramTypes = first.method.getParamTypes();
@@ -686,18 +686,18 @@ public class TextParser extends SourceParser
                     nonAbstractCount++;
                     nonAbstractMethod = next;
                 }
-                
+
                 if (mostSpecificMethod.retType.isAssignableFrom(next.retType)) {
                     mostSpecificMethod = next;
                 }
             }
         }
-        
+
         MethodCallDesc chosenMethod = nonAbstractMethod;
         if (nonAbstractCount != 1) {
             chosenMethod = mostSpecificMethod;
         }
-        
+
         // TODO check applicability of chosen method as per JLS 3rd ed. 15.12.3
 
         valueStack.push(new ValueEntity(chosenMethod.retType));
@@ -712,7 +712,7 @@ public class TextParser extends SourceParser
             if (firstTpars.size() != secondTpars.size()) {
                 return false;
             }
-            
+
             // Create a map from second method tpar name to first method tpar
             Map<String,GenTypeParameter> tparMap = new HashMap<String,GenTypeParameter>();
             Iterator<GenTypeDeclTpar> i = firstTpars.iterator();
@@ -725,7 +725,7 @@ public class TextParser extends SourceParser
                     return false;
                 }
             }
-            
+
             // Check argument types
             Iterator<JavaType> k = firstParamTypes.iterator();
             Iterator<JavaType> l = secondParamTypes.iterator();
@@ -734,10 +734,10 @@ public class TextParser extends SourceParser
                     return false;
                 }
             }
-            
+
             return true;
         }
-        
+
         if (firstTpars.isEmpty() && secondTpars.isEmpty()) {
             // The parameter types might match exactly
             boolean doMatch = true;
@@ -753,7 +753,7 @@ public class TextParser extends SourceParser
                 return true;
             }
         }
-        
+
         if (firstTpars.isEmpty()) {
             // The first signature might be the erasure of the second
             boolean doMatch = true;
@@ -769,7 +769,7 @@ public class TextParser extends SourceParser
                 return true;
             }
         }
-        
+
         if (secondTpars.isEmpty()) {
             // The second signature might be the erasure of the first
             boolean doMatch = true;
@@ -783,7 +783,7 @@ public class TextParser extends SourceParser
             }
             return doMatch;
         }
-        
+
         return false;
     }
 
@@ -798,10 +798,10 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         doUnaryOp(rarg1, op);
     }
-    
+
     /**
      * Do a unary plus operation (JLS 3rd ed. 15.15.3)
      */
@@ -827,7 +827,7 @@ public class TextParser extends SourceParser
             }
         }
     }
-    
+
     /**
      * Do a unary minus operation (JLS 3rd ed. 15.15.4)
      */
@@ -853,7 +853,7 @@ public class TextParser extends SourceParser
             }
         }
     }
-    
+
     /**
      * Process a unary operator.
      */
@@ -864,7 +864,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         JavaType argType = varg.getType();
 
         int ttype = op.getType();
@@ -917,7 +917,7 @@ public class TextParser extends SourceParser
             break;
         }
     }
-    
+
     /**
      * Cast an integer value to the given integer type, and return the resulting value.
      * The returned value will be within the range of values representable by the type. 
@@ -938,7 +938,7 @@ public class TextParser extends SourceParser
         }
         return value;
     }
-    
+
     /**
      * Promote an integer or float to a float, return the result
      */
@@ -951,7 +951,7 @@ public class TextParser extends SourceParser
             return arg1.getConstantIntValue();
         }
     }
-    
+
     /**
      * Promote an integer, float or double to a double, return the result.
      */
@@ -964,7 +964,7 @@ public class TextParser extends SourceParser
             return arg1.getConstantIntValue();
         }
     }
-    
+
     /**
      * Process the '+' operator
      */
@@ -972,14 +972,14 @@ public class TextParser extends SourceParser
     {
         JavaType a1type = arg1.getType();
         JavaType a2type = arg2.getType();
-        
+
         // either the first or second argument might be a String,
         // in which case the result will be a String also.
         GenTypeSolid a1solid = a1type.asSolid();
         GenTypeSolid a2solid = a2type.asSolid();
         GenTypeClass a1class = null;
         GenTypeClass a2class = null;
-        
+
         // The JLS 3rd edition conflicts with actual compiler behaviour.
         // JLS says that String concatenation is only the case if the type of
         // either argument is String. However, if the type is a type parameter
@@ -996,7 +996,7 @@ public class TextParser extends SourceParser
                 a2class = a2solid.getReferenceSupertypes()[0];
             }
         }
-        
+
         if (a1class != null && a1class.toString().equals("java.lang.String")) {
             // TODO concatenation of constant string with a constant should yield a constant string
             valueStack.push(new ValueEntity(a1class));
@@ -1007,10 +1007,10 @@ public class TextParser extends SourceParser
             valueStack.push(new ValueEntity(a2class));
             return;
         }
-        
+
         doBnpOp(op, arg1, arg2);
     }
-    
+
     /**
      * Process an operator which performs binary numeric promotion and which allows
      * the result to be a constant expression.
@@ -1020,12 +1020,12 @@ public class TextParser extends SourceParser
         JavaType a1type = arg1.getType();
         JavaType a2type = arg2.getType();
         JavaType resultType = TextAnalyzer.binaryNumericPromotion(a1type, a2type);
-        
+
         if (resultType == null) {
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         // Handle the case where the arguments are constant. We must do three cases
         // differently: integral types, "float" type (arguments promoted to "float")
         // and "double" type (arguments promoted to "double").
@@ -1121,7 +1121,7 @@ public class TextParser extends SourceParser
 
         valueStack.push(new ValueEntity(null, resultType));
     }
-    
+
     /**
      * Process equality operators '==' and '!='
      */
@@ -1129,7 +1129,7 @@ public class TextParser extends SourceParser
     {
         JavaType a1type = arg1.getType();
         JavaType a2type = arg2.getType();
-        
+
         if (ValueEntity.isConstant(arg1) && ValueEntity.isConstant(arg2)) {
             if (a1type.isNumeric()) {
                 if (! a2type.isNumeric()) {
@@ -1159,7 +1159,7 @@ public class TextParser extends SourceParser
                 }
                 return;
             }
-            
+
             // Constants but not numeric...
             if (arg1.hasConstantBooleanValue() && arg2.hasConstantBooleanValue()) {
                 boolean a1 = arg1.getConstantBooleanValue();
@@ -1168,7 +1168,7 @@ public class TextParser extends SourceParser
                 valueStack.push(new ConstantBoolValue(rval));
                 return;
             }
-            
+
             if (arg1.isConstantString() && arg2.isConstantString()) {
                 String a1 = arg1.getConstantString();
                 String a2 = arg2.getConstantString();
@@ -1176,10 +1176,10 @@ public class TextParser extends SourceParser
                 valueStack.push(new ConstantBoolValue(rval));
                 return;
             }
-            
+
             valueStack.push(new ErrorEntity());
         }
-        
+
         if (a1type.isNumeric() || a2type.isNumeric()) {
             // Note we only perform binary numeric promotion if one of the arguments
             // is already (primitive) numeric, as per the JLS 3rd ed.
@@ -1207,7 +1207,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     /**
      * Process a relationship operator - '&lt;', '&gt;', '&lt;=', '&gt;='
      */
@@ -1215,7 +1215,7 @@ public class TextParser extends SourceParser
     {
         JavaType a1type = arg1.getType();
         JavaType a2type = arg2.getType();
-        
+
         JavaType promotedType = TextAnalyzer.binaryNumericPromotion(a1type, a2type);
         if (promotedType == null) {
             valueStack.push(new ErrorEntity());
@@ -1226,7 +1226,7 @@ public class TextParser extends SourceParser
                     long a1 = arg1.getConstantIntValue();
                     long a2 = arg2.getConstantIntValue();
                     boolean rval;
-                    
+
                     switch (op.type) {
                     case JavaTokenTypes.LT:
                         rval = a1 < a2; break;
@@ -1238,14 +1238,14 @@ public class TextParser extends SourceParser
                     // case JavaTokenTypes.GE:
                         rval = a1 >= a2;
                     }
-                    
+
                     valueStack.push(new ConstantBoolValue(rval));
                 }
                 else if (promotedType.typeIs(JavaType.JT_FLOAT)) {
                     float a1 = promoteToFloat(arg1);
                     float a2 = promoteToFloat(arg2);
                     boolean rval;
-                    
+
                     switch (op.type) {
                     case JavaTokenTypes.LT:
                         rval = a1 < a2; break;
@@ -1257,14 +1257,14 @@ public class TextParser extends SourceParser
                     // case JavaTokenTypes.GE:
                         rval = a1 >= a2;
                     }
-                    
+
                     valueStack.push(new ConstantBoolValue(rval));
                 }
                 else { // JT_DOUBLE
                     double a1 = promoteToDouble(arg1);
                     double a2 = promoteToDouble(arg2);
                     boolean rval;
-                    
+
                     switch (op.type) {
                     case JavaTokenTypes.LT:
                         rval = a1 < a2; break;
@@ -1276,16 +1276,16 @@ public class TextParser extends SourceParser
                     // case JavaTokenTypes.GE:
                         rval = a1 >= a2;
                     }
-                    
+
                     valueStack.push(new ConstantBoolValue(rval));
                 }
                 return;
             }
-            
+
             valueStack.push(new ValueEntity("", JavaPrimitiveType.getBoolean()));
         }
     }
-    
+
     /**
      * Do a bitwise operation - '&amp;', '|' or '^'
      */
@@ -1321,10 +1321,10 @@ public class TextParser extends SourceParser
                 return;
             }
         }
-        
+
         doBnpOp(op, arg1, arg2);
     }
-    
+
     /**
      * Do a logical operation - '&amp;&amp;' or '||'
      * @param op
@@ -1359,10 +1359,10 @@ public class TextParser extends SourceParser
                 return;
             }
         }
-        
+
         valueStack.push(new ErrorEntity());
     }
-    
+
     /**
      * Process a binary operator. Arguments have been resolved as values.
      * The result is pushed back onto the value stack.
@@ -1376,9 +1376,9 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         JavaType a1type = arg1.getType().getCapture();
-        
+
         int ttype = op.getType();
         switch (ttype) {
         case JavaTokenTypes.PLUS:
@@ -1464,44 +1464,44 @@ public class TextParser extends SourceParser
         default:
         }
     }
-    
+
     private void processQuestionOperator()
     {
         // JLS 15.25
         JavaEntity rhs = popValueStack();
         JavaEntity lhs = popValueStack();
         JavaEntity condition = popValueStack();
-        
+
         ValueEntity conditionv = condition.resolveAsValue();
         if (conditionv == null) {
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         JavaType ctype = conditionv.getType();
         if (!ctype.typeIs(JavaType.JT_BOOLEAN) && !ctype.toString().equals("java.lang.Boolean")) {
             // Condition is not a boolean
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         ValueEntity rhsv = rhs.resolveAsValue();
         ValueEntity lhsv = lhs.resolveAsValue();
         if (rhsv == null || lhsv == null) {
             valueStack.push(new ErrorEntity());
             return;
         }
-        
+
         ValueEntity rent = TextAnalyzer.questionOperator15(conditionv, lhsv, rhsv);
         valueStack.push(rent);
     }
-    
+
     @Override
     protected void beginExpression(LocatableToken token, boolean isLambdaBody)
     {
         operatorStack.push(new Operator(PAREN_OPERATOR, token));
     }
-    
+
     @Override
     protected void endExpression(LocatableToken token, boolean isEmpty)
     {
@@ -1509,11 +1509,11 @@ public class TextParser extends SourceParser
         if (isEmpty) {
             valueStack.push(new ErrorEntity());
         }
-        
+
         // This should leave the expression value on top of the value stack:
         processHigherPrecedence(getPrecedence(PAREN_OPERATOR));
         operatorStack.pop(); // pop expression beginning operator
-        
+
         if (!operatorStack.isEmpty()) {
             if (operatorStack.peek().type == JavaTokenTypes.LCURLY) {
                 // The value generated by this expression can be discarded:
@@ -1521,7 +1521,7 @@ public class TextParser extends SourceParser
             }
         }
     }
-    
+
     private void gotStringLiteral(LocatableToken token)
     {
         String ctext = token.getText();
@@ -1586,7 +1586,7 @@ public class TextParser extends SourceParser
         ValueEntity ent = new ConstantStringEntity(stringType, sb.toString());
         valueStack.push(ent);
     }
-    
+
     @Override
     protected void gotLiteral(LocatableToken token)
     {
@@ -1722,7 +1722,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     @Override
     protected void gotIdentifier(LocatableToken token)
     {
@@ -1731,7 +1731,7 @@ public class TextParser extends SourceParser
         valueStack.push(UnresolvedEntity.getEntity(resolver, ident, accessSource));
         arrayCount = 0;
     }
-    
+
     /**
      * Get the access type as a reflective.
      */
@@ -1745,13 +1745,13 @@ public class TextParser extends SourceParser
         }
         return null;
     }
-    
+
     @Override
     protected void gotMemberAccess(LocatableToken token)
     {
         String ident = token.getText();
         JavaEntity top = valueStack.pop();
-        
+
         // handle array "length" member
         if (token.getText().equals("length")) {
             JavaEntity topVal = top.resolveAsValue();
@@ -1763,7 +1763,7 @@ public class TextParser extends SourceParser
                 }
             }
         }
-        
+
         JavaEntity newTop = top.getSubentity(ident, getAccessSource());
         if (newTop != null) {
             valueStack.push(newTop);
@@ -1772,26 +1772,26 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     @Override
     protected void gotMemberCall(LocatableToken token, List<LocatableToken> typeArgs)
     {
         operatorStack.push(new Operator(MEMBER_CALL_OP, token));
         typeArgStack.push(typeArgs);
     }
-    
+
     @Override
     protected void gotMethodCall(LocatableToken token)
     {
         operatorStack.push(new Operator(METHOD_CALL_OP, token));
     }
-    
+
     @Override
     protected void gotConstructorCall(LocatableToken token)
     {
         operatorStack.push(new Operator(METHOD_CALL_OP, token));
     }
-    
+
     @Override
     protected void gotUnaryOperator(LocatableToken token)
     {
@@ -1805,14 +1805,14 @@ public class TextParser extends SourceParser
         processHigherPrecedence(getPrecedence(ttype)); // right associative
         operatorStack.push(new Operator(ttype, token));
     }
-    
+
     @Override
     protected void gotBinaryOperator(LocatableToken token)
     {
         processHigherPrecedence(getPrecedence(token.getType()) - 1);
         operatorStack.push(new Operator(token.getType(), token));
     }
-    
+
     @Override
     protected void gotInstanceOfOperator(LocatableToken token)
     {
@@ -1820,21 +1820,21 @@ public class TextParser extends SourceParser
         operatorStack.push(new Operator(token.getType(), token));
         state = STATE_INSTANCEOF;
     }
-    
+
     @Override
     protected void gotQuestionOperator(LocatableToken token)
     {
         processHigherPrecedence(getPrecedence(token.getType()) - 1);
         operatorStack.push(new Operator(token.getType(), token));
     }
-    
+
     @Override
     protected void gotTypeSpec(List<LocatableToken> tokens)
     {
         if (state == STATE_NEW) {
             JavaEntity entity = resolveTypeSpec(tokens);
             state = STATE_NEW_ARGS;
-            
+
             if (entity != null) {
                 valueStack.push(new ValueEntity(entity.getType()));
             }
@@ -1855,12 +1855,12 @@ public class TextParser extends SourceParser
             }
         }
     }
-    
+
     @Override
     protected void gotTypeCast(List<LocatableToken> tokens)
     {
         JavaEntity entity = resolveTypeSpec(tokens);
-        
+
         if (entity != null) {
             valueStack.push(entity);
             operatorStack.push(new Operator(CAST_OPERATOR, null));
@@ -1869,13 +1869,13 @@ public class TextParser extends SourceParser
             operatorStack.push(new Operator(BAD_CAST_OPERATOR, null));
         }
     }
-    
+
     @Override
     protected void gotArrayDeclarator()
     {
         arrayCount++;
     }
-    
+
     @Override
     protected void gotNewArrayDeclarator(boolean withDimension)
     {
@@ -1883,11 +1883,11 @@ public class TextParser extends SourceParser
             state = STATE_NONE; // Don't expect constructor arguments!
             operatorStack.pop(); // remove new operator from stack
         }
-        
+
         if (withDimension) {
             valueStack.pop(); // pull the dimension off the value stack
         }
-        
+
         JavaEntity top = valueStack.pop();
         JavaEntity ttop = top.resolveAsValue();
         if (ttop != null) {
@@ -1897,7 +1897,7 @@ public class TextParser extends SourceParser
             valueStack.push(new ErrorEntity());
         }
     }
-    
+
     @Override
     protected void gotPrimitiveTypeLiteral(LocatableToken token)
     {
@@ -1907,7 +1907,7 @@ public class TextParser extends SourceParser
         valueStack.push(tent);
         arrayCount = 0;
     }
-    
+
     @Override
     @OnThread(Tag.FXPlatform)
     protected void gotClassLiteral(LocatableToken token)
@@ -1978,12 +1978,12 @@ public class TextParser extends SourceParser
 
         valueStack.push(new ErrorEntity());
     }
-    
+
     private class DepthRef
     {
         int depth = 0;
     }
-    
+
     /**
      * Resolve a type specification. Returns null if the type couldn't be resolved.
      */
@@ -1992,7 +1992,7 @@ public class TextParser extends SourceParser
         DepthRef dr = new DepthRef();
         return resolveTypeSpec(tokens.listIterator(), dr);
     }
-    
+
     /**
      * Resolve a type specification. Returns null if the type couldn't be resolved.
      */
@@ -2000,12 +2000,12 @@ public class TextParser extends SourceParser
     private TypeEntity resolveTypeSpec(ListIterator<LocatableToken> i, DepthRef depthRef)
     {
         LocatableToken token = i.next();
-        
+
         if (isPrimitiveType(token)) {
             if (token.getType() == JavaTokenTypes.LITERAL_void) {
                 return new TypeEntity(JavaPrimitiveType.getVoid());
             }
-            
+
             JavaType type = null;
             switch (token.getType()) {
             case JavaTokenTypes.LITERAL_int:
@@ -2032,7 +2032,7 @@ public class TextParser extends SourceParser
             case JavaTokenTypes.LITERAL_float:
                 type = JavaPrimitiveType.getFloat();
             }
-            
+
             while (i.hasNext()) {
                 token = i.next();
                 if (token.getType() == JavaTokenTypes.LBRACK) {
@@ -2043,7 +2043,7 @@ public class TextParser extends SourceParser
                     return null;
                 }
             }
-            
+
             return new TypeEntity(type);
         }
 
@@ -2071,7 +2071,7 @@ public class TextParser extends SourceParser
                 if (poc == null) {
                     return null;
                 }
-                
+
                 while (token.getType() == JavaTokenTypes.LBRACK) {
                     poc = new TypeEntity(poc.getType().getArray());
                     if (i.hasNext()) {
@@ -2082,7 +2082,7 @@ public class TextParser extends SourceParser
                     }
                     token = i.next();
                 }
-                
+
                 i.previous(); // allow token to be re-read by caller
                 return poc.resolveAsType();
             }
@@ -2092,7 +2092,7 @@ public class TextParser extends SourceParser
             }
             poc = poc.getPackageOrClassMember(token.getText());
         }
-                
+
         if (poc != null) {
             return poc.resolveAsType();
         }
@@ -2100,7 +2100,7 @@ public class TextParser extends SourceParser
             return null;
         }
     }
-    
+
     /**
      * Process tokens as type arguments
      * @param base  The base type, i.e. the type to which the arguments are applied
@@ -2114,11 +2114,11 @@ public class TextParser extends SourceParser
         if (taList == null) {
             return null;
         }
-        
+
         // TODO check the type arguments are actually valid
         return base.setTypeArgs(taList);
     }
-    
+
     /**
      * Read a list of type arguments (the opening angle-bracket has already been read) from a list of tokens.
      * Returns null if there is an error.
@@ -2128,7 +2128,7 @@ public class TextParser extends SourceParser
         int startDepth = depthRef.depth;
         List<TypeArgumentEntity> taList = new LinkedList<TypeArgumentEntity>();
         depthRef.depth++; // initial '<' already skipped
-        
+
         mainLoop:
         while (i.hasNext() && depthRef.depth > startDepth) {
             LocatableToken token = i.next();
@@ -2195,17 +2195,17 @@ public class TextParser extends SourceParser
                 break;
             }
         }
-        
+
         return taList;
     }
-    
+
     @Override
     protected void beginArgumentList(LocatableToken token)
     {
         state = STATE_NONE;
         argumentStack.push(new ArrayList<JavaEntity>());
     }
-    
+
     @Override
     protected void endArgument()
     {
@@ -2216,7 +2216,7 @@ public class TextParser extends SourceParser
             argumentStack.peek().add(valueStack.pop());
         }
     }
-    
+
     @Override
     protected void endArgumentList(LocatableToken token)
     {
@@ -2237,14 +2237,14 @@ public class TextParser extends SourceParser
             }
         }
     }
-    
+
     @Override
     protected void gotExprNew(LocatableToken token)
     {
         state = STATE_NEW;
         operatorStack.push(new Operator(token.getType(), token));
     }
-    
+
     @Override
     protected void endExprNew(LocatableToken token, boolean included)
     {
@@ -2258,13 +2258,13 @@ public class TextParser extends SourceParser
             state = STATE_NONE;
         }
     }
-    
+
     @Override
     protected void beginAnonClassBody(LocatableToken token, boolean isEnumMember)
     {
         operatorStack.push(new Operator(token.getType(), token));
     }
-    
+
     @Override
     protected void beginArrayInitList(LocatableToken token)
     {

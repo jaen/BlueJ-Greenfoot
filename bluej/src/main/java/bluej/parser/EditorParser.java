@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 2010,2011,2012,2013,2014,2016,2017,2019,2021,2022,2023,2024  Michael Kolling and John Rosenberg 
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -52,7 +52,7 @@ public class EditorParser extends SourceParser
     private final NodeStructureListener nodeStructureListener;
     protected Stack<JavaParentNode> scopeStack = new Stack<JavaParentNode>();
     private ParsedTypeNode innermostType;
-    
+
     private LocatableToken pcuStmtBegin;
     private ParsedCUNode pcuNode;
     private List<LocatableToken> commentQueue = new LinkedList<LocatableToken>();
@@ -69,35 +69,35 @@ public class EditorParser extends SourceParser
     {
         String name;
         List<List<LocatableToken>> bounds;
-        
+
         TypeParam(String name, List<List<LocatableToken>> bounds)
         {
             this.name = name;
             this.bounds = bounds;
         }
     }
-    
+
     private List<TypeParam> typeParams;
     private String lastTypeParamName;
     private List<List<LocatableToken>> lastTypeParBounds;
-    
+
     private List<JavaEntity> extendedTypes;
     private List<JavaEntity> implementedTypes;
-    
+
     private ReparseableDocument document;
-    
+
     private boolean gotExtends = false;
     private boolean gotImplements = false;
     private boolean gotPermits = false;
-    
+
     private boolean gotNewType = true;  // whether we've seen the type in a "new TYPE(..." expression,
         // assuming we're in such an expression. (If false, we have seen new, but not the type).
-    
+
     /** Stack of types instantiated via "new ...()" expression */
     private Stack<List<LocatableToken>> newTypes = new Stack<List<LocatableToken>>();
-    
+
     private int currentModifiers = 0;
-    
+
     /**
      * Constructor for use by subclasses (InfoReader).
      */
@@ -123,7 +123,7 @@ public class EditorParser extends SourceParser
         };
         pcuNode = new ParsedCUNode(resolver);
     }
-    
+
     public EditorParser(ReparseableDocument document, Reader r, int line, int col, int pos, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
     {
         super(r, document.getSourceType(), line, col, pos);
@@ -132,7 +132,7 @@ public class EditorParser extends SourceParser
         this.nodeStructureListener = nodeStructureListener;
         pcuNode = (ParsedCUNode) scopeStack.get(0);
     }
-    
+
     /**
      * Get the types following the "extends" keyword, if we have some. Used in incremental parsing.
      */
@@ -140,7 +140,7 @@ public class EditorParser extends SourceParser
     {
         return extendedTypes;
     }
-    
+
     @Override
     // This tag is hacky, but if document is an instanceof MoeSyntaxDocument, the parsing
     // should be happening on the FX thread:
@@ -155,7 +155,7 @@ public class EditorParser extends SourceParser
         }
         int endPos = lineEl.getStartOffset() + endColumn - 1;
     }
-    
+
     @Override
     public void parseCU()
     {
@@ -164,7 +164,7 @@ public class EditorParser extends SourceParser
         scopeStack.pop();
         completedNode(pcuNode, 0, pcuNode.getSize());
     }
-    
+
     /**
      * Convert a line and column number to an absolute position within the document
      * @param line  Line number (1..N)
@@ -199,10 +199,10 @@ public class EditorParser extends SourceParser
         top.resize(endPos - topPos);
         NodeAndPosition<ParsedNode> child = new NodeAndPosition<ParsedNode>(top, topPos, endPos - topPos);
         scopeStack.peek().childResized(null, topPos - top.getOffsetFromParent(), child);
-        
+
         completedNode(top, topPos, endPos - topPos);
     }
-    
+
     /**
      * Check whether a type specification (list of tokens) is "var", the magical non-keyword used
      * to enable type inference.
@@ -241,7 +241,7 @@ public class EditorParser extends SourceParser
             }
         }
     }
-    
+
     /**
      * Prepare to begin a new node at the given position (document position).
      */
@@ -263,7 +263,7 @@ public class EditorParser extends SourceParser
             scopeStack.peek().insertNode(cn, startpos - topOffset, endpos - startpos, nodeStructureListener);
         }
     }
-    
+
     /**
      * Get the start position of the top node in the scope stack.
      */
@@ -273,7 +273,7 @@ public class EditorParser extends SourceParser
         if (!i.hasNext()) {
             return 0;
         }
-        
+
         int rval = 0;
         i.next();
         while (i.hasNext()) {
@@ -281,7 +281,7 @@ public class EditorParser extends SourceParser
         }
         return rval;
     }
-    
+
     /**
      * Join a sequence of tokens together to form a string.
      */
@@ -293,7 +293,7 @@ public class EditorParser extends SourceParser
         }
         return r.toString();
     }
-    
+
     /**
      * Get the current query source - a fully qualified class name representing
      * the current context. (This is mainly used to determine what members of a
@@ -309,11 +309,11 @@ public class EditorParser extends SourceParser
                 return new ParsedReflective(ptn);
             }
         }
-        
+
         return null;
     }
-    
-    
+
+
     //  -------------- Callbacks from the superclass ----------------------
 
     @Override
@@ -350,19 +350,19 @@ public class EditorParser extends SourceParser
         default:
         }
     }
-    
+
     @Override
     protected void modifiersConsumed()
     {
         currentModifiers = 0;
     }
-    
+
     @Override
     protected void beginPackageStatement(LocatableToken token)
     {
         pcuStmtBegin = token;
     }
-    
+
     @Override
     protected void gotPackage(List<LocatableToken> pkgTokens)
     {
@@ -377,7 +377,7 @@ public class EditorParser extends SourceParser
         if (parentResolver == null) {
             return;
         }
-        
+
         if (isStatic)
         {
             if (tokens.size() < 2)
@@ -385,16 +385,16 @@ public class EditorParser extends SourceParser
                 // An invalid static import (like "import static Math;"); we should ignore it
                 return;
             }
-            
-            
+
+
             // Apparently static inner classes can be imported with or without the "static" keyword
             // So, a static import imports a field and/or method and/or class.
             // That's right - the same import statement pulls in all three.
-            
+
             // We want to pull the name out (and remove the intermediate dot)
             int newSize = tokens.size() - 2;
             String memberName = tokens.get(newSize + 1).getText();
-            
+
             List<LocatableToken> newList = new ArrayList<LocatableToken>(newSize);
             Iterator<LocatableToken> i = tokens.iterator();
             while (newSize > 0) {
@@ -417,7 +417,7 @@ public class EditorParser extends SourceParser
             }
         }
     }
-    
+
     @Override
     protected void gotWildcardImport(List<LocatableToken> tokens,
                                      boolean isStatic, LocatableToken importToken, LocatableToken semiColonToken)
@@ -442,7 +442,7 @@ public class EditorParser extends SourceParser
             }
         }
     }
-    
+
     @Override
     protected void gotDeclBegin(LocatableToken token)
     {
@@ -458,14 +458,14 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(placeHolder, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(placeHolder);
     }
-    
+
     @Override
     protected void endDecl(LocatableToken token)
     {
         // Failed declaration; just throw away the node
         scopeStack.pop().remove();
     }
-    
+
     @Override
     protected void gotTypeDef(LocatableToken firstToken, int tdType)
     {
@@ -478,7 +478,7 @@ public class EditorParser extends SourceParser
         else {
             prefix = (declaredPkg.length() == 0) ? "" : (declaredPkg + ".");
         }
-        
+
         innermostType = new ParsedTypeNode(scopeStack.peek(), innermostType, tdType, prefix, currentModifiers);
         int curOffset = getTopNodeOffset();
         LocatableToken hidden = firstToken.getHiddenBefore();
@@ -492,7 +492,7 @@ public class EditorParser extends SourceParser
         scopeStack.push(innermostType);
         initializeTypeExtras();
     }
-    
+
     /**
      * Initialize the lists for holding type parameters, supertypes, etc.
      */
@@ -502,20 +502,20 @@ public class EditorParser extends SourceParser
         extendedTypes = new LinkedList<JavaEntity>();
         implementedTypes = new LinkedList<JavaEntity>();
     }
-    
+
     @Override
     protected void gotMethodTypeParamsBegin()
     {
         typeParams = new LinkedList<TypeParam>();
     }
-    
+
     @Override
     protected void gotTypeDefName(LocatableToken nameToken)
     {
         ParsedTypeNode tnode = (ParsedTypeNode) scopeStack.peek();
         tnode.setName(nameToken.getText());
     }
-    
+
     @Override
     protected void gotTypeParam(LocatableToken idToken)
     {
@@ -525,14 +525,14 @@ public class EditorParser extends SourceParser
         lastTypeParamName = idToken.getText();
         lastTypeParBounds = new ArrayList<List<LocatableToken>>();
     }
-    
+
     @Override
     protected void gotTypeParamBound(List<LocatableToken> tokens)
     {
         lastTypeParBounds.add(tokens);
         typeParams.add(new TypeParam(lastTypeParamName, lastTypeParBounds));
     }
-    
+
     /**
      * Get a list of the recently processed type parameters as a list of TparEntity.
      * The given resolver must be able to resolve the type parameter names
@@ -544,12 +544,12 @@ public class EditorParser extends SourceParser
         if (typeParams == null) {
             return null;
         }
-        
+
         if (lastTypeParamName != null) {
             typeParams.add(new TypeParam(lastTypeParamName, lastTypeParBounds));
             lastTypeParamName = null;
         }
-        
+
         Reflective querySource = currentQuerySource();
         List<TparEntity> rlist = new ArrayList<TparEntity>(typeParams.size());
         for (TypeParam tpar : typeParams) {
@@ -560,10 +560,10 @@ public class EditorParser extends SourceParser
             JavaEntity boundsEnt = IntersectionTypeEntity.getIntersectionEntity(bounds, scopeStack.peek());
             rlist.add(new TparEntity(tpar.name, boundsEnt));
         }
-        
+
         return rlist;
     }
-    
+
     @Override
     protected void beginTypeBody(LocatableToken token)
     {
@@ -574,7 +574,7 @@ public class EditorParser extends SourceParser
         gotExtends = false;
         gotImplements = false;
         gotPermits = false;
-        
+
         TypeInnerNode bodyNode = new TypeInnerNode(scopeStack.peek());
         bodyNode.setInner(true);
         int curOffset = getTopNodeOffset();
@@ -583,7 +583,7 @@ public class EditorParser extends SourceParser
         top.insertInner(bodyNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(bodyNode);
     }
-    
+
     @Override
     protected void beginForLoop(LocatableToken token)
     {
@@ -594,7 +594,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(loopNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(loopNode);
     }
-    
+
     @Override
     protected void beginForLoopBody(LocatableToken token)
     {
@@ -610,7 +610,7 @@ public class EditorParser extends SourceParser
             scopeStack.push(loopNode);
         }
     }
-    
+
     @Override
     protected void endForLoopBody(LocatableToken token, boolean included)
     {
@@ -618,7 +618,7 @@ public class EditorParser extends SourceParser
             endTopNode(token, included);
         }
     }
-    
+
     @Override
     protected void beginWhileLoop(LocatableToken token)
     {
@@ -629,7 +629,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(loopNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(loopNode);
     }
-    
+
     @Override
     protected void beginWhileLoopBody(LocatableToken token)
     {
@@ -645,7 +645,7 @@ public class EditorParser extends SourceParser
             scopeStack.push(loopNode);
         }
     }
-    
+
     @Override
     protected void endWhileLoopBody(LocatableToken token, boolean included)
     {
@@ -653,7 +653,7 @@ public class EditorParser extends SourceParser
             endTopNode(token, included);
         }
     }
-    
+
     @Override
     protected void beginDoWhile(LocatableToken token)
     {
@@ -664,7 +664,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(loopNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(loopNode);
     }
-    
+
     @Override
     protected void beginDoWhileBody(LocatableToken token)
     {
@@ -680,7 +680,7 @@ public class EditorParser extends SourceParser
             scopeStack.push(loopNode);
         }
     }
-    
+
     @Override
     protected void endDoWhileBody(LocatableToken token, boolean included)
     {
@@ -688,7 +688,7 @@ public class EditorParser extends SourceParser
             endTopNode(token, included);
         }
     }
-        
+
     @Override
     protected void beginIfStmt(LocatableToken token)
     {
@@ -699,7 +699,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(loopNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(loopNode);
     }
-    
+
     @Override
     protected void beginIfCondBlock(LocatableToken token)
     {
@@ -715,7 +715,7 @@ public class EditorParser extends SourceParser
             scopeStack.push(loopNode);
         }
     }
-    
+
     @Override
     protected void endIfCondBlock(LocatableToken token, boolean included)
     {
@@ -727,7 +727,7 @@ public class EditorParser extends SourceParser
             endTopNode(token, included);
         }
     }
-    
+
     @Override
     protected void endIfStmt(LocatableToken token, boolean included)
     {
@@ -739,7 +739,7 @@ public class EditorParser extends SourceParser
     {
         beginIfStmt(token);
     }
-    
+
     @Override
     protected void beginSwitchBlock(LocatableToken token)
     {
@@ -792,13 +792,13 @@ public class EditorParser extends SourceParser
     {
         endTopNode(token, false);
     }
-    
+
     @Override
     protected void endSwitchStmt(LocatableToken token, boolean included)
     {
         endTopNode(token, included);
     }
-    
+
     @Override
     protected void beginTryCatchSmt(LocatableToken token, boolean hasResource)
     {
@@ -809,7 +809,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(tryNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(tryNode);
     }
-    
+
     @Override
     protected void beginTryBlock(LocatableToken token)
     {
@@ -821,7 +821,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(tryBlockNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(tryBlockNode);
     }
-    
+
     @Override
     protected void endTryBlock(LocatableToken token, boolean included)
     {
@@ -829,13 +829,13 @@ public class EditorParser extends SourceParser
         // so pass included=false.
         endTopNode(token, false);
     }
-    
+
     @Override
     protected void endTryCatchStmt(LocatableToken token, boolean included)
     {
         endTopNode(token, included);
     }
-    
+
     @Override
     protected void beginStmtblockBody(LocatableToken token)
     {
@@ -858,7 +858,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(blockInner, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(blockInner);
     }
-   
+
     @Override
     protected void endStmtblockBody(LocatableToken token, boolean included)
     {
@@ -870,7 +870,7 @@ public class EditorParser extends SourceParser
             endTopNode(token, included);
         }
     }
-    
+
     @Override
     protected void beginSynchronizedBlock(LocatableToken token)
     {
@@ -881,7 +881,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(tryNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(tryNode);
     }
-    
+
     @Override
     protected void beginInitBlock(LocatableToken first, LocatableToken lcurly)
     {
@@ -902,25 +902,25 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(blockInner, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(blockInner);
     }
-    
+
     @Override
     protected void endInitBlock(LocatableToken rcurly, boolean included)
     {
         endStmtblockBody(rcurly, included);
     }
-    
+
     @Override
     protected void beginElement(LocatableToken token)
     {
         pcuStmtBegin = token;
     }
-    
+
     @Override
     protected void endTypeBody(LocatableToken token, boolean included)
     {
         endTopNode(token, false); // Don't include the final curly as part of inner block
     }
-    
+
     @Override
     protected void gotTypeDefEnd(LocatableToken token, boolean included)
     {
@@ -930,19 +930,19 @@ public class EditorParser extends SourceParser
         gotImplements = false;
         gotPermits = false;
     }
-    
+
     @Override
     protected void endForLoop(LocatableToken token, boolean included)
     {
         endTopNode(token, included);
     }
-    
+
     @Override
     protected void endWhileLoop(LocatableToken token, boolean included)
     {
         endTopNode(token, included);
     }
-    
+
     @Override
     protected void endDoWhile(LocatableToken token, boolean included)
     {
@@ -957,38 +957,38 @@ public class EditorParser extends SourceParser
     {
         Selection s = new Selection(pcuStmtBegin.getLine(), pcuStmtBegin.getColumn());
         s.extendEnd(token.getLine(), token.getColumn() + token.getLength());
-        
+
         int startpos = lineColToPosition(s.getLine(), s.getColumn());
         int endpos = lineColToPosition(s.getEndLine(), s.getEndColumn());
-        
+
         PkgStmtNode psn = new PkgStmtNode(pcuNode);
         beginNode(startpos);
         pcuNode.insertNode(psn, startpos, endpos - startpos, nodeStructureListener);
         completedNode(psn, startpos, endpos - startpos);
     }
-    
+
     @Override
     protected void gotImportStmtSemi(LocatableToken token)
     {
         Selection s = new Selection(pcuStmtBegin.getLine(), pcuStmtBegin.getColumn());
         s.extendEnd(token.getLine(), token.getColumn() + token.getLength());
-        
+
         int startpos = lineColToPosition(s.getLine(), s.getColumn());
         int endpos = lineColToPosition(s.getEndLine(), s.getEndColumn());
-        
+
         ParentParsedNode cn = new ImportNode(pcuNode);
         cn.setComplete(true);
         beginNode(startpos);
         pcuNode.insertNode(cn, startpos, endpos - startpos, nodeStructureListener);
         completedNode(cn, startpos, endpos - startpos);
     }
-    
+
     @Override
     public void gotComment(LocatableToken token)
     {
         commentQueue.add(token);
     }
-    
+
     @Override
     protected void gotConstructorDecl(LocatableToken token,
                                       LocatableToken hiddenToken)
@@ -1000,7 +1000,7 @@ public class EditorParser extends SourceParser
             start = hiddenToken;
             jdcomment = hiddenToken.getText();
         }
-        
+
         MethodNode pnode = new MethodNode(scopeStack.peek(), token.getText(), jdcomment);
         pnode.setModifiers(currentModifiers);
         int curOffset = getTopNodeOffset();
@@ -1009,7 +1009,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(pnode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(pnode);
     }
-    
+
     @Override
     protected void gotMethodDeclaration(LocatableToken token,
                                         LocatableToken hiddenToken)
@@ -1021,7 +1021,7 @@ public class EditorParser extends SourceParser
             start = hiddenToken;
             jdcomment = hiddenToken.getText();
         }
-        
+
         int curOffset = getTopNodeOffset();
         int insPos = lineColToPosition(start.getLine(), start.getColumn());
 
@@ -1038,12 +1038,12 @@ public class EditorParser extends SourceParser
         pnode.setModifiers(currentModifiers);
         pnode.setTypeParams(getTparList(pnode));
         typeParams = null;
-        
+
         beginNode(insPos);
         scopeStack.peek().insertNode(pnode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(pnode);
     }
-    
+
     @Override
     protected void gotMethodParameter(LocatableToken token, LocatableToken ellipsisToken)
     {
@@ -1063,7 +1063,7 @@ public class EditorParser extends SourceParser
         }
         mNode.addParameter(token.getText(), paramType);
     }
-    
+
     @Override
     protected void endMethodDecl(LocatableToken token, boolean included)
     {
@@ -1073,7 +1073,7 @@ public class EditorParser extends SourceParser
         TypeInnerNode topNode = (TypeInnerNode) scopeStack.peek();
         topNode.methodAdded(mNode);
     }
-    
+
     @Override
     protected void beginMethodBody(LocatableToken token)
     {
@@ -1084,20 +1084,20 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(pnode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(pnode);
     }
-    
+
     @Override
     protected void endMethodBody(LocatableToken token, boolean included)
     {
         scopeStack.peek().setComplete(included);
         endTopNode(token, false); // Don't include the final curly as part of inner block
     }
-    
+
     @Override
     protected void gotExprNew(LocatableToken token)
     {
         gotNewType = false;
     }
-    
+
     @Override
     protected void endExprNew(LocatableToken token, boolean included)
     {
@@ -1107,7 +1107,7 @@ public class EditorParser extends SourceParser
         }
         gotNewType = true; // outer "new" has type
     }
-    
+
     @Override
     protected void gotTypeSpec(List<LocatableToken> tokens)
     {
@@ -1136,20 +1136,20 @@ public class EditorParser extends SourceParser
             arrayDecls = 0;
         }
     }
-    
+
     @Override
     protected void gotArrayDeclarator()
     {
         arrayDecls++;
     }
-        
+
     @Override
     protected void beginFieldDeclarations(LocatableToken first)
     {
         arrayDecls = 0;
         endDecl(first); // remove placeholder
     }
-    
+
     /**
      * Saw a field or a variable declaration. This may be part of multiple declarations
      * (eg  "int a, b, c = 3;") and an initialisation expression may follow.
@@ -1165,9 +1165,9 @@ public class EditorParser extends SourceParser
         int curOffset = getTopNodeOffset();
         int insPos = lineColToPosition(first.getLine(), first.getColumn());
         EntityResolver resolver = new PositionedResolver(scopeStack.peek(), insPos - curOffset);
-        
+
         boolean declaredVar = isVariable && initExpressionFollows && typeSpecIsVar(lastTypeSpec);
-        
+
         JavaEntity fieldType;
         if (declaredVar || lastTypeSpec == null || lastTypeSpec.isEmpty())
         {
@@ -1181,21 +1181,21 @@ public class EditorParser extends SourceParser
             lastField = new FieldNode(scopeStack.peek(), idToken.getText(), fieldType,
                     arrayDecls, currentModifiers);
         }
-        
+
         arrayDecls = 0;
         beginNode(insPos);
-        
+
         JavaParentNode top = scopeStack.peek();
         top.insertField(lastField, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(lastField);
     }
-    
+
     @Override
     protected void gotField(LocatableToken first, LocatableToken idToken, boolean initExpressionFollows)
     {
         gotFieldOrVar(first, idToken, initExpressionFollows, false);
     }
-    
+
     @Override
     protected void gotSubsequentField(LocatableToken first,
                                       LocatableToken idToken, boolean initFollows)
@@ -1205,7 +1205,7 @@ public class EditorParser extends SourceParser
         int curOffset = getTopNodeOffset();
         int insPos = lineColToPosition(first.getLine(), first.getEndColumn());
         beginNode(insPos);
-        
+
         if (lastField.getFieldType() != null) {
             JavaParentNode top = scopeStack.peek();
             top.insertField(field, insPos - curOffset, 0, nodeStructureListener);
@@ -1213,75 +1213,75 @@ public class EditorParser extends SourceParser
         else {
             scopeStack.peek().insertNode(field, insPos - curOffset, 0, nodeStructureListener);
         }
-        
+
         scopeStack.push(field);
     }
-    
+
     @Override
     protected void endField(LocatableToken token, boolean included)
     {
         endTopNode(token, included);
     }
-    
+
     // Variables can be treated exactly like fields:
-    
+
     @Override
     protected void beginVariableDecl(LocatableToken first)
     {
         beginFieldDeclarations(first);
     }
-    
+
     @Override
     protected void gotVariableDecl(LocatableToken first, LocatableToken idToken, boolean inited)
     {
         gotFieldOrVar(first, idToken, inited, true);
     }
-    
+
     @Override
     protected void gotSubsequentVar(LocatableToken first, LocatableToken idToken, boolean inited)
     {
         gotSubsequentField(first, idToken, inited);
     }
-    
+
     @Override
     protected void endVariable(LocatableToken token, boolean included)
     {
         endField(token, included);
     }
-    
+
     // For-initializers are like variables/fields
-    
+
     @Override
     protected void beginForInitDecl(LocatableToken first)
     {
         arrayDecls = 0;
     }
-    
+
     @Override
     protected void gotForInit(LocatableToken first, LocatableToken idToken)
     {
         gotVariableDecl(first, idToken, true);
     }
-    
+
     @Override
     protected void gotSubsequentForInit(LocatableToken first,
                                         LocatableToken idToken, boolean initFollows)
     {
         gotSubsequentVar(first, idToken, true);
     }
-    
+
     @Override
     protected void endForInit(LocatableToken token, boolean included)
     {
         endVariable(token, included);
     }
-    
+
     @Override
     protected void beginAnonClassBody(LocatableToken token, boolean isEnumMember)
     {
         ParsedTypeNode pnode = new ParsedTypeNode(scopeStack.peek(), innermostType,
                 JavaParser.TYPEDEF_CLASS, null, 0); // TODO generate Abc$1 ?
-                
+
         innermostType = pnode;
         int curOffset = getTopNodeOffset();
         LocatableToken begin = token;
@@ -1289,7 +1289,7 @@ public class EditorParser extends SourceParser
         beginNode(insPos);
         scopeStack.peek().insertNode(pnode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(pnode);
-        
+
         JavaEntity supert;
         if (! isEnumMember) {
             EntityResolver resolver = new PositionedResolver(scopeStack.peek(), insPos - curOffset);
@@ -1301,7 +1301,7 @@ public class EditorParser extends SourceParser
         List<JavaEntity> superts = new ArrayList<JavaEntity>(1);
         superts.add(supert);
         pnode.setExtendedTypes(superts);
-        
+
         TypeInnerNode bodyNode = new TypeInnerNode(scopeStack.peek());
         bodyNode.setInner(true);
         curOffset = getTopNodeOffset();
@@ -1310,7 +1310,7 @@ public class EditorParser extends SourceParser
         pnode.insertInner(bodyNode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(bodyNode);
     }
-    
+
     @Override
     protected void endAnonClassBody(LocatableToken token, boolean included)
     {
@@ -1318,7 +1318,7 @@ public class EditorParser extends SourceParser
         endTopNode(token, included);  // outer node
         innermostType = innermostType.getContainingClass();
     }
-    
+
     @Override
     protected void beginExpression(LocatableToken token, boolean isLambdaBody)
     {
@@ -1330,7 +1330,7 @@ public class EditorParser extends SourceParser
         scopeStack.peek().insertNode(nnode, insPos - curOffset, 0, nodeStructureListener);
         scopeStack.push(nnode);
     }
-    
+
     @Override
     protected void endExpression(LocatableToken token, boolean isEmpty)
     {
@@ -1367,7 +1367,7 @@ public class EditorParser extends SourceParser
         gotImplements = false;
         gotPermits = false;
     }
-    
+
     @Override
     protected void beginTypeDefImplements(LocatableToken implementsToken)
     {
@@ -1399,7 +1399,7 @@ public class EditorParser extends SourceParser
                     arrayDecls, currentModifiers);
 
             arrayDecls = 0;
-            
+
             JavaParentNode top = scopeStack.peek();
             top.insertField(paramNode, insPos - curOffset, 0, nodeStructureListener);
         }
@@ -1436,7 +1436,7 @@ public class EditorParser extends SourceParser
         // then it will go outside the expression, and outside the container
         // node for the if, and then treat the variable declaration as if
         // it occurs just before the if.
-        
+
         int targetIndex = -1;
         for (int i = scopeStack.size() - 1; i >= 0; i--)
         {
@@ -1451,7 +1451,7 @@ public class EditorParser extends SourceParser
         // the variable than cause an exception:
         if (targetIndex == -1 || targetIndex >= scopeStack.size() - 1)
             return;
-        
+
         LocatableToken first = lastTypeSpec.get(0);
         int curOffset = scopeStack.get(targetIndex).getAbsoluteEditorPosition();
 
@@ -1460,7 +1460,7 @@ public class EditorParser extends SourceParser
 
         JavaEntity fieldType = ParseUtils.getTypeEntity(resolver, currentQuerySource(), lastTypeSpec);
         arrayDecls = 0;
-        
+
         final int finalAbsPos = scopeStack.get(targetIndex + 1).getAbsoluteEditorPosition();
         final int finalOffsetFromParent = scopeStack.get(targetIndex + 1).getOffsetFromParent();//insPos - curOffset;
         int modifiers = currentModifiers;

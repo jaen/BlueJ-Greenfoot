@@ -59,7 +59,7 @@ public class TestableDocument extends JavaSyntaxView implements ReparseableDocum
     {
         document.replaceText(pos, pos, content);
     }
-    
+
     public void remove(int start, int length)
     {
         document.replaceText(start, start + length, "");

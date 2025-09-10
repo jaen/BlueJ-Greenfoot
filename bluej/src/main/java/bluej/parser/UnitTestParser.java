@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 1999-2009,2011,2016  Michael Kolling and John Rosenberg 
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -46,14 +46,14 @@ public class UnitTestParser extends SourceParser
     private LocatableToken methodBegin;
     private boolean isPublic = false;
     private boolean haveClassInfo = false;
-    
+
     private List<SourceSpan> fieldSpans = new LinkedList<SourceSpan>();
     private SourceLocation methodInsertLocation;
     private SourceLocation fixtureInsertLocation;
     private Map<String,SourceSpan> methodSpans = new HashMap<String,SourceSpan>();
-    
+
     private Stack<SourceLocation> fieldStarts = new Stack<SourceLocation>();
-    
+
     public UnitTestParser(Reader r)
     {
         super(r, SourceType.Java); // TODO SourceType To be decided later
@@ -63,33 +63,33 @@ public class UnitTestParser extends SourceParser
         catch (Exception e) {
         }
     }
-    
+
     public List<SourceSpan> getFieldSpans()
     {
         return fieldSpans;
     }
-    
+
     public SourceLocation getNewMethodInsertLocation()
     {
         return methodInsertLocation;
     }
-    
+
     public SourceLocation getFixtureInsertLocation()
     {
         return fixtureInsertLocation;
     }
-    
+
     public SourceSpan getMethodBlockSpan(String name)
     {
         return methodSpans.get(name);
     }
-    
+
     @Override
     protected void error(String msg, int beginLine, int beginColumn, int endLine, int endColumn)
     {
         throw new RuntimeException("Parse error: " + msg);
     }
-        
+
     @Override
     protected void gotModifier(LocatableToken token)
     {
@@ -97,13 +97,13 @@ public class UnitTestParser extends SourceParser
             isPublic = true;
         }
     }
-    
+
     @Override
     protected void modifiersConsumed()
     {
         isPublic = false;
     }
-    
+
     @Override
     protected void gotField(LocatableToken first, LocatableToken idToken, boolean initExpressionFollows)
     {
@@ -111,7 +111,7 @@ public class UnitTestParser extends SourceParser
             fieldStarts.push(new SourceLocation(first.getLine(), first.getColumn()));
         }
     }
-    
+
     @Override
     protected void endFieldDeclarations(LocatableToken token, boolean included)
     {
@@ -122,7 +122,7 @@ public class UnitTestParser extends SourceParser
             fieldSpans.add(ss);
         }
     }
-    
+
     @Override
     protected void gotTypeDef(LocatableToken firstToken, int tdType)
     {
@@ -134,7 +134,7 @@ public class UnitTestParser extends SourceParser
             methodSpans = new HashMap<String,SourceSpan>();
         }
     }
-    
+
     @Override
     protected void beginTypeBody(LocatableToken leftCurlyToken)
     {
@@ -143,7 +143,7 @@ public class UnitTestParser extends SourceParser
                     leftCurlyToken.getColumn());
         }
     }
-    
+
     @Override
     protected void gotTypeDefEnd(LocatableToken token, boolean included)
     {
@@ -154,7 +154,7 @@ public class UnitTestParser extends SourceParser
             methodInsertLocation = new SourceLocation(token.getLine(), token.getColumn());
         }
     }
-    
+
     @Override
     protected void gotMethodDeclaration(LocatableToken token,
                                         LocatableToken hiddenToken)
@@ -164,13 +164,13 @@ public class UnitTestParser extends SourceParser
             methodName = token.getText();
         }
     }
-    
+
     @Override
     protected void gotMethodParameter(LocatableToken token, LocatableToken ellipsisToken)
     {
         inMethod = false; // we're not interested in methods with parameters
     }
-    
+
     @Override
     protected void beginMethodBody(LocatableToken token)
     {
@@ -178,7 +178,7 @@ public class UnitTestParser extends SourceParser
             methodBegin = token;
         }
     }
-    
+
     @Override
     protected void endMethodBody(LocatableToken token, boolean included)
     {

@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
 
-import bluej.JavaFXThreadingRule;
 import bluej.extensions2.SourceType;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.symtab.ClassInfo;
@@ -53,10 +52,6 @@ import static bluej.utility.ResourceFileReader.getResourceFile;
  */
 public class KotlinBasicParseTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
-
     /**
      * Test that the KotlinInfoParser class exists and can be instantiated.
      * This is a basic test to verify that the Kotlin parser functionality is available.

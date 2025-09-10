@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 1999-2010,2011,2016,2017,2019,2022,2025  Michael Kolling and John Rosenberg
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -67,7 +67,7 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
     private final ToggleGroup templateButtons;
     /** Which radio button is associated with which template */
     private final Map<RadioButton, TemplateInfo> templates = new IdentityHashMap<>();
-    
+
     /** The buttons for the source language (Java/Stride) */
     private final HorizontalRadio<SourceType> language;
 
@@ -111,17 +111,17 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
         setDialogPane(dialogPane);
         Config.addDialogStylesheets(getDialogPane());
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        
+
         VBox mainPanel = new VBox();
         JavaFXUtil.addStyleClass(mainPanel, "new-class-dialog");
-        
+
         nameField = new TextField();
         nameField.setPromptText(Config.getString("pkgmgr.newClass.prompt"));
         JavaFXUtil.addChangeListenerPlatform(nameField.textProperty(), s -> {
             hideError();
             updateOKButton(false);
         });
-        
+
         HBox nameBox = new HBox(new Label(Config.getString("pkgmgr.newClass.label")), nameField);
         JavaFXUtil.addStyleClass(nameBox, "new-class-dialog-hbox");
         nameBox.setAlignment(Pos.BASELINE_LEFT);
@@ -130,14 +130,14 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
 
         language = new HorizontalRadio(Arrays.asList(SourceType.Java, SourceType.Stride, SourceType.Kotlin));
         language.select(defaultSourceType);
-        
+
         HBox langBox = new HBox();
         JavaFXUtil.addStyleClass(langBox, "new-class-dialog-hbox");
         langBox.getChildren().add(new Label(Config.getString("pkgmgr.newClass.lang")));
         langBox.getChildren().addAll(language.getButtons());
         langBox.setAlignment(Pos.BASELINE_LEFT);
         mainPanel.getChildren().add(langBox);
-        
+
         mainPanel.getChildren().add(new Label(Config.getString("pkgmgr.newClass.classType")));
 
         templateButtons = new ToggleGroup();
@@ -178,7 +178,7 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
             updateOKButton(false);
             resortTemplateButtons(templateButtons);
         });
-        
+
         getDialogPane().setContent(mainPanel);
         setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK)
@@ -192,7 +192,7 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
                 return null;
             }
         });
-        
+
         updateOKButton(false);
         resortTemplateButtons(templateButtons);
         setOnShown(e -> Platform.runLater(nameField::requestFocus));
@@ -354,13 +354,13 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
         templates.forEach((radio, templateInfo) -> radio.setVisible(templateInfo.sourceTypes.contains(language.selectedProperty().get())));
         setOKEnabled(enable);
     }
-    
+
     private void hideError()
     {
         errorLabel.setText("");
         JavaFXUtil.setPseudoclass("bj-dialog-error", false, nameField);
     }
-    
+
     private void showError(String error, boolean problemIsName)
     {
         // show error, highlight field red if problem is name:
@@ -376,7 +376,7 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
         dialogPane.getOKButton().setDisable(!okEnabled);
     }
 
-    
+
     /**
      * Tests for restricted class names (case insensitive)
      * @param fileName potential class name
@@ -387,7 +387,7 @@ class NewClassDialog extends Dialog<NewClassDialog.NewClassInfo>
         initialiseRestrictedWordList();
         return windowsRestrictedWords.contains(fileName.toUpperCase());
     }
-    
+
     /**
      * Initialises the list of restricted words
      */

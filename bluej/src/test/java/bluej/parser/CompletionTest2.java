@@ -1,27 +1,27 @@
 /*
- This file is part of the BlueJ program. 
+ This file is part of the BlueJ program.
  Copyright (C) 2022,2024  Michael Kolling and John Rosenberg
- 
- This program is free software; you can redistribute it and/or 
- modify it under the terms of the GNU General Public License 
- as published by the Free Software Foundation; either version 2 
- of the License, or (at your option) any later version. 
- 
- This program is distributed in the hope that it will be useful, 
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
- 
- You should have received a copy of the GNU General Public License 
- along with this program; if not, write to the Free Software 
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
- This file is subject to the Classpath exception as provided in the  
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+ This file is subject to the Classpath exception as provided in the
  LICENSE.txt file that accompanied this code.
  */
 package bluej.parser;
 
-import bluej.JavaFXThreadingRule;
+
 import bluej.parser.ParseUtility.StartEnd;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.utility.Debug;
@@ -45,8 +45,7 @@ import static org.junit.Assert.assertNull;
  */
 public class CompletionTest2
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
+
 
     @BeforeClass
     public static void initConfig()
@@ -62,7 +61,7 @@ public class CompletionTest2
         Debug.setDebugStream(new OutputStreamWriter(System.out));
         resolver = new TestEntityResolver(new ClassLoaderResolver(this.getClass().getClassLoader()));
     }
-    
+
     @Test
     public void testLocations()
     {
@@ -79,12 +78,12 @@ public class CompletionTest2
                 "D", new StartEnd(30, 35)
         ), p.positions());
     }
-    
+
     /**
      * Asserts that the type at position "A" in the source, i.e. where
      * / * A * / (without spaces) occurs in the source is the given one.
      * @param expectedTypeName The expected fully-qualified type name, or null if you expect the type to be unavailable
-     * @param javaSrc The Java source code                        
+     * @param javaSrc The Java source code
      */
     private void assertTypeAtA(String expectedTypeName, String javaSrc)
     {
@@ -122,7 +121,7 @@ public class CompletionTest2
             }
         });
     }
-    
+
     /**
      * Wraps the given Java in a class with some lambda utility functions
      */
@@ -161,7 +160,7 @@ public class CompletionTest2
     @Test
     public void testCastLiteral()
     {
-        assertTypeAtA("java.lang.Integer", withLambdaDefs( 
+        assertTypeAtA("java.lang.Integer", withLambdaDefs(
     "{((Integer)1)./*A*/toString();}"
         ));
     }
@@ -170,7 +169,7 @@ public class CompletionTest2
     public void testInner()
     {
         // Check that inner classes work right when nested multiple-levels inside an expression:
-        assertTypeAtA("java.lang.Integer", withLambdaDefs( 
+        assertTypeAtA("java.lang.Integer", withLambdaDefs(
         "{return 1 + (2 + new Object(){ Integer x; {x./*A*/.toString();} }.hashCode());}"
         ));
         // And similar for lambdas:
@@ -178,12 +177,12 @@ public class CompletionTest2
             "{return 1 + (2 + (() -> { Integer x; x./*A*/.toString();}).hashCode());}"
         ));
     }
-    
+
     @Test
     public void testLambda()
     {
         // We only support auto complete when type is specified explicitly:
-        
+
         // Inferred type:
         assertTypeAtA(null, withLambdaDefs(
                 "{withInteger(x -> x./*A*/toString());}"
@@ -197,8 +196,8 @@ public class CompletionTest2
         assertTypeAtA("java.lang.Integer", withLambdaDefs(
                 "{withInteger((Integer x) -> x./*A*/toString());}"
         ));
-        
-        
+
+
         // Check scope works inside lambda with a block:
         assertTypeAtA("java.lang.Integer", withLambdaDefs("""
                 {
@@ -246,7 +245,7 @@ public class CompletionTest2
                 }
                 """
         ));
-        
+
         // Check scope doesn't extend outside lambda:
         assertTypeAtA(null, withLambdaDefs(
             """
@@ -263,7 +262,7 @@ public class CompletionTest2
             }
             """
         ));
-        
+
         // Check multiple parameters:
         assertTypeAtA("java.lang.Integer", withLambdaDefs(
             "{withStringAndInteger((String s, Integer x) -> x./*A*/toString());}"
@@ -287,7 +286,7 @@ public class CompletionTest2
                 case 2:
                     s./*A*/length();
                     break;
-            }    
+            }
             """
         ));
 
@@ -302,7 +301,7 @@ public class CompletionTest2
                 case 2 -> {
                     s./*A*/length();
                 }
-            }    
+            }
             """
         ));
     }
@@ -311,7 +310,7 @@ public class CompletionTest2
     public void testStaticInner()
     {
         // Check that static items of non-static inner classes work:
-        assertTypeAtA("java.lang.String", 
+        assertTypeAtA("java.lang.String",
             """
             class Outer
             {
@@ -319,12 +318,12 @@ public class CompletionTest2
                 {
                     static String s;
                 }
-                
+
                 public void foo()
                 {
                     Outer.Inner.s./*A*/length();
                 }
-            }    
+            }
             """
         );
 
@@ -339,12 +338,12 @@ public class CompletionTest2
                         static String s;
                     }
                 }
-                
+
                 public void foo()
                 {
                     Grandparent.Parent.Child.s./*A*/length();
                 }
-            }    
+            }
             """
         );
 
@@ -359,17 +358,17 @@ public class CompletionTest2
                         static String getString() {return ""};
                     }
                 }
-                
+
                 public void foo()
                 {
                     Grandparent.Parent.Child.getString()./*A*/length();
                 }
-            }    
+            }
             """
         );
 
     }
-    
+
     @Test
     public void testRecord()
     {
@@ -391,14 +390,14 @@ public class CompletionTest2
                 c.x()./*A*/toString();
             }
             """));
-        
+
         // public record PrefixedString(String prefix, String content) {}
         assertTypeAtA("java.lang.String", withRecordDef("""
             public void foo(PrefixedString p) {
                 p.prefix()./*A*/toString();
             }
             """));
-        
+
         // public record PrefixedT<T>(String prefix, T content) {}
         assertTypeAtA("java.lang.String", withRecordDef("""
             public void foo(PrefixedT<Integer> p) {
@@ -438,7 +437,7 @@ public class CompletionTest2
                 x.multiple()./*A*/toString();
             }
             """));
-        
+
         // public record VarargsPrim(int single, int... multiple) {}
         assertTypeAtA("int[]", withRecordDef("""
             public void foo(VarargsPrim x) {
@@ -489,7 +488,7 @@ public class CompletionTest2
             }
             """));
     }
-    
+
     /**
      * We have decided not to support the exact scoping of instanceof pattern matching,
      * as it's quite complex to get right.  Instead we will support a generous interpretation,
@@ -511,7 +510,7 @@ public class CompletionTest2
                 }
             }
         """));
-        
+
         // Should be in scope if then using an &&:
         assertTypeAtA( "java.lang.Integer", withLambdaDefs("""
             public void ifInt(Object orig)
@@ -521,7 +520,7 @@ public class CompletionTest2
                 }
             }
         """));
-        
+
         // More complex example where the declaration is inside a sub-expression, but the scope should extend onwards:
         assertTypeAtA( "java.lang.Integer", withLambdaDefs("""
             public void ifInt(Object orig)
@@ -539,7 +538,7 @@ public class CompletionTest2
                     s./*A*/equalsIgnoreCase(this);
             }
         """));
-        
+
         // Negated patterns can then be in scope!
         assertTypeAtA("java.lang.String", withLambdaDefs("""
             public void onlyForStrings(Object o) throws MyException {
@@ -588,13 +587,13 @@ public class CompletionTest2
                     d./*A*/length() > 0;
             }
         """));
-        
+
     }
-    
+
     @Test
     public void testIfInstanceofApproximate()
     {
-        // It could be in scope outside the if, should it have been negated: 
+        // It could be in scope outside the if, should it have been negated:
         assertTypeAtA( "java.lang.Integer", withLambdaDefs("""
             public void ifInt(Object orig)
             {
@@ -641,7 +640,7 @@ public class CompletionTest2
         // Name shadowing:
         assertTypeAtAandB("java.lang.String", "java.lang.String", withLambdaDefs("""
             Double s;
-    
+
             void test1(Object o) {
                 if (o instanceof String s) {
                     System.out.println(s./*A*/length());      // Field s is shadowed
@@ -654,7 +653,7 @@ public class CompletionTest2
         // Name shadowing part 2:
         assertTypeAtAandB("java.lang.String", "java.lang.Integer", withLambdaDefs("""
             Double s;
-    
+
             void test1(Object o) {
                 if (o instanceof String s) {
                     System.out.println(s./*A*/length());      // Field s is shadowed
@@ -669,11 +668,11 @@ public class CompletionTest2
         // Name shadowing part 3:
         assertTypeAtAandB("java.lang.String", "java.lang.Integer", withLambdaDefs("""
             Double s;
-    
+
             void test1(Object o) {
                 if (o instanceof String s) {
                     System.out.println(s.length());      // Field s is shadowed
-                    s = s + "\n";               // Assignment to pattern variable                
+                    s = s + "\n";               // Assignment to pattern variable
                 }
                 s./*A*/toString();
                 if (o instanceof Integer s) {
@@ -686,12 +685,12 @@ public class CompletionTest2
         // Name shadowing part 4:
         assertTypeAtAandB("java.lang.Double", "java.lang.String", withLambdaDefs("""
             Double s;
-    
+
             void test1(Object o) {
                 s./*A*/toString();
                 if (o instanceof String s) {
                     System.out.println(s.length());      // Field s is shadowed
-                    s = s + "\n";               // Assignment to pattern variable                
+                    s = s + "\n";               // Assignment to pattern variable
                 }
                 s./*B*/toString();
             }
@@ -720,7 +719,7 @@ public class CompletionTest2
                     }
                 """));
     }
-    
+
     @Test
     public void testIfInstanceofNestedScopes()
     {
@@ -741,7 +740,7 @@ public class CompletionTest2
                     {
                         {
                             if (orig instanceof Integer x)
-                                
+
                             }
                         }
                         x./*A*/toString();
@@ -753,7 +752,7 @@ public class CompletionTest2
                     {
                         while (true) {
                             if (orig instanceof Integer x)
-                                
+
                             }
                         }
                         x./*A*/toString();
@@ -765,14 +764,14 @@ public class CompletionTest2
                     {
                         try {
                             if (orig instanceof Integer x)
-                                
+
                             }
                         } finally {}
                         x./*A*/toString();
                     }
                 """));
     }
-    
+
     @Test
     public void testIfInstanceofLambdas()
     {
@@ -782,7 +781,7 @@ public class CompletionTest2
                     {
                         withInteger(s -> {
                             if (s instanceof Integer x)
-                                
+
                             }
                         });
                         x./*A*/toString();

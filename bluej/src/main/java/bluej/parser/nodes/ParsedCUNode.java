@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 1999-2010,2019  Michael Kolling and John Rosenberg 
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -45,7 +45,7 @@ public class ParsedCUNode extends IncrementalParsingNode
     private final ImportsCollection imports = new ImportsCollection();
 
     private int size = 0;
-    
+
     /**
      * Construct a parsed node for as yet unknown source.
      */
@@ -59,12 +59,12 @@ public class ParsedCUNode extends IncrementalParsingNode
     {
         return imports;
     }
-    
+
     public EntityResolver getParentResolver()
     {
         return parentResolver;
     }
-    
+
     /**
      * Overridden getSize() which returns the document size.
      * 
@@ -80,26 +80,26 @@ public class ParsedCUNode extends IncrementalParsingNode
     {
         size = newSize;
     }
-    
+
     @Override
     public void setSize(int newSize)
     {
         size = newSize;
     }
-    
+
     @Override
     protected int doPartialParse(ParseParams params, int state)
     {
         last = params.tokenStream.LA(1);
-       
+
         if (checkBoundary(params, last)) {
             return PP_PULL_UP_CHILD;
         }
-        
+
         params.parser.parseCUpart(state);
         return PP_OK;
     };
-    
+
     @Override
     protected boolean isDelimitingNode(NodeAndPosition<ParsedNode> nap)
     {
@@ -108,19 +108,19 @@ public class ParsedCUNode extends IncrementalParsingNode
         int nt = nap.getNode().getNodeType();
         return nt != ParsedNode.NODETYPE_COMMENT;
     }
-    
+
     @Override
     protected boolean isNodeEndMarker(int tokenType)
     {
         return false;
     }
-    
+
     @Override
     protected boolean marksOwnEnd()
     {
         return true;
     }
-    
+
     @Override
     public PackageOrClass resolvePackageOrClass(String name, Reflective querySource)
     {
@@ -145,12 +145,12 @@ public class ParsedCUNode extends IncrementalParsingNode
         }
         return poc;
     }
-    
+
     @Override
     public JavaEntity getValueEntity(String name, Reflective querySource)
     {
         // We may have static imports
-        
+
         List<JavaEntity> simports = imports.getStaticImports(name);
         for (JavaEntity importType : simports) {
             importType = importType.resolveAsType();
@@ -165,7 +165,7 @@ public class ParsedCUNode extends IncrementalParsingNode
                 }
             }
         }
-        
+
         simports = imports.getStaticWildcardImports();
         for (JavaEntity importType : simports) {
             importType = importType.resolveAsType();
@@ -180,10 +180,10 @@ public class ParsedCUNode extends IncrementalParsingNode
                 }
             }
         }
-        
+
         return resolvePackageOrClass(name, querySource);
     }
-    
+
     @Override
     public TypeEntity resolveQualifiedClass(String name)
     {
@@ -192,7 +192,7 @@ public class ParsedCUNode extends IncrementalParsingNode
         }
         return null;
     }
-    
+
     public static void printTree(ParsedNode node, int nodepos, int indent)
     {
         for (int i = 0; i < indent; i++) {

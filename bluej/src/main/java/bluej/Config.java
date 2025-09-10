@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 1999-2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2022,2023,2025  Michael Kolling and John Rosenberg
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -162,7 +162,7 @@ public final class Config
         // Load any debug vm args (only needed on server VM):
         initDebugVMArgs();
     }
-    
+
     /**
      * Initialisation of BlueJ configuration. Must be called at startup.
      * This method finds and opens the configuration files.<p>
@@ -176,23 +176,23 @@ public final class Config
             return;
 
         initialised = true;
-        
+
         initialCommandLineProps = tempCommandLineProps;
-        
+
         isGreenfoot = bootingGreenfoot;
 
         // construct paths for the configuration directories
         Config.bluejLibDir = bluejLibDir;
         Config.greenfootLibDir = new File(bluejLibDir, "greenfoot");
-        
+
         // setup our heirarchy of property objects if it is not done yet:
         if(systemProps == null)
         {
             isDebugVm = false;
-            
+
             // top level is the system properties loaded from bluej.defs
             systemProps = loadDefs("bluej.defs", System.getProperties());
-            
+
             // next level is the greenfoot propeties (if we are running greenfoot)
             // and then the user propeties (not loaded yet)
             if(isGreenfoot()) {
@@ -203,15 +203,15 @@ public final class Config
                 userProps = new Properties(systemProps);
             }
         }
-        
+
         // then there is the command line properties
         commandProps = new Properties(userProps);
-        
+
         // copy in all our command line properties (done first
         // incase the bluej.userHome property is one specified)
         commandProps.putAll(tempCommandLineProps);
         commandProps.setProperty("bluej.libdir", bluejLibDir.getAbsolutePath());
-        
+
         if (createUserhome) {
 
             // get user home directory
@@ -227,7 +227,7 @@ public final class Config
 
             checkDebug(userPrefDir);
         }
-        
+
         initLanguage();
 
         moeSystemProps = loadDefs("moe.defs", System.getProperties());
@@ -241,7 +241,7 @@ public final class Config
         System.setProperty("apple.laf.useScreenMenuBar", macOSscreenMenuBar);      
 
         Config.setVMLocale();
-        
+
         // Create a property containing the BlueJ version string
         // put it in command_props so it won't be saved to a file
         commandProps.setProperty("bluej.version", Boot.BLUEJ_VERSION);
@@ -255,7 +255,7 @@ public final class Config
     private static void initLanguage()
     {
         language = commandProps.getProperty("bluej.language", null);
-        
+
         // If no language is set, try to auto-detect from locale:
         if (language == null) {
             language = DEFAULT_LANGUAGE;
@@ -295,7 +295,7 @@ public final class Config
                 Debug.log("Using default language \"" + language + "\"");
             }
         }
-        
+
         langProps = loadLanguageLabels(language);
 
         // Also set locale, needed for error messages:
@@ -353,7 +353,7 @@ public final class Config
     {
         return locale;
     }
-    
+
     /**
      * Initialise the user home (try and create directories if necessary).
      * <p>
@@ -368,7 +368,7 @@ public final class Config
         userHome = new File(homeDir);
 
         String prefDirName = getBlueJPrefDirName();
-        
+
         // get user specific bluej property directory (in user home)
         userPrefDir = new File(userHome, prefDirName);
 
@@ -383,7 +383,7 @@ public final class Config
             else if (userPrefDir.canWrite()) {
                 break;
             }
-            
+
             nameCounter++;
             String propertyName = "bluej.userHome" + nameCounter;
             homeDir = getPropString(propertyName, null);
@@ -394,7 +394,7 @@ public final class Config
             userPrefDir = new File(userHome, prefDirName);
         }
         while (true);
-        
+
         if (homeDir == null) {
             // Now we're in trouble... just user user.home, and hope it's writable.
             homeDir = System.getProperty("user.home");
@@ -437,7 +437,7 @@ public final class Config
                 Debug.printCallStack("Internal error: setting user property on debug VM");
                 return null;
             }
-            
+
             @Override
             public String getProperty(String key)
             {
@@ -452,7 +452,7 @@ public final class Config
         };
         initialise(bluejLibDir, new Properties(), true, false);
     }
-    
+
     /**
      * Get the properties that were given on the command line and used 
      * to initialise bluej.Config.
@@ -461,7 +461,7 @@ public final class Config
     {
         return initialCommandLineProps;
     }    
-    
+
     /**
      * Initializer for use in Greenfoot's standalone scenario viewer if you 
      * export a scenario as an app or applet.
@@ -470,17 +470,17 @@ public final class Config
     {
         if(initialised)
             return;
-    
+
         initialised = true;
         Config.isGreenfoot = true;
-        
+
         langProps =  new Properties() {
             @Override
             public String getProperty(String key)
             {
                 return propSource.getLabel(key);
             }
-            
+
             @Override
             public String getProperty(String key, String def)
             {
@@ -489,12 +489,12 @@ public final class Config
         };
         commandProps = langProps;
     }
-    
+
     public static boolean isInitialised() 
     {
         return initialised;
     }
-    
+
     /**
      * Get the name of icons file for the debug VM (Mac).
      */
@@ -505,7 +505,7 @@ public final class Config
         }
         return BLUEJ_DEBUG_DOCK_ICON;
     }
-    
+
     /**
      * Get the name of the debug VM to appear in the dock (Mac).
      */
@@ -516,7 +516,7 @@ public final class Config
         }
         return BLUEJ_DEBUG_DOCK_NAME;
     }
-    
+
     /**
      * True if this is the debugVM or false if not.
      */
@@ -524,7 +524,7 @@ public final class Config
     {
         return isDebugVm;
     }
-    
+
     /**
      * Tell us whether we are running on MacOS
      */
@@ -532,7 +532,7 @@ public final class Config
     {
         return osname.startsWith("Mac");
     }
-    
+
     private static boolean osVersionNumberAtLeast(int... target)
     {
         return versionAtLeast(System.getProperty("os.version"), target);
@@ -567,7 +567,7 @@ public final class Config
         return osname.startsWith("Mac") &&
                 osVersionNumberAtLeast(10, 5);
     }
-    
+
     /**
      * Tell use whether we are running on MacOS 10.6 (Snow Leopard) or later
      */
@@ -576,7 +576,7 @@ public final class Config
         return osname.startsWith("Mac") &&
             osVersionNumberAtLeast(10, 6);
     }
-    
+
     /**
      * Tell us whether we are running on MS Windows
      */
@@ -584,7 +584,7 @@ public final class Config
     {
         return osname.startsWith("Windows");
     }
-    
+
     /**
      * True if OS is Windows Vista or newer.
      */
@@ -593,7 +593,7 @@ public final class Config
         return isWinOS()
                 && osVersionNumberAtLeast(6, 0);
     }
-    
+
     /**
      * Tell us whether we are running on Linux
      */
@@ -601,7 +601,7 @@ public final class Config
     {
         return osname.startsWith("Linux");
     }
-    
+
     /**
      * Tell us whether we are running on Solaris
      */
@@ -617,7 +617,7 @@ public final class Config
     {
         return javaVersionNumberAtLeast(1, 7);
     }
-    
+
     /**
      * Tell us whether we are running OpenJDK.
      */
@@ -625,7 +625,7 @@ public final class Config
     {
         return System.getProperty("java.runtime.name").startsWith("OpenJDK");
     }
-    
+
     /**
      * Whether we need to make all dialogs resizable, due to bug:
      * https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8198761
@@ -635,7 +635,7 @@ public final class Config
         // The bug only affects Linux:
         return Config.isLinux();
     }
-    
+
     /**
      * Return the name of a directory within the user's home directory
      * that should be used for storing BlueJ user preferences.
@@ -658,7 +658,7 @@ public final class Config
             return "." + programName;
         }
     }
-    
+
     /**
      * Get the name of this application.
      */
@@ -669,7 +669,7 @@ public final class Config
         }
         return "BlueJ";
     }
-    
+
     /**
      * Get the screen size information
      */
@@ -683,16 +683,16 @@ public final class Config
         }
         return Screen.getPrimary().getBounds();
     }
-    
+
     @OnThread(Tag.FXPlatform)
     public static Rectangle2D getScreenBounds()
     {
         if (screenBounds == null)
             screenBounds = calculateScreenBounds();
-        
+
         return screenBounds;
     }
-    
+
     /**
      * Check whether we want to see debug information. If not, redirect it to
      * a file.
@@ -705,12 +705,12 @@ public final class Config
                 // simple diversion of output stream to a log file
                 try {
                     boolean append = debugLogFile.exists() && debugLogFile.length() < MAX_DEBUG_LOG_SIZE;
-                    
+
                     PrintStream outStream = new PrintStream(new FileOutputStream(debugLogFile, append));
                     System.setOut(outStream);
                     System.setErr(outStream);
                     Debug.setDebugStream(new OutputStreamWriter(outStream));
-                    
+
                     if (append)
                     {
                         Debug.message("====\n\n====");
@@ -742,7 +742,7 @@ public final class Config
                 }
             }
         }
-        
+
         // We get here if:
         // - we are on the debug VM (and in Greenfoot) or
         // - bluej.debug=true or
@@ -962,7 +962,7 @@ public final class Config
             Debug.reportError("could not save properties file " + propsFile);
         }
     }
-    
+
     /**
      * Find and return the moe help definitions
      */
@@ -999,12 +999,12 @@ public final class Config
     {
         return getString(strname, strname);
     }
-    
+
     public static String getMenuString(String strname)
     {
         return getString(strname, strname, null, true);
     }
-    
+
     /**
      * Get a string from the language dependent definitions file
      * (eg. "english/labels"). If not found, return default.
@@ -1039,7 +1039,7 @@ public final class Config
                     str = str.substring(0, index) + str.substring(index + 1);
                 }
             }
-            
+
             if ((index = str.indexOf('@')) != -1)
             {
                 //remove everything from @
@@ -1058,7 +1058,7 @@ public final class Config
 
         return str;
     }
-    
+
     /**
      * Check whether a particular label has an accelerator key defined.
      * @param strname  The label name to check
@@ -1167,7 +1167,7 @@ public final class Config
         }
         return rval;
     }
-    
+
     /**
      * Get a non-language-dependent string from the BlueJ properties
      * ("bluej.defs" or "bluej.properties") with a default value. Variable
@@ -1178,7 +1178,7 @@ public final class Config
     {
         return getPropString(strname, def, commandProps);
     }
-    
+
     /**
      * Get a property string from the given properties map, using variable substitution.
      * If the variable is not defined the given default value is used (and variable
@@ -1260,7 +1260,7 @@ public final class Config
             return prop;
         });
     }
-    
+
     /**
      * Get a boolean value from the BlueJ properties. The default value is false.
      */
@@ -1268,7 +1268,7 @@ public final class Config
     {
         return parseBoolean(getPropString(propname, null));
     }
-    
+
     /**
      * Get a boolean value from the BlueJ properties, with the specified default.
      */
@@ -1280,7 +1280,7 @@ public final class Config
         }
         return parseBoolean(propval);
     }
-    
+
     /**
      * Parses the string argument as a boolean.  The <code>boolean</code> 
      * returned represents the value <code>true</code> if the string argument 
@@ -1345,7 +1345,7 @@ public final class Config
     {
         if (filename == null)
             throw new IllegalArgumentException("Cannot load null image");
-        
+
         File image = new File(bluejLibDir, "images" + File.separator + filename);
         try {
             return new Image(image.toURI().toURL().toString());
@@ -1395,7 +1395,7 @@ public final class Config
                 File potentialExe = new File(binPath, executableName);
                 if(potentialExe.exists())
                     return potentialExe.getAbsolutePath();
-                
+
                 // try to find windows executable
                 potentialExe = new File(binPath, executableName + ".exe");
                 if(potentialExe.exists())
@@ -1474,7 +1474,7 @@ public final class Config
     {
         return new File(getClassTemplateDir(sourceType), base + ".tmpl");
     }
-    
+
     /**
      * Return the file with language specific text. 
      * For example,
@@ -1578,7 +1578,7 @@ public final class Config
         }
         userProps.setProperty(intname, Integer.toString(value));
     }
-    
+
     /**
      * Set a non-language dependant string for the BlueJ properties.
      * If the supplied value is null, the property is removed.
@@ -1593,7 +1593,7 @@ public final class Config
             userProps.remove(strname);
         }
     }
-    
+
     /**
      * Set a non-language dependent boolean value for the BlueJ properties
      */
@@ -1607,7 +1607,7 @@ public final class Config
             userProps.setProperty(propname, String.valueOf(value));
         }
     }
-    
+
     /**
      * Returns the blueJLibDir
      */
@@ -1623,7 +1623,7 @@ public final class Config
     {
         return greenfootLibDir;
     }
-    
+
     /**
      * Returns the blueJLibDir
      */
@@ -1631,7 +1631,7 @@ public final class Config
     {
         return bluejLibDir.getPath() + "/images";
     }
-    
+
     /**
      * Checks for optional bluej.defs settings for vm language and
      * country. If either are specified, a Locale object is created
@@ -1641,11 +1641,11 @@ public final class Config
     {
         String lang = Config.getPropString("vm.language", null);
         String region = Config.getPropString("vm.country", null);
-        
+
         // nothing specified, its either commented out or no value 
         if((lang == null || "".equals(lang)) && (region == null || "".equals(region)))
             return;
-        
+
         // something has been specified...
         // if only one of region or language is specified only, make the other
         // use the existing default to create the Locale object
@@ -1674,7 +1674,7 @@ public final class Config
             debugVMArgs.addAll(splitArgs);
         }        
     }
-    
+
     /**
      * debug vm args used for launch of debug vm
      */
@@ -1682,7 +1682,7 @@ public final class Config
     {
         return debugVMArgs;
     }
-    
+
     /**
      * Method to determine if BlueJ is running in greenfoot mode. Greenfoot mode
      * is used when we are launching BlueJ to be used for greenfoot.
@@ -1741,7 +1741,7 @@ public final class Config
                 "flow",
                 "moe",
                 "shared"};
-        
+
         for (String stem : stylesheetStems)
         {
             addStylesheet(scene.getStylesheets(), stem);
@@ -1841,7 +1841,7 @@ public final class Config
     {
         if (!fontOptions.isEmpty())
             return;
-        
+
         //fontOptions = Arrays.asList("Droid Sans", "Montserrat", "Noto Sans", "Roboto", "Open Sans", "Source Sans", "Ubuntu");
         //List<String> fontStems = Arrays.asList("NotoSans-Regular", "NotoSans-Bold", "NotoSans-Italic", "NotoSans-BoldItalic");
         for (File file : new File(bluejLibDir + "/fonts").listFiles())

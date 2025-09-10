@@ -28,6 +28,10 @@ public class ResourceFileReader {
     public static File getResourceFile(Class<?> clazz, String name)
     {
         URL url = clazz.getResource(name);
-        return url != null && !url.getFile().isEmpty() ? new File(url.getFile()) : null;
+
+        if (url == null || url.getFile().isEmpty())
+            return null;
+        else
+            return new File(url.getFile());
     }
 }

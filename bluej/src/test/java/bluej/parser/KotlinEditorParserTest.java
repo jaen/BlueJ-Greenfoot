@@ -21,7 +21,6 @@
  */
 package bluej.parser;
 
-import bluej.JavaFXThreadingRule;
 import bluej.debugger.gentype.GenTypeClass;
 import bluej.debugger.gentype.MethodReflective;
 import bluej.extensions2.SourceType;
@@ -46,9 +45,6 @@ import static org.junit.Assert.*;
 
 public class KotlinEditorParserTest
 {
-    @Rule
-    public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
-
     @BeforeClass
     public static void initConfig()
     {

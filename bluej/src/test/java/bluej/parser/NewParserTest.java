@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 2014,2016,2017,2022  Michael Kolling and John Rosenberg
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -28,13 +28,18 @@ import java.util.List;
 import bluej.extensions2.SourceType;
 import bluej.parser.lexer.LocatableToken;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-public class NewParserTest extends TestCase
+import static org.junit.Assert.*;
+
+public class NewParserTest
 {
     /**
      * Test array as type parameter
      */
+    @Test
     public void test1()
     {
         StringReader sr = new StringReader(
@@ -50,6 +55,7 @@ public class NewParserTest extends TestCase
     /**
      * Test handling of '>>' sequence in type spec
      */
+    @Test
     public void test2()
     {
         StringReader sr = new StringReader(
@@ -65,6 +71,7 @@ public class NewParserTest extends TestCase
     /**
      * Test multiple type parameters
      */
+    @Test
     public void test3()
     {
         StringReader sr = new StringReader(
@@ -77,6 +84,7 @@ public class NewParserTest extends TestCase
     /**
      * Test generic inner class of generic outer class
      */
+    @Test
     public void test4()
     {
         StringReader sr = new StringReader(
@@ -89,6 +97,7 @@ public class NewParserTest extends TestCase
     /**
      * Test wildcard type parameters
      */
+    @Test
     public void test5()
     {
         StringReader sr = new StringReader(
@@ -105,6 +114,7 @@ public class NewParserTest extends TestCase
     /**
      * Test less-than operator.
      */
+    @Test
     public void test6()
     {
         StringReader sr = new StringReader(
@@ -117,6 +127,7 @@ public class NewParserTest extends TestCase
     /**
      * Test a funky statement.
      */
+    @Test
     public void test7()
     {
         StringReader sr = new StringReader(
@@ -129,6 +140,7 @@ public class NewParserTest extends TestCase
     /**
      * Test a class declaration with a single type parameter.
      */
+    @Test
     public void test8()
     {
         StringReader sr = new StringReader(
@@ -141,6 +153,7 @@ public class NewParserTest extends TestCase
     /**
      * Test a class declaration containing a semi-colon
      */
+    @Test
     public void test9()
     {
         StringReader sr = new StringReader(
@@ -153,6 +166,7 @@ public class NewParserTest extends TestCase
     /**
      * Test a simple enum
      */
+    @Test
     public void test10()
     {
         StringReader sr = new StringReader(
@@ -168,6 +182,7 @@ public class NewParserTest extends TestCase
     /**
      * Test array declarators after a variable name.
      */
+    @Test
     public void test11()
     {
         StringReader sr = new StringReader(
@@ -180,6 +195,7 @@ public class NewParserTest extends TestCase
     /**
      * Test array declarators after a method parameter name.
      */
+    @Test
     public void test12()
     {
         StringReader sr = new StringReader(
@@ -189,9 +205,10 @@ public class NewParserTest extends TestCase
         ip.parseMethodParamsBody();
     }
 
-    /** 
+    /**
      * Test array declarators after a field name.
      */
+    @Test
     public void test13()
     {
         StringReader sr = new StringReader(
@@ -200,10 +217,11 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseTypeDef();
     }
-    
+
     /**
      * Test multiple field definition in one statement.
      */
+    @Test
     public void test13p2()
     {
         StringReader sr = new StringReader(
@@ -216,6 +234,7 @@ public class NewParserTest extends TestCase
     /**
      * Test multiple variable declaration in a single statement.
      */
+    @Test
     public void test14()
     {
         StringReader sr = new StringReader(
@@ -228,6 +247,7 @@ public class NewParserTest extends TestCase
     /**
      * Test annotation declaration
      */
+    @Test
     public void test15()
     {
         StringReader sr = new StringReader(
@@ -240,6 +260,7 @@ public class NewParserTest extends TestCase
     /**
      * Test use of marker annotation
      */
+    @Test
     public void test16()
     {
         StringReader sr = new StringReader(
@@ -252,6 +273,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the use of an annotation.
      */
+    @Test
     public void test17()
     {
         StringReader sr = new StringReader(
@@ -265,6 +287,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the '?:' operator.
      */
+    @Test
     public void testQuestionOperator()
     {
         StringReader sr = new StringReader(
@@ -277,6 +300,7 @@ public class NewParserTest extends TestCase
     /**
      * Test a static method call.
      */
+    @Test
     public void testStaticMethodCall()
     {
         StringReader sr = new StringReader(
@@ -289,6 +313,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the declaration of an annotation.
      */
+    @Test
     public void test18()
     {
         StringReader sr = new StringReader(
@@ -307,6 +332,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the use of an annotation.
      */
+    @Test
     public void test19()
     {
         StringReader sr = new StringReader(
@@ -325,6 +351,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the use of an annotation for a method.
      */
+    @Test
     public void test20()
     {
         StringReader sr = new StringReader(
@@ -337,6 +364,7 @@ public class NewParserTest extends TestCase
     /**
      * Test the use of a qualified annotation
      */
+    @Test
     public void test21()
     {
         StringReader sr = new StringReader(
@@ -348,6 +376,7 @@ public class NewParserTest extends TestCase
 
 
 
+    @Test
     public void test22()
     {
         StringReader sr = new StringReader(
@@ -359,6 +388,7 @@ public class NewParserTest extends TestCase
 
     }
 
+    @Test
     public void test23()
     {
         StringReader sr = new StringReader(
@@ -368,7 +398,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
+    @Test
     public void test24()
     {
         StringReader sr = new StringReader(
@@ -378,6 +409,7 @@ public class NewParserTest extends TestCase
         ip.parseExpression();
     }
 
+    @Test
     public void test25()
     {
         StringReader sr = new StringReader(
@@ -386,7 +418,7 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseExpression();
     }
-    
+
     // Lambda syntax tests
     private void checkLambdaExpression(String s)
     {
@@ -394,44 +426,50 @@ public class NewParserTest extends TestCase
         StringReader sr = new StringReader("(" + s + ")");
         SourceParser ip = new SourceParser(sr);
         ip.parseExpression();
-        
+
         // test when used in assigment:
         sr = new StringReader("Runnable r = " + s + ";");
         ip = new SourceParser(sr);
         ip.parseStatement();
-        
+
         // test when used as method parameter:
         sr = new StringReader("doSomething(" + s + ");");
         ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
-    
+
+
+    @Test
     public void testLambdaNoParameters1()
     {
         checkLambdaExpression("() -> {}");
     }
 
+    @Test
     public void testLambdaNoParameters2()
     {
         checkLambdaExpression("() -> 42");   // No parameters; expression body
     }
 
+    @Test
     public void testLambdaNoParameters3()
     {
         checkLambdaExpression("() -> null"); // No parameters; expression body
     }
 
+    @Test
     public void testLambdaNoParameters4()
     {
         checkLambdaExpression("() -> {return 42;}"); // No parameters; block body with return
     }
 
+    @Test
     public void testLambdaNoParameters5()
     {
         checkLambdaExpression("() -> System.gc()"); // No parameters; void block body
     }
 
+    @Test
     public void testLambdaNoParameters6()
     {
         String s = "() -> {\n "
@@ -443,96 +481,114 @@ public class NewParserTest extends TestCase
                 + "        return result;\n"
                 + "    }\n"
                 + "}\n"; // Complex block body with returns
-        
+
         checkLambdaExpression(s);
     }
-    
+
+    @Test
     public void testLambdaSingleParameter1()
     {
         checkLambdaExpression("(int x) -> x+1"); // Single declared-type parameter
     }
-    
+
+    @Test
     public void testLambdaSingleParameter2()
     {
         checkLambdaExpression("(x) -> x+1"); // Single inferred-type parameter
     }
-    
+
+    @Test
     public void testLambdaSingleParameter3()
     {
         checkLambdaExpression("x -> x+1"); // Parens optional for single inferred-type case
     }
-    
+
+    @Test
     public void testLambdaSingleParameter4()
     {
         checkLambdaExpression("t -> { t.start(); } "); // Single inferred-type parameter
     }
-    
+
+    @Test
     public void testLambdaSingleParameter5()
     {
         checkLambdaExpression("(final int x) -> x+1"); // Modified declared-type parameter
     }
-    
+
+    @Test
     public void testLambdaSingleParameter6()
     {
         checkLambdaExpression("(CustomClass x) -> x+1"); // Modified declared-type parameter
     }
-    
+
+    @Test
     public void testLambdaSingleParameter7()
     {
         checkLambdaExpression("(int... x) -> x+1"); // Modified declared-type parameter
     }
 
+    @Test
     public void testLambdaVarParameter1()
     {
         checkLambdaExpression("(var x) -> x+1");
     }
 
+    @Test
     public void testLambdaVarParameter2()
     {
         checkLambdaExpression("(var x, y) -> x+1"); // Modified declared-type parameter
     }
 
+    @Test
     public void testLambdaVarParameter3()
     {
         checkLambdaExpression("(var x, var y) -> x+1"); // Modified declared-type parameter
     }
-    
+
+    @Test
     public void testLambdaVarParameter4()
     {
         checkLambdaExpression("(x, var y) -> x+1"); // Modified declared-type parameter
     }
 
+    @Test
     public void testLambdaVarParameter5()
     {
         checkLambdaExpression("(x, var y, int... z) -> x+1"); // Modified declared-type parameter
     }
-    
+
+    @Test
     public void testLambdaMultipleParameters1()
     {
         checkLambdaExpression("(int x, float y) -> x+y"); // Multiple declared-type parameters
     }
-    
+
+    @Test
     public void testLambdaMultipleParameters2()
     {
         checkLambdaExpression("(x,y) -> x+y"); // Multiple inferred-type parameters
     }    
 
+    @Test
     public void testMethodRef2()
     {
         checkLambdaExpression("SomeClass::someMethod");
     }
-    
+
+    @Test
     public void testMethodRef3()
     {
         checkLambdaExpression("somepkg.someotherpkg.SomeClass::someMethod");
     }
-    
+
+    @Test
     public void testMethodRef4()
     {
         checkLambdaExpression("SomeClass::new");
     }
-    
+
     /** Test generic method call */
+    @Test
     public void testGenericMethodCall()
     {
         // someMethod might be declared something like:
@@ -543,7 +599,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseExpression();
     }
-    
+
+    @Test
     public void testPrimitiveCast()
     {
         StringReader sr = new StringReader(
@@ -552,7 +609,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseExpression();
     }
-    
+
+    @Test
     public void testSynchronizedModifier()
     {
         StringReader sr = new StringReader(
@@ -562,16 +620,16 @@ public class NewParserTest extends TestCase
         );
         SourceParser ip = new SourceParser(sr);
         ip.parseTypeDef();
-        
+
         sr = new StringReader("synchronized { throw new Exception(); }");
         ip = new SourceParser(sr);
         ip.parseStatement();
-        
+
         sr = new StringReader("synchronized(getSomeValue()) { throw new Exception(); }");
         ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
     public void testVarargsMethod()
     {
         StringReader sr = new StringReader(
@@ -582,10 +640,11 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseTypeDef();
     }
-    
+
     /**
      * Test for loop with double initializer
      */
+    @Test
     public void testForLoop()
     {
         StringReader sr = new StringReader(
@@ -595,10 +654,11 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
     /**
      * Test for loop where initializer has modifier(s)
      */
+    @Test
     public void testForLoop2()
     {
         StringReader sr = new StringReader(
@@ -608,10 +668,11 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
     /**
      * Test for loop where initializer variables are already declared
      */
+    @Test
     public void testForLoop3()
     {
         // if i and j are already declared, this should still parse:
@@ -626,6 +687,7 @@ public class NewParserTest extends TestCase
     /**
      * Test for loop where loop var is an array (and brackets on LHS)
      */
+    @Test
     public void testForLoop4()
     {
         StringReader sr = new StringReader(
@@ -638,6 +700,7 @@ public class NewParserTest extends TestCase
     /**
      * Test for loop where loop var is an array (and brackets on RHS)
      */
+    @Test
     public void testForLoop5()
     {
         StringReader sr = new StringReader(
@@ -648,6 +711,7 @@ public class NewParserTest extends TestCase
     }
 
 
+    @Test
     public void testFunkyCast()
     {
         StringReader sr = new StringReader(
@@ -656,7 +720,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
+    @Test
     public void testMethodParamModifier()
     {
         StringReader sr = new StringReader(
@@ -667,7 +732,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
+    @Test
     public void testParenthesizedValue()
     {
         StringReader sr = new StringReader(
@@ -676,7 +742,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseExpression();
     }
-    
+
+    @Test
     public void testTopLevelExtraSemis()
     {
         StringReader sr = new StringReader(
@@ -687,7 +754,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseCU();
     }
-    
+
+    @Test
     public void testParenthesizedInTrinary()
     {
         StringReader sr = new StringReader(
@@ -696,7 +764,8 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseStatement();
     }
-    
+
+    @Test
     public void testDefaultMethodModifier()
     {
         StringReader sr = new StringReader(
@@ -707,62 +776,74 @@ public class NewParserTest extends TestCase
         SourceParser ip = new SourceParser(sr);
         ip.parseCU();
     }
-    
+
+    @Test
     public void testConstructor1()
     {
         new SourceParser(new StringReader("Foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testConstructor2()
     {
         new SourceParser(new StringReader("public Foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testConstructor3()
     {
         new SourceParser(new StringReader("<T> Foo(T t) { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testConstructor4()
     {
         new SourceParser(new StringReader("public <T, U> Foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testMethod1()
     {
         new SourceParser(new StringReader("void foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testMethod2()
     {
         new SourceParser(new StringReader("<T, U> void foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testMethod3()
     {
         new SourceParser(new StringReader("public <T, U> void foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testMethod4()
     {
         new SourceParser(new StringReader("public <T, U> java.lang.String[] foo() { return; } }")).parseClassBody();
     }
 
+    @Test
     public void testField1()
     {
         new SourceParser(new StringReader("int foo; }")).parseClassBody();
     }
 
+    @Test
     public void testField2()
     {
         new SourceParser(new StringReader("int foo[]; }")).parseClassBody();
     }
 
+    @Test
     public void testField3()
     {
         new SourceParser(new StringReader("int foo = 0; }")).parseClassBody();
     }
 
+    @Test
     public void testTopLevelRecord1()
     {
         new SourceParser(new StringReader("""
@@ -770,6 +851,7 @@ public class NewParserTest extends TestCase
             """
         )).parseCU();
     }
+    @Test
     public void testTopLevelRecord2()
     {
         new SourceParser(new StringReader("""
@@ -781,6 +863,7 @@ public class NewParserTest extends TestCase
         )).parseCU();
     }
 
+    @Test
     public void testTopLevelRecord3()
     {
         new SourceParser(new StringReader("""
@@ -796,6 +879,7 @@ public class NewParserTest extends TestCase
         )).parseCU();
     }
 
+    @Test
     public void testTopLevelRecord4()
     {
         new SourceParser(new StringReader("""
@@ -807,6 +891,7 @@ public class NewParserTest extends TestCase
         )).parseCU();
     }
 
+    @Test
     public void testTopLevelRecord5()
     {
         new SourceParser(new StringReader("""
@@ -818,6 +903,7 @@ public class NewParserTest extends TestCase
         )).parseCU();
     }
 
+    @Test
     public void testTopLevelRecord6()
     {
         new SourceParser(new StringReader("""
@@ -830,6 +916,7 @@ public class NewParserTest extends TestCase
         )).parseCU();
     }
 
+    @Test
     public void testTopLevelRecord7()
     {
         new SourceParser(new StringReader("""
@@ -837,6 +924,7 @@ public class NewParserTest extends TestCase
             """
         )).parseCU();
     }
+    @Test
     public void testTopLevelRecord8()
     {
         new SourceParser(new StringReader("""
@@ -844,5 +932,5 @@ public class NewParserTest extends TestCase
             """
         )).parseCU();
     }
-    
+
 }

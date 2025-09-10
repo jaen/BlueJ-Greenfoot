@@ -1,21 +1,21 @@
 /*
  This file is part of the BlueJ program. 
  Copyright (C) 2011,2016,2025  Michael Kolling and John Rosenberg
- 
+
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
  as published by the Free Software Foundation; either version 2 
  of the License, or (at your option) any later version. 
- 
+
  This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of 
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  GNU General Public License for more details. 
- 
+
  You should have received a copy of the GNU General Public License 
  along with this program; if not, write to the Free Software 
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
- 
+
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
@@ -73,7 +73,7 @@ public class Diagnostic implements Serializable
     // May be -1 if it wasn't a compiler error with specific location
     private final int diagnosticIdentifier;
 
-    
+
     /**
      * Constructor for Diagnostic objects representing notes. 
      */
@@ -81,7 +81,7 @@ public class Diagnostic implements Serializable
     {
         this(type, message, null, -1, -1, -1, -1, DiagnosticOrigin.UNKNOWN, -1);
     }
-    
+
     /**
      * Constructor for error and warning diagnostics associated with
      * a particular position in the source code.
@@ -113,7 +113,7 @@ public class Diagnostic implements Serializable
         this.origin = origin;
         this.diagnosticIdentifier = identifier;
     }
-    
+
     /**
      * Get the type of the diagnostic - ERROR, WARNING or NOTE.
      */
@@ -121,7 +121,7 @@ public class Diagnostic implements Serializable
     {
         return type;
     }
-    
+
     /**
      * Get the end column of the error. Return is valid only if {@code getStartLine()} returns
      * a valid line number (greater than 0). Caller should be prepared for this value to be slightly
@@ -132,7 +132,7 @@ public class Diagnostic implements Serializable
     {
         return endColumn;
     }
-    
+
     /**
      * Get the end line of the error. Return is valid only if {@code getStartLine()} returns
      * a valid line number (greater than 0).
@@ -141,7 +141,7 @@ public class Diagnostic implements Serializable
     {
         return endLine;
     }
-    
+
     /**
      * Get the diagnostic message which can be presented to the end user.
      */
@@ -149,7 +149,7 @@ public class Diagnostic implements Serializable
     {
         return message;
     }
-    
+
     /**
      * Get the starting column of the error/problem. Return is only valid if
      * {@code getStartLine()} returns a valid line (greater than 0). Tab stops
@@ -159,7 +159,7 @@ public class Diagnostic implements Serializable
     {
         return startColumn;
     }
-    
+
     /**
      * Get the starting line of the error/problem, if known. Return is valid if
      * it is greater than 0.
@@ -168,7 +168,7 @@ public class Diagnostic implements Serializable
     {
         return startLine;
     }
-    
+
     /**
      * Get the filename associated with the error/problem. May be null.
      */
