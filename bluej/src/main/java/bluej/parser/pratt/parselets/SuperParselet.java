@@ -24,10 +24,12 @@ package bluej.parser.pratt.parselets;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.CallbackIntegrationException;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.PrefixParselet;
 import bluej.parser.pratt.ParseResult;
+import bluej.parser.pratt.TrackedScope;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -72,46 +74,51 @@ public class SuperParselet implements PrefixParselet {
     }
 
     /**
-     * Parses a 'super' keyword token into a 'super' reference node.
+     * Parses a 'super' keyword token into a 'super' reference node using SafeCallbacks integration.
      *
-     * <p>This method handles the parsing of the 'super' keyword, validating that
-     * the token represents the correct keyword and creating an appropriate AST node
-     * using the parser's NodeFactory.</p>
+     * <p>This method uses the SafeCallbacks pattern with try-with-resources to ensure
+     * proper callback pairing and automatic cleanup. The SafeCallbacks system handles
+     * both the callback emission and AST node creation, following the architectural
+     * principle that callbacks create AST nodes, not parselets.</p>
      *
      * <p>The method validates that the token is actually a 'super' keyword token
      * and creates a node representing a reference to the parent class instance.</p>
      *
-     * @param parser The parser instance (used to access NodeFactory)
+     * <p>Integration pattern:</p>
+     * <ul>
+     *   <li>Use try-with-resources for SafeCallbacks scope management</li>
+     *   <li>Emit appropriate callback sequences (begin → gotIdentifier → end)</li>
+     *   <li>Handle parsing errors with CallbackIntegrationException</li>
+     *   <li>Let SafeCallbacks create the actual AST node</li>
+     * </ul>
+     *
+     * @param parser The parser instance providing SafeCallbacks access
      * @param token The 'super' keyword token to parse
-     * @return A ParsedNode representing the 'super' reference, or null if parsing failed
-     * @throws IllegalArgumentException if token is null
+     * @return A ParseResult containing the 'super' reference AST node or error information
+     * @throws CallbackIntegrationException if callback integration fails
      */
     @Override
     public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
-        // Validate token is not null
-//        if (token == null) {
-//            return ParseResult.failure("Null token in 'super' parselet", null);
-//        }
-
-        // Get NodeFactory
-        NodeFactory nodeFactory = parser.getNodeFactory();
-        if (nodeFactory == null) {
-            return ParseResult.failure("NodeFactory not available", token);
-        }
-
         // Validate that this is actually a 'super' token
         if (token.getType() != JavaTokenTypes.LITERAL_super) {
             return ParseResult.failure(
                 "Expected 'super' keyword but found: " + getTokenDescription(token), token);
         }
 
-        // Create the 'super' reference node using the factory
-        try {
-            ParsedNode node = nodeFactory.createSuperNode(token);
-            return ParseResult.success(node);
+        // Use SafeCallbacks with try-with-resources pattern for proper callback management
+        try (var scope = parser.getCallbacks().beginSuperExpression(token)) {
+            // Parse logic here - validation is already done above
+            // Let SafeCallbacks handle the callback emission and AST node creation
+            return scope.createSuperResult(token);
+        } catch (CallbackIntegrationException e) {
+            // Re-throw callback integration exceptions as-is
+            throw e;
         } catch (Exception e) {
-            return ParseResult.failure(
-                "Failed to create 'super' node: " + e.getMessage(), token);
+            // Wrap other exceptions in CallbackIntegrationException
+            throw new CallbackIntegrationException(
+                "Failed to parse 'super' reference: " + e.getMessage(),
+                CallbackIntegrationException.FailureType.CALLBACK_EXCEPTION,
+                "super", token);
         }
     }
 

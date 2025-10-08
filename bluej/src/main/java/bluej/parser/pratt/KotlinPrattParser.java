@@ -88,6 +88,9 @@ public class KotlinPrattParser {
     /** Error recovery mechanism for handling parse errors gracefully */
     private final ErrorRecovery errorRecovery;
 
+    /** SafeCallbacks for managing callback integration with TrackedScope */
+    private final SafeCallbacks safeCallbacks;
+
     /**
      * Creates a new KotlinPrattParser with the specified token operations and parent parser.
      *
@@ -102,6 +105,7 @@ public class KotlinPrattParser {
         this.registry = new ParseletRegistry();
         this.errors = new ArrayList<>();
         this.errorRecovery = new ErrorRecovery();
+        this.safeCallbacks = new SafeCallbacks(sourceParser.getCallbackDelegate(), nodeFactory);
 
         // Initialize the registry with parselets
         initializeRegistry();
@@ -124,6 +128,7 @@ public class KotlinPrattParser {
         this.registry = registry;
         this.errors = new ArrayList<>();
         this.errorRecovery = new ErrorRecovery();
+        this.safeCallbacks = new SafeCallbacks(sourceParser.getCallbackDelegate(), nodeFactory);
     }
 
     /**
@@ -616,6 +621,15 @@ public class KotlinPrattParser {
      */
     public NodeFactory getNodeFactory() {
         return nodeFactory;
+    }
+
+    /**
+     * Gets the SafeCallbacks instance for callback integration.
+     *
+     * @return The SafeCallbacks instance
+     */
+    public SafeCallbacks getCallbacks() {
+        return safeCallbacks;
     }
 
     /**

@@ -25,10 +25,12 @@ import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ExpressionNode;
 import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.CallbackIntegrationException;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
+import bluej.parser.pratt.TrackedScope;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -59,39 +61,48 @@ import org.jetbrains.annotations.NotNull;
 public final class LiteralParselet implements PrefixParselet {
 
     /**
-     * Parses a literal token into an AST node.
+     * Parses a literal token into an AST node using SafeCallbacks integration.
      *
-     * <p>This method handles all supported literal types by creating an
-     * {@link ExpressionNode} that contains the literal token. The node
-     * represents the literal in the AST structure and preserves source
-     * position information for IDE features.</p>
+     * <p>This method uses the SafeCallbacks pattern with try-with-resources to ensure
+     * proper callback pairing and automatic cleanup. The SafeCallbacks system handles
+     * both the callback emission and AST node creation, following the architectural
+     * principle that callbacks create AST nodes, not parselets.</p>
      *
-     * @param parser The parser instance (used for error reporting)
+     * <p>Integration pattern:</p>
+     * <ul>
+     *   <li>Use try-with-resources for SafeCallbacks scope management</li>
+     *   <li>Emit appropriate callback sequences (begin → gotLiteral → end)</li>
+     *   <li>Handle parsing errors with CallbackIntegrationException</li>
+     *   <li>Let SafeCallbacks create the actual AST node</li>
+     * </ul>
+     *
+     * @param parser The parser instance providing SafeCallbacks access
      * @param token The literal token to parse
-     * @return An ExpressionNode representing the literal, or null if parsing failed
+     * @return A ParseResult containing the literal AST node or error information
+     * @throws CallbackIntegrationException if callback integration fails
      */
     @Override
     public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
-//        if (token == null) {
-//            return ParseResult.failure("Null token in literal parselet", null);
-//        }
-
         // Validate that this is indeed a literal token type
         if (!isLiteralToken(token.getType())) {
             return ParseResult.failure("Expected literal token, got: " + getTokenTypeName(token.getType()), token);
         }
 
-        // Create the literal node using the NodeFactory
-        // This ensures thread-safe AST node creation
-        NodeFactory nodeFactory = parser.getNodeFactory();
-//        if (nodeFactory == null) {
-//            return ParseResult.failure("NodeFactory not available for AST node creation", token);
-//        }
-
-        // Create and return the literal node
-        // The factory handles all threading requirements
-        ParsedNode literalNode = nodeFactory.createLiteralNode(token);
-        return ParseResult.success(literalNode);
+        // Use SafeCallbacks with try-with-resources pattern for proper callback management
+        try (var scope = parser.getCallbacks().beginLiteralExpression(token)) {
+            // Parse logic here - validation is already done above
+            // Let SafeCallbacks handle the callback emission and AST node creation
+            return scope.createResult(token);
+        } catch (CallbackIntegrationException e) {
+            // Re-throw callback integration exceptions as-is
+            throw e;
+        } catch (Exception e) {
+            // Wrap other exceptions in CallbackIntegrationException
+            throw new CallbackIntegrationException(
+                "Failed to parse literal: " + e.getMessage(),
+                CallbackIntegrationException.FailureType.CALLBACK_EXCEPTION,
+                "literal", token);
+        }
     }
 
     /**

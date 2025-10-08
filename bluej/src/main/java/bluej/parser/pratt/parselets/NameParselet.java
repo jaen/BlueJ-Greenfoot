@@ -24,10 +24,12 @@ package bluej.parser.pratt.parselets;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.ParsedNode;
+import bluej.parser.pratt.CallbackIntegrationException;
 import bluej.parser.pratt.KotlinPrattParser;
 import bluej.parser.pratt.NodeFactory;
 import bluej.parser.pratt.ParseResult;
 import bluej.parser.pratt.PrefixParselet;
+import bluej.parser.pratt.TrackedScope;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -71,30 +73,35 @@ public class NameParselet implements PrefixParselet {
     }
 
     /**
-     * Parses an identifier token into an identifier reference node.
+     * Parses an identifier token into an identifier reference node using SafeCallbacks integration.
      *
-     * <p>This method handles the parsing of identifier tokens, including:</p>
+     * <p>This method uses the SafeCallbacks pattern with try-with-resources to ensure
+     * proper callback pairing and automatic cleanup. The SafeCallbacks system handles
+     * both the callback emission and AST node creation, following the architectural
+     * principle that callbacks create AST nodes, not parselets.</p>
+     *
+     * <p>The method handles the parsing of identifier tokens, including:</p>
      * <ul>
      *   <li>Regular identifiers that follow Kotlin naming conventions</li>
      *   <li>Backtick-wrapped identifiers that allow keywords as names</li>
      *   <li>Unicode identifiers that are valid in Kotlin</li>
      * </ul>
      *
-     * <p>The method validates that the token represents a valid identifier and
-     * creates an appropriate AST node using the parser's NodeFactory.</p>
+     * <p>Integration pattern:</p>
+     * <ul>
+     *   <li>Use try-with-resources for SafeCallbacks scope management</li>
+     *   <li>Emit appropriate callback sequences (begin → gotIdentifier → end)</li>
+     *   <li>Handle parsing errors with CallbackIntegrationException</li>
+     *   <li>Let SafeCallbacks create the actual AST node</li>
+     * </ul>
      *
-     * @param parser The parser instance (used to access NodeFactory)
+     * @param parser The parser instance providing SafeCallbacks access
      * @param token The identifier token to parse
-     * @return A ParsedNode representing the identifier reference, or null if parsing failed
-     * @throws IllegalArgumentException if token is null
+     * @return A ParseResult containing the identifier AST node or error information
+     * @throws CallbackIntegrationException if callback integration fails
      */
     @Override
     public @NotNull ParseResult<ParsedNode> parse(KotlinPrattParser parser, @NotNull LocatableToken token) {
-        // Validate token is not null
-//        if (token == null) {
-//            return ParseResult.failure("Null token in name parselet", null);
-//        }
-
         // Validate that this is indeed an identifier token
         if (token.getType() != JavaTokenTypes.IDENT) {
             return ParseResult.failure("Expected identifier token, got: " + getTokenTypeName(token.getType()), token);
@@ -106,15 +113,21 @@ public class NameParselet implements PrefixParselet {
             return ParseResult.failure("Identifier cannot be empty", token);
         }
 
-        // Create the identifier node using the NodeFactory
-        NodeFactory nodeFactory = parser.getNodeFactory();
-        if (nodeFactory == null) {
-            return ParseResult.failure("NodeFactory not available for AST node creation", token);
+        // Use SafeCallbacks with try-with-resources pattern for proper callback management
+        try (var scope = parser.getCallbacks().beginIdentifierExpression(token)) {
+            // Parse logic here - validation is already done above
+            // Let SafeCallbacks handle the callback emission and AST node creation
+            return scope.createIdentifierResult(token);
+        } catch (CallbackIntegrationException e) {
+            // Re-throw callback integration exceptions as-is
+            throw e;
+        } catch (Exception e) {
+            // Wrap other exceptions in CallbackIntegrationException
+            throw new CallbackIntegrationException(
+                "Failed to parse identifier: " + e.getMessage(),
+                CallbackIntegrationException.FailureType.CALLBACK_EXCEPTION,
+                "identifier", token);
         }
-
-        // Create and return the identifier node
-        ParsedNode identifierNode = nodeFactory.createIdentifierNode(token);
-        return ParseResult.success(identifierNode);
     }
 
     /**
