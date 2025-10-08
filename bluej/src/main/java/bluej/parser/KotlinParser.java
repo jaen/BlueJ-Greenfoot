@@ -21,7 +21,10 @@
  */
 package bluej.parser;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 
 import bluej.parser.lexer.*;
@@ -44,6 +47,9 @@ import static bluej.parser.lexer.JavaTokenTypes.*;
 public class KotlinParser implements ParserBehavior
 {
     private SourceParser parser;
+    // Stack to track current parsing scope (class, method, block)
+    // Thread safety is handled via synchronized blocks when accessing
+    private final Deque<ScopeInfo> scopeStack = new ArrayDeque<>();
 
     public static final int TYPEDEF_CLASS = 0;
     public static final int TYPEDEF_INTERFACE = 1;
@@ -146,10 +152,10 @@ public class KotlinParser implements ParserBehavior
     public void parseCU()
     {
         int state = 0;
-        while (getTokenStream().LA(1).getType() != JavaTokenTypes.EOF) {
+        while (getTokenStream().LA(1).getType() != EOF) {
             LocatableToken nextToken = getTokenStream().LA(1);
 
-            if (nextToken.getType() == JavaTokenTypes.SEMI) {
+            if (nextToken.getType() == SEMI) {
                 nextToken();
                 continue;
             }
@@ -172,9 +178,9 @@ public class KotlinParser implements ParserBehavior
      */
     public final boolean isTypeDeclarator(LocatableToken token)
     {
-        return token.getType() == JavaTokenTypes.LITERAL_class
-        || token.getType() == JavaTokenTypes.LITERAL_enum
-        || token.getType() == JavaTokenTypes.LITERAL_interface;
+        return token.getType() == LITERAL_class
+        || token.getType() == LITERAL_enum
+        || token.getType() == LITERAL_interface;
     }
 
     /**
@@ -182,15 +188,15 @@ public class KotlinParser implements ParserBehavior
      */
     public static boolean isPrimitiveType(LocatableToken token)
     {
-        return token.getType() == JavaTokenTypes.LITERAL_void
-        || token.getType() == JavaTokenTypes.LITERAL_boolean
-        || token.getType() == JavaTokenTypes.LITERAL_byte
-        || token.getType() == JavaTokenTypes.LITERAL_char
-        || token.getType() == JavaTokenTypes.LITERAL_short
-        || token.getType() == JavaTokenTypes.LITERAL_int
-        || token.getType() == JavaTokenTypes.LITERAL_long
-        || token.getType() == JavaTokenTypes.LITERAL_float
-        || token.getType() == JavaTokenTypes.LITERAL_double;
+        return token.getType() == LITERAL_void
+        || token.getType() == LITERAL_boolean
+        || token.getType() == LITERAL_byte
+        || token.getType() == LITERAL_char
+        || token.getType() == LITERAL_short
+        || token.getType() == LITERAL_int
+        || token.getType() == LITERAL_long
+        || token.getType() == LITERAL_float
+        || token.getType() == LITERAL_double;
     }
 
     /**
@@ -202,14 +208,14 @@ public class KotlinParser implements ParserBehavior
     public final int parseCUpart(int state)
     {
         LocatableToken token = nextToken();
-        if (at(token, JavaTokenTypes.LITERAL_package)) {
+        if (at(token, LITERAL_package)) {
             if (state != 0) {
                 error("Only one 'package' statement is allowed", token);
             }
             token = parsePackageStmt(token);
             parser.reachedCUstate(1); state = 1;
         }
-        else if (at(token,JavaTokenTypes.LITERAL_import)) {
+        else if (at(token, LITERAL_import)) {
             parseImportStatement(token);
             parser.reachedCUstate(1); state = 1;
         }
@@ -222,19 +228,19 @@ public class KotlinParser implements ParserBehavior
             parseTypeDef(token);
             parser.reachedCUstate(2); state = 2;
         }
-        else if (at(token,JavaTokenTypes.LITERAL_fun)) {
+        else if (at(token, LITERAL_fun)) {
             parser.gotTopLevelDecl(token);
             parser.gotDeclBegin(token);
             processFunction(token);
             parser.reachedCUstate(2); state = 2;
         }
-        else if (at(token,JavaTokenTypes.LITERAL_val, JavaTokenTypes.LITERAL_var)) {
+        else if (at(token, LITERAL_val, LITERAL_var)) {
             parser.gotTopLevelDecl(token);
             parser.gotDeclBegin(token);
             processProperty(token);
             parser.reachedCUstate(2); state = 2;
         }
-        else if (at(token, JavaTokenTypes.EOF)) {
+        else if (at(token, EOF)) {
             return state;
         }
         else {
@@ -251,37 +257,37 @@ public class KotlinParser implements ParserBehavior
     public static boolean isModifier(LocatableToken token)
     {
         int tokType = token.getType();
-        return (tokType == JavaTokenTypes.LITERAL_public
-                || tokType == JavaTokenTypes.LITERAL_private
-                || tokType == JavaTokenTypes.LITERAL_protected
-                || tokType == JavaTokenTypes.LITERAL_internal
-                || tokType == JavaTokenTypes.ABSTRACT
-                || tokType == JavaTokenTypes.FINAL
-                || tokType == JavaTokenTypes.LITERAL_static
-                || tokType == JavaTokenTypes.LITERAL_volatile
-                || tokType == JavaTokenTypes.LITERAL_native
-                || tokType == JavaTokenTypes.STRICTFP
-                || tokType == JavaTokenTypes.LITERAL_transient
-                || tokType == JavaTokenTypes.LITERAL_synchronized
-                || tokType == JavaTokenTypes.AT
-                || tokType == JavaTokenTypes.LITERAL_default
-                || tokType == JavaTokenTypes.LITERAL_sealed
-                || tokType == JavaTokenTypes.LITERAL_non_sealed
-                || tokType == JavaTokenTypes.LITERAL_open
-                || tokType == JavaTokenTypes.LITERAL_data
-                || tokType == JavaTokenTypes.LITERAL_actual
-                || tokType == JavaTokenTypes.LITERAL_expect
-                || tokType == JavaTokenTypes.LITERAL_const
-                || tokType == JavaTokenTypes.LITERAL_lateinit
-                || tokType == JavaTokenTypes.LITERAL_override
-                || tokType == JavaTokenTypes.LITERAL_suspend
-                || tokType == JavaTokenTypes.LITERAL_tailrec
-                || tokType == JavaTokenTypes.LITERAL_vararg
-                || tokType == JavaTokenTypes.LITERAL_infix
-                || tokType == JavaTokenTypes.LITERAL_inline
-                || tokType == JavaTokenTypes.LITERAL_external
-                || tokType == JavaTokenTypes.LITERAL_operator
-                || tokType == JavaTokenTypes.LITERAL_inner);
+        return (tokType == LITERAL_public
+                || tokType == LITERAL_private
+                || tokType == LITERAL_protected
+                || tokType == LITERAL_internal
+                || tokType == ABSTRACT
+                || tokType == FINAL
+                || tokType == LITERAL_static
+                || tokType == LITERAL_volatile
+                || tokType == LITERAL_native
+                || tokType == STRICTFP
+                || tokType == LITERAL_transient
+                || tokType == LITERAL_synchronized
+                || tokType == AT
+                || tokType == LITERAL_default
+                || tokType == LITERAL_sealed
+                || tokType == LITERAL_non_sealed
+                || tokType == LITERAL_open
+                || tokType == LITERAL_data
+                || tokType == LITERAL_actual
+                || tokType == LITERAL_expect
+                || tokType == LITERAL_const
+                || tokType == LITERAL_lateinit
+                || tokType == LITERAL_override
+                || tokType == LITERAL_suspend
+                || tokType == LITERAL_tailrec
+                || tokType == LITERAL_vararg
+                || tokType == LITERAL_infix
+                || tokType == LITERAL_inline
+                || tokType == LITERAL_external
+                || tokType == LITERAL_operator
+                || tokType == LITERAL_inner);
     }
 
     /**
@@ -293,7 +299,7 @@ public class KotlinParser implements ParserBehavior
 
         LocatableToken token = getTokenStream().nextToken();
         while (isModifier(token)) {
-            if (token.getType() == JavaTokenTypes.AT) {
+            if (token.getType() == AT) {
                 if (getTokenStream().LA(1).getType() == IDENT) {
                     parser.setLastToken(token);
                     parseAnnotation();
@@ -323,10 +329,10 @@ public class KotlinParser implements ParserBehavior
         // TODO: Implement annotation parsing for Kotlin
         // For now, just skip the annotation
         LocatableToken token = nextToken();
-        while (token.getType() != JavaTokenTypes.SEMI && 
-               token.getType() != JavaTokenTypes.LCURLY &&
-               token.getType() != JavaTokenTypes.RCURLY &&
-               token.getType() != JavaTokenTypes.EOF) {
+        while (token.getType() != SEMI &&
+               token.getType() != LCURLY &&
+               token.getType() != RCURLY &&
+               token.getType() != EOF) {
             token = nextToken();
         }
         getTokenStream().pushBack(token);
@@ -349,7 +355,7 @@ public class KotlinParser implements ParserBehavior
         List<LocatableToken> rval = new ArrayList<>();
         rval.add(first);
         LocatableToken token = nextToken();
-        while (token.getType() == JavaTokenTypes.DOT) {
+        while (token.getType() == DOT) {
             LocatableToken ntoken = nextToken();
             if (ntoken.getType() != IDENT) {
                 // This could be for example "xyz.class"
@@ -370,7 +376,7 @@ public class KotlinParser implements ParserBehavior
     public final void parseImportStatement()
     {
         LocatableToken token = nextToken();
-        if (token.getType() == JavaTokenTypes.LITERAL_import) {
+        if (token.getType() == LITERAL_import) {
             parseImportStatement(token);
         }
         else {
@@ -389,7 +395,7 @@ public class KotlinParser implements ParserBehavior
         parser.beginElement(token);
         boolean isStatic = false;
         token = getTokenStream().nextToken();
-        if (token.getType() == JavaTokenTypes.LITERAL_static) {
+        if (token.getType() == LITERAL_static) {
             isStatic = true;
             token = getTokenStream().nextToken();
         }
@@ -402,17 +408,17 @@ public class KotlinParser implements ParserBehavior
 
         List<LocatableToken> tokens = parseDottedIdent(token);
         LocatableToken lastIdentToken = parser.getLastToken();
-        if (getTokenStream().LA(1).getType() == JavaTokenTypes.DOT) {
+        if (getTokenStream().LA(1).getType() == DOT) {
             LocatableToken lastToken = nextToken(); // DOT
             token = nextToken();
-            if (token.getType() == JavaTokenTypes.SEMI) {
+            if (token.getType() == SEMI) {
                 parser.error("Trailing '.' in import statement", lastToken.getLine(), lastToken.getColumn(),
                         lastToken.getEndLine(), lastToken.getEndColumn());
             }
-            else if (token.getType() == JavaTokenTypes.STAR) {
+            else if (token.getType() == STAR) {
                 lastToken = token;
                 token = nextToken();
-                if (token.getType() != JavaTokenTypes.SEMI) {
+                if (token.getType() != SEMI) {
                     getTokenStream().pushBack(token);
                     parser.error("Expected ';' following import statement", lastToken.getEndLine(), lastToken.getEndColumn(),
                             lastToken.getEndLine(), lastToken.getEndColumn());
@@ -424,14 +430,14 @@ public class KotlinParser implements ParserBehavior
             }
             else {
                 error("Expected package/class identifier, or '*', in import statement.");
-                if (getTokenStream().LA(1).getType() == JavaTokenTypes.SEMI) {
+                if (getTokenStream().LA(1).getType() == SEMI) {
                     nextToken();
                 }
             }
         }
         else {
             token = nextToken();
-            if (token.getType() != JavaTokenTypes.SEMI) {
+            if (token.getType() != SEMI) {
                 getTokenStream().pushBack(token);
                 parser.error("Expected ';' following import statement", lastIdentToken.getEndLine(), lastIdentToken.getEndColumn(),
                         lastIdentToken.getEndLine(), lastIdentToken.getEndColumn());
@@ -456,52 +462,76 @@ public class KotlinParser implements ParserBehavior
     /**
      * Parse a type definition (class, interface, enum).
      * Returns with {@code lastToken} set to the last token seen as part of the definition.
-     * 
+     *
      * @param firstToken  the first token of the type definition, which might still be in the token
      *                    stream, or which might be a modifier already read.
      */
     public final void parseTypeDef(LocatableToken firstToken)
     {
         int tdType = parseTypeDefBegin();
+        
+        // Determine scope type based on typedef type
+        ScopeType scopeType = switch (tdType) {
+            case TYPEDEF_INTERFACE -> ScopeType.INTERFACE;
+            case TYPEDEF_CLASS | TYPEDEF_ENUM -> ScopeType.CLASS;
+            default -> throw new IllegalStateException("Unexpected value: " + tdType);
+        };
+
+        // Extract class/interface name for the scope
+        String typeName = null;
+        LocatableToken nameToken = null;
         if (tdType != TYPEDEF_EPIC_FAIL) {
-            parser.gotTypeDef(firstToken, tdType);
+            // Peek at the next token to get the name
+            LocatableToken peekToken = getTokenStream().nextToken();
+            if (peekToken.getType() == IDENT) {
+                typeName = peekToken.getText();
+                nameToken = peekToken;
+            }
+            getTokenStream().pushBack(peekToken);
         }
-        parser.modifiersConsumed();
-        if (tdType == TYPEDEF_EPIC_FAIL) {
-            parser.endDecl(getTokenStream().LA(1));
-            return;
+        
+        try (ParseScope scope = createScope(scopeType, firstToken, typeName)) {
+            if (tdType != TYPEDEF_EPIC_FAIL) {
+                parser.gotTypeDef(firstToken, tdType);
+            }
+            parser.modifiersConsumed();
+            if (tdType == TYPEDEF_EPIC_FAIL) {
+                parser.endDecl(getTokenStream().LA(1));
+                scope.complete(); // Complete scope before returning
+                return;
+            }
+
+            // Class name
+            LocatableToken token = getTokenStream().nextToken();
+            if (token.getType() != IDENT) {
+                getTokenStream().pushBack(token);
+                error("Expected identifier (in type definition)");
+                scope.complete(); // Complete scope before returning
+                return;
+            }
+            parser.gotTypeDefName(token);
+
+            token = parseTypeDefPart2(false);
+
+            if (token == null) {
+                // If parseTypeDefPart2 returns null, it means we've encountered the start of a new declaration
+                // Consider the class definition complete
+                scope.complete(); // Complete scope before returning
+                return;
+            }
+
+            if (token.getType() != LCURLY) {
+                // In Kotlin, classes can be defined without curly braces
+                // If we don't find a curly brace, consider the class definition complete
+                getTokenStream().pushBack(token);
+//                error("Expected '{' (in type definition)");
+                scope.complete(); // Complete scope before returning
+                return;
+            }
+
+            token = parseTypeBody(tdType, token);
+            scope.complete(); // Complete scope before automatic close
         }
-
-        // Class name
-        LocatableToken token = getTokenStream().nextToken();
-        if (token.getType() != IDENT) {
-            getTokenStream().pushBack(token);
-            parser.gotTypeDefEnd(token, false);
-            error("Expected identifier (in type definition)");
-            return;
-        }
-        parser.gotTypeDefName(token);
-
-        token = parseTypeDefPart2(false);
-
-        if (token == null) {
-            // If parseTypeDefPart2 returns null, it means we've encountered the start of a new declaration
-            // Consider the class definition complete
-            parser.gotTypeDefEnd(getLastToken(), true);
-            return;
-        }
-
-        if (token.getType() != JavaTokenTypes.LCURLY) {
-            // In Kotlin, classes can be defined without curly braces
-            // If we don't find a curly brace, consider the class definition complete
-            getTokenStream().pushBack(token);
-            parser.gotTypeDefEnd(token, false);
-//            error("Expected '{' (in type definition)");
-            return;
-        }
-
-        token = parseTypeBody(tdType, token);
-        parser.gotTypeDefEnd(token, token.getType() == JavaTokenTypes.RCURLY);
     }
 
     /**
@@ -522,7 +552,7 @@ public class KotlinParser implements ParserBehavior
 
         // Check if the next token is a closing brace (empty body)
         LocatableToken nextToken = getTokenStream().LA(1);
-        if (nextToken.getType() == JavaTokenTypes.RCURLY) {
+        if (nextToken.getType() == RCURLY) {
             // Empty body, consume the closing brace
             token = nextToken();
         } else {
@@ -530,7 +560,7 @@ public class KotlinParser implements ParserBehavior
             parseClassBody();
             // Check if the next token is a closing brace
             token = getTokenStream().LA(1);
-            if (token.getType() == JavaTokenTypes.RCURLY) {
+            if (token.getType() == RCURLY) {
                 // Consume the closing brace
                 token = nextToken();
             } else {
@@ -538,11 +568,11 @@ public class KotlinParser implements ParserBehavior
                 // This is especially important for sealed classes with inner classes
                 // that inherit from the outer class
                 int braceCount = 1; // We've already seen one opening brace
-                while (braceCount > 0 && token.getType() != JavaTokenTypes.EOF) {
+                while (braceCount > 0 && token.getType() != EOF) {
                     token = nextToken();
-                    if (token.getType() == JavaTokenTypes.LCURLY) {
+                    if (token.getType() == LCURLY) {
                         braceCount++;
-                    } else if (token.getType() == JavaTokenTypes.RCURLY) {
+                    } else if (token.getType() == RCURLY) {
                         braceCount--;
                     }
                 }
@@ -556,7 +586,7 @@ public class KotlinParser implements ParserBehavior
                 }
             }
         }
-        parser.endTypeBody(token, token.getType() == JavaTokenTypes.RCURLY);
+        parser.endTypeBody(token, token.getType() == RCURLY);
         return token;
     }
 
@@ -569,105 +599,104 @@ public class KotlinParser implements ParserBehavior
         LocatableToken token = getTokenStream().LA(1);
 
         // If the first token is a closing brace, there are no enum constants
-        if (token.getType() == JavaTokenTypes.RCURLY) {
+        if (token.getType() == RCURLY) {
             return;
         }
 
-        // Begin field declarations for enum constants
-        parser.beginFieldDeclarations(token);
+        try (ParseScope scope = createScope(ScopeType.ENUM_CONSTANTS, token)) {
+            boolean foundSemicolon = false;
 
-        boolean foundSemicolon = false;
-
-        while (token.getType() != JavaTokenTypes.RCURLY && token.getType() != JavaTokenTypes.EOF) {
-            if (token.getType() == JavaTokenTypes.SEMI) {
-                // Found a semicolon, which marks the end of enum constants
-                foundSemicolon = true;
-                nextToken(); // consume the semicolon
-                break;
-            }
-
-            if (token.getType() == IDENT) {
-                // Found an enum constant
-                LocatableToken identToken = token;
-                parser.gotDeclBegin(identToken);
-                token = nextToken(); // consume the identifier
-
-                // Notify the parser about the enum constant (treating it as a field)
-                parser.gotField(identToken, identToken, false);
-
-                boolean hasConstructorArgs = false;
-                boolean hasClassBody = false;
-
-                // Check for constructor arguments
-                if (token.getType() == JavaTokenTypes.LPAREN) {
-                    hasConstructorArgs = true;
-                    // Begin argument list
-                    parser.beginArgumentList(token);
-
-                    // Skip constructor arguments
-                    int parenCount = 1;
-                    while (parenCount > 0 && token.getType() != JavaTokenTypes.EOF) {
-                        token = nextToken();
-                        if (token.getType() == JavaTokenTypes.LPAREN) {
-                            parenCount++;
-                        } else if (token.getType() == JavaTokenTypes.RPAREN) {
-                            parenCount--;
-                        }
-                    }
-
-                    // End argument list
-                    parser.endArgumentList(token);
-                    token = nextToken(); // consume the closing parenthesis
-                }
-
-                // Check for enum constant class body
-                if (token.getType() == JavaTokenTypes.LCURLY) {
-                    hasClassBody = true;
-                    // Begin anonymous class body for enum constant
-                    parser.beginAnonClassBody(token, true);
-
-                    // Skip enum constant class body
-                    int braceCount = 1;
-                    while (braceCount > 0 && token.getType() != JavaTokenTypes.EOF) {
-                        token = nextToken();
-                        if (token.getType() == JavaTokenTypes.LCURLY) {
-                            braceCount++;
-                        } else if (token.getType() == JavaTokenTypes.RCURLY) {
-                            braceCount--;
-                        }
-                    }
-
-                    // End anonymous class body
-                    parser.endAnonClassBody(token, true);
-                    token = nextToken(); // consume the closing brace
-                }
-
-                // End the field (enum constant)
-                parser.endField(token, true);
-
-                // Check for comma or semicolon
-                if (token.getType() == JavaTokenTypes.COMMA) {
-                    token = nextToken(); // consume the comma
-                } else if (token.getType() == JavaTokenTypes.SEMI) {
+            while (token.getType() != RCURLY && token.getType() != EOF) {
+                if (token.getType() == SEMI) {
                     // Found a semicolon, which marks the end of enum constants
                     foundSemicolon = true;
                     nextToken(); // consume the semicolon
                     break;
-                } else if (token.getType() == JavaTokenTypes.RCURLY) {
-                    // End of enum class body
-                    getTokenStream().pushBack(token);
-                    break;
                 }
-            } else {
-                // Not an identifier, skip to the next token
-                token = nextToken();
+
+                if (token.getType() == IDENT) {
+                    // Found an enum constant
+                    LocatableToken identToken = token;
+                    parser.gotDeclBegin(identToken);
+                    token = nextToken(); // consume the identifier
+
+                    // Notify the parser about the enum constant (treating it as a field)
+                    parser.gotField(identToken, identToken, false);
+
+                    boolean hasConstructorArgs = false;
+                    boolean hasClassBody = false;
+
+                    // Check for constructor arguments
+                    if (token.getType() == LPAREN) {
+                        hasConstructorArgs = true;
+                        // Begin argument list
+                        parser.beginArgumentList(token);
+
+                        // Skip constructor arguments
+                        int parenCount = 1;
+                        while (parenCount > 0 && token.getType() != EOF) {
+                            token = nextToken();
+                            if (token.getType() == LPAREN) {
+                                parenCount++;
+                            } else if (token.getType() == RPAREN) {
+                                parenCount--;
+                            }
+                        }
+
+                        // End argument list
+                        parser.endArgumentList(token);
+                        token = nextToken(); // consume the closing parenthesis
+                    }
+
+                    // Check for enum constant class body
+                    if (token.getType() == LCURLY) {
+                        hasClassBody = true;
+                        // Begin anonymous class body for enum constant
+                        parser.beginAnonClassBody(token, true);
+
+                        // Skip enum constant class body
+                        int braceCount = 1;
+                        while (braceCount > 0 && token.getType() != EOF) {
+                            token = nextToken();
+                            if (token.getType() == LCURLY) {
+                                braceCount++;
+                            } else if (token.getType() == RCURLY) {
+                                braceCount--;
+                            }
+                        }
+
+                        // End anonymous class body
+                        parser.endAnonClassBody(token, true);
+                        token = nextToken(); // consume the closing brace
+                    }
+
+                    // End the field (enum constant)
+                    parser.endField(token, true);
+
+                    // Check for comma or semicolon
+                    if (token.getType() == COMMA) {
+                        token = nextToken(); // consume the comma
+                    } else if (token.getType() == SEMI) {
+                        // Found a semicolon, which marks the end of enum constants
+                        foundSemicolon = true;
+                        nextToken(); // consume the semicolon
+                        break;
+                    } else if (token.getType() == RCURLY) {
+                        // End of enum class body
+                        getTokenStream().pushBack(token);
+                        break;
+                    }
+                } else {
+                    // Not an identifier, skip to the next token
+                    token = nextToken();
+                }
+
+                token = getTokenStream().LA(1);
             }
 
-            token = getTokenStream().LA(1);
+            // Complete the scope before automatic close
+            scope.complete();
         }
-
-        // End field declarations for enum constants
-        parser.endFieldDeclarations(token, foundSemicolon);
 
         // If we found a semicolon, we've already consumed it
         // If we didn't find a semicolon, we're at the end of the enum constants
@@ -683,19 +712,19 @@ public class KotlinParser implements ParserBehavior
     {
         LocatableToken token = getTokenStream().nextToken();
 
-        if (token.getType() == JavaTokenTypes.LITERAL_class) {
+        if (token.getType() == LITERAL_class) {
             return TYPEDEF_CLASS;
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_interface) {
+        else if (token.getType() == LITERAL_interface) {
             return TYPEDEF_INTERFACE;
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_enum) {
+        else if (token.getType() == LITERAL_enum) {
             return TYPEDEF_ENUM;
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_sealed) {
+        else if (token.getType() == LITERAL_sealed) {
             // For sealed classes, we need to check if the next token is "class"
             LocatableToken nextToken = getTokenStream().nextToken();
-            if (nextToken.getType() == JavaTokenTypes.LITERAL_class) {
+            if (nextToken.getType() == LITERAL_class) {
                 // Push back the "class" token so it can be consumed by the parser
                 getTokenStream().pushBack(nextToken);
                 // Push back the "sealed" token so it can be treated as a modifier
@@ -722,15 +751,15 @@ public class KotlinParser implements ParserBehavior
     {
         // Check for extends or implements
         LocatableToken token = getTokenStream().nextToken();
-        while (token.getType() != JavaTokenTypes.LCURLY && token.getType() != JavaTokenTypes.EOF) {
+        while (token.getType() != LCURLY && token.getType() != EOF) {
             // Check if we've reached the start of a new class definition
-            if (token.getType() == JavaTokenTypes.LITERAL_class ||
-                token.getType() == JavaTokenTypes.LITERAL_interface ||
-                token.getType() == JavaTokenTypes.LITERAL_enum ||
-                token.getType() == JavaTokenTypes.LITERAL_fun ||
-                token.getType() == JavaTokenTypes.LITERAL_val ||
-                token.getType() == JavaTokenTypes.LITERAL_var ||
-                token.getType() == JavaTokenTypes.LITERAL_open) {
+            if (token.getType() == LITERAL_class ||
+                token.getType() == LITERAL_interface ||
+                token.getType() == LITERAL_enum ||
+                token.getType() == LITERAL_fun ||
+                token.getType() == LITERAL_val ||
+                token.getType() == LITERAL_var ||
+                token.getType() == LITERAL_open) {
                 // Found the start of a new declaration
                 // Push it back so it can be consumed by the parser
                 getTokenStream().pushBack(token);
@@ -743,13 +772,13 @@ public class KotlinParser implements ParserBehavior
 
                 // After processing inheritance, check if the next token is the start of a new declaration
                 token = getTokenStream().LA(1);
-                if (token.getType() == JavaTokenTypes.LITERAL_class ||
-                    token.getType() == JavaTokenTypes.LITERAL_interface ||
-                    token.getType() == JavaTokenTypes.LITERAL_enum ||
-                    token.getType() == JavaTokenTypes.LITERAL_fun ||
-                    token.getType() == JavaTokenTypes.LITERAL_val ||
-                    token.getType() == JavaTokenTypes.LITERAL_var ||
-                    token.getType() == JavaTokenTypes.LITERAL_open) {
+                if (token.getType() == LITERAL_class ||
+                    token.getType() == LITERAL_interface ||
+                    token.getType() == LITERAL_enum ||
+                    token.getType() == LITERAL_fun ||
+                    token.getType() == LITERAL_val ||
+                    token.getType() == LITERAL_var ||
+                    token.getType() == LITERAL_open) {
                     // Found the start of a new declaration
                     // This means the current class definition has ended
                     return null;
@@ -769,14 +798,14 @@ public class KotlinParser implements ParserBehavior
     public final void parseClassBody()
     {
         LocatableToken token = getTokenStream().nextToken();
-        while (token.getType() != JavaTokenTypes.RCURLY) {
-            if (token.getType() == JavaTokenTypes.EOF) {
+        while (token.getType() != RCURLY) {
+            if (token.getType() == EOF) {
                 error("Unexpected end-of-file in type body; missing '}'", token);
                 return;
             }
             parseClassElement(token);
             token = getTokenStream().LA(1);
-            if (token.getType() == JavaTokenTypes.RCURLY) {
+            if (token.getType() == RCURLY) {
                 // Found the closing brace, but don't consume it
                 // Let parseTypeBody consume it
                 break;
@@ -784,7 +813,7 @@ public class KotlinParser implements ParserBehavior
             token = nextToken();
         }
         // Only push back the token if it's not a closing brace
-        if (token.getType() != JavaTokenTypes.RCURLY) {
+        if (token.getType() != RCURLY) {
             getTokenStream().pushBack(token);
         }
     }
@@ -796,7 +825,7 @@ public class KotlinParser implements ParserBehavior
      */
     public final void parseClassElement(LocatableToken token)
     {
-        if (token.getType() == JavaTokenTypes.SEMI) {
+        if (token.getType() == SEMI) {
             // A spurious semicolon.
             return;
         }
@@ -813,21 +842,21 @@ public class KotlinParser implements ParserBehavior
         }
 
         token = nextToken();
-        if (token.getType() == JavaTokenTypes.LITERAL_class
-                || token.getType() == JavaTokenTypes.LITERAL_interface
-                || token.getType() == JavaTokenTypes.LITERAL_enum
-                || token.getType() == JavaTokenTypes.AT
-                || token.getType() == JavaTokenTypes.LITERAL_sealed) {
+        if (token.getType() == LITERAL_class
+                || token.getType() == LITERAL_interface
+                || token.getType() == LITERAL_enum
+                || token.getType() == AT
+                || token.getType() == LITERAL_sealed) {
             parser.gotInnerType(token);
             getTokenStream().pushBack(token);
             parseTypeDef(firstMod != null ? firstMod : token);
             parser.endElement(getLastToken(), true);
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_companion) {
+        else if (token.getType() == LITERAL_companion) {
             // Process companion object
             LocatableToken companionToken = token;
             token = nextToken();
-            if (token.getType() == JavaTokenTypes.LITERAL_object) {
+            if (token.getType() == LITERAL_object) {
                 processCompanionObject(companionToken, token);
             } else {
                 // Not a companion object, push back both tokens
@@ -836,25 +865,25 @@ public class KotlinParser implements ParserBehavior
                 error("Expected 'object' after 'companion'", token);
             }
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_object) {
+        else if (token.getType() == LITERAL_object) {
             // Process object declaration
             processObjectDeclaration(token);
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_fun) {
+        else if (token.getType() == LITERAL_fun) {
             // Process function
             processFunction(token);
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_val ||
-                 token.getType() == JavaTokenTypes.LITERAL_var ||
-                 token.getType() == JavaTokenTypes.LITERAL_const) {
+        else if (token.getType() == LITERAL_val ||
+                 token.getType() == LITERAL_var ||
+                 token.getType() == LITERAL_const) {
             // Process property
             processProperty(token);
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_init) {
+        else if (token.getType() == LITERAL_init) {
             // Kotlin init block
             LocatableToken initToken = token;
             token = nextToken();
-            if (token.getType() != JavaTokenTypes.LCURLY) {
+            if (token.getType() != LCURLY) {
                 error("Expected '{' after 'init'", token);
                 getTokenStream().pushBack(token);
                 getTokenStream().pushBack(initToken);
@@ -867,7 +896,7 @@ public class KotlinParser implements ParserBehavior
             parser.getTokenStream().pushBack(token);
             parseStmtBlock();
             token = nextToken();
-            if (token.getType() != JavaTokenTypes.RCURLY) {
+            if (token.getType() != RCURLY) {
                 error("Expecting '}' (at end of init block)");
                 getTokenStream().pushBack(token);
                 parser.endInitBlock(token, false);
@@ -877,14 +906,14 @@ public class KotlinParser implements ParserBehavior
             parser.endInitBlock(token, true);
             parser.endElement(token, true);
         }
-        else if (token.getType() == JavaTokenTypes.LCURLY) {
+        else if (token.getType() == LCURLY) {
             // initialisation block
             LocatableToken firstToken = firstMod == null ? token : firstMod;
             parser.beginInitBlock(firstToken, token);
             parser.modifiersConsumed();
             parseStmtBlock();
             token = nextToken();
-            if (token.getType() != JavaTokenTypes.RCURLY) {
+            if (token.getType() != RCURLY) {
                 error("Expecting '}' (at end of initialisation block)");
                 getTokenStream().pushBack(token);
                 parser.endInitBlock(token, false);
@@ -903,13 +932,13 @@ public class KotlinParser implements ParserBehavior
             token = nextToken();
 
             // Check for comma or semicolon
-            if (token.getType() == JavaTokenTypes.COMMA) {
+            if (token.getType() == COMMA) {
                 // Another enum constant follows
                 parser.endField(token, true);
-            } else if (token.getType() == JavaTokenTypes.SEMI) {
+            } else if (token.getType() == SEMI) {
                 // End of enum constants
                 parser.endField(token, true);
-            } else if (token.getType() == JavaTokenTypes.RCURLY) {
+            } else if (token.getType() == RCURLY) {
                 // End of enum class body
                 getTokenStream().pushBack(token);
                 parser.endField(token, true);
@@ -922,15 +951,15 @@ public class KotlinParser implements ParserBehavior
         else {
             // Not recognized, skip to next semicolon or closing brace
             error("Unexpected token in class body: " + token.getText(), token);
-            while (token.getType() != JavaTokenTypes.SEMI && 
-                   token.getType() != JavaTokenTypes.RCURLY &&
-                   token.getType() != JavaTokenTypes.EOF) {
+            while (token.getType() != SEMI &&
+                   token.getType() != RCURLY &&
+                   token.getType() != EOF) {
                 token = nextToken();
             }
-            if (token.getType() == JavaTokenTypes.RCURLY) {
+            if (token.getType() == RCURLY) {
                 getTokenStream().pushBack(token);
             }
-            parser.endElement(token, token.getType() == JavaTokenTypes.SEMI);
+            parser.endElement(token, token.getType() == SEMI);
         }
     }
 
@@ -942,29 +971,32 @@ public class KotlinParser implements ParserBehavior
     public final LocatableToken parseStmtBlock()
     {
         LocatableToken token = getTokenStream().LA(1);
-        if (token.getType() != JavaTokenTypes.LCURLY) {
+        if (token.getType() != LCURLY) {
             error("Expected '{' (at beginning of statement block)");
             return token;
         }
 
         token = nextToken(); // consume the '{'
-        parser.beginStmtblockBody(token);
-
-        token = getTokenStream().LA(1);
-        while (token.getType() != JavaTokenTypes.RCURLY && token.getType() != JavaTokenTypes.EOF) {
-            parseStatement();
+        
+        try (ParseScope scope = createScope(ScopeType.BLOCK, token)) {
             token = getTokenStream().LA(1);
-        }
+            while (token.getType() != RCURLY && token.getType() != EOF) {
+                parseStatement();
+                token = getTokenStream().LA(1);
+            }
 
-        if (token.getType() == JavaTokenTypes.EOF) {
-            error("Unexpected end-of-file in statement block; missing '}'");
-            parser.endStmtblockBody(token, false);
+            if (token.getType() == EOF) {
+                error("Unexpected end-of-file in statement block; missing '}'");
+                scope.complete(); // Complete scope before returning
+                return token;
+            }
+
+            // Complete the scope before automatic close
+            scope.complete();
+            
+            // Don't consume the '}'
             return token;
         }
-
-        // Don't consume the '}'
-        parser.endStmtblockBody(token, true);
-        return token;
     }
 
     /**
@@ -986,22 +1018,22 @@ public class KotlinParser implements ParserBehavior
      */
     public final LocatableToken parseStatement(LocatableToken token, boolean allowComma)
     {
-        if (token.getType() == JavaTokenTypes.LITERAL_while) {
+        if (token.getType() == LITERAL_while) {
             return parseWhileStatement(token);
         }
-        else if (token.getType() == JavaTokenTypes.LITERAL_for) {
+        else if (token.getType() == LITERAL_for) {
             return parseForStatement(token);
         }
-        else if (token.getType() == JavaTokenTypes.LCURLY) {
+        else if (token.getType() == LCURLY) {
             getTokenStream().pushBack(token);
             parseStmtBlock();
             return nextToken();
         }
         
         // For now, just skip to the next semicolon or closing brace
-        while (token.getType() != JavaTokenTypes.SEMI && 
-               token.getType() != JavaTokenTypes.RCURLY &&
-               token.getType() != JavaTokenTypes.EOF) {
+        while (token.getType() != SEMI &&
+               token.getType() != RCURLY &&
+               token.getType() != EOF) {
             int line = token.getLine();
             token = nextToken();
             if (token.getLine() > line) {
@@ -1011,7 +1043,7 @@ public class KotlinParser implements ParserBehavior
 
         }
 
-        if (token.getType() == JavaTokenTypes.RCURLY) {
+        if (token.getType() == RCURLY) {
             getTokenStream().pushBack(token);
         }
 
@@ -1028,7 +1060,7 @@ public class KotlinParser implements ParserBehavior
     {
         parser.beginWhileLoop(token);
         token = nextToken();
-        if (token.getType() != JavaTokenTypes.LPAREN) {
+        if (token.getType() != LPAREN) {
             error("Expecting '(' after 'while'");
             getTokenStream().pushBack(token);
             parser.endWhileLoop(token, false);
@@ -1036,7 +1068,7 @@ public class KotlinParser implements ParserBehavior
         }
         parseExpression();
         token = nextToken();
-        if (token.getType() != JavaTokenTypes.RPAREN) {
+        if (token.getType() != RPAREN) {
             error("Expecting ')' after conditional expression (in 'while' statement)");
             getTokenStream().pushBack(token);
             parser.endWhileLoop(token, false);
@@ -1069,7 +1101,7 @@ public class KotlinParser implements ParserBehavior
     {
         parser.beginForLoop(forToken);
         LocatableToken token = nextToken();
-        if (token.getType() != JavaTokenTypes.LPAREN) {
+        if (token.getType() != LPAREN) {
             error("Expecting '(' after 'for'");
             getTokenStream().pushBack(token);
             endForLoop(token);
@@ -1081,7 +1113,7 @@ public class KotlinParser implements ParserBehavior
         
         // Look for the 'in' keyword
         token = nextToken();
-        if (token.getType() != JavaTokenTypes.LITERAL_in) {
+        if (token.getType() != LITERAL_in) {
             error("Expecting 'in' in for loop");
             getTokenStream().pushBack(token);
             endForLoop(token);
@@ -1092,7 +1124,7 @@ public class KotlinParser implements ParserBehavior
         parseExpression();
         
         token = nextToken();
-        if (token.getType() != JavaTokenTypes.RPAREN) {
+        if (token.getType() != RPAREN) {
             error("Expecting ')' after for loop expression");
             getTokenStream().pushBack(token);
             endForLoop(token);
@@ -1148,8 +1180,92 @@ public class KotlinParser implements ParserBehavior
      */
     public final boolean parseTypeSpec(boolean speculative, boolean processArray, List<LocatableToken> ttokens)
     {
-        // For now, just return false
-        return false;
+        // Minimal Kotlin type-spec parser: consumes identifiers, optional dotted qualifiers,
+        // optional generic type arguments in <...>, and optional nullable suffix '?'.
+        // Returns true if at least one identifier was consumed.
+        JavaTokenFilter ts = getTokenStream();
+        LocatableToken la = ts.LA(1);
+        boolean consumed = false;
+
+        // Kotlin allows parentheses around types in some contexts; skip them if present speculatively
+        if (la.getType() == LPAREN) {
+            // Speculatively skip one parenthesized type: (Type)
+            // Only do this if there is an IDENT after '('
+            LocatableToken la2 = ts.LA(2);
+            if (la2.getType() == IDENT) {
+                ts.nextToken(); // consume '('
+                la = ts.LA(1);
+            }
+        }
+
+        while (la.getType() == IDENT) {
+            // Consume the simple name
+            LocatableToken t = ts.nextToken();
+            if (ttokens != null) ttokens.add(t);
+            consumed = true;
+
+            // Handle type arguments: < ... > (nested allowed)
+            la = ts.LA(1);
+            if (la.getType() == LT) {
+                int depth = 0;
+                do {
+                    LocatableToken t2 = ts.nextToken();
+                    if (ttokens != null) ttokens.add(t2);
+                    if (t2.getType() == LT) depth++;
+                    else if (t2.getType() == GT) depth--;
+                } while (depth > 0 && ts.LA(1).getType() != EOF);
+                la = ts.LA(1);
+            }
+
+            // Qualified name: a.b.c
+            while (la.getType() == DOT) {
+                LocatableToken dot = ts.nextToken();
+                if (ttokens != null) ttokens.add(dot);
+                LocatableToken id = ts.LA(1);
+                if (id.getType() != IDENT) {
+                    // Malformed; stop after dot
+                    break;
+                }
+                LocatableToken idTok = ts.nextToken();
+                if (ttokens != null) ttokens.add(idTok);
+                la = ts.LA(1);
+
+                // Possible type arguments after qualified segment
+                if (la.getType() == LT) {
+                    int depth = 0;
+                    do {
+                        LocatableToken t2 = ts.nextToken();
+                        if (ttokens != null) ttokens.add(t2);
+                        if (t2.getType() == LT) depth++;
+                        else if (t2.getType() == GT) depth--;
+                    } while (depth > 0 && ts.LA(1).getType() != EOF);
+                    la = ts.LA(1);
+                }
+            }
+
+            // Nullable suffix '?'
+            if (la.getType() == QUESTION) {
+                LocatableToken q = ts.nextToken();
+                if (ttokens != null) ttokens.add(q);
+                la = ts.LA(1);
+            }
+
+            // Array type: trailing [] (Java-style) — rarely in Kotlin, but handle if present
+            while (processArray && la.getType() == LBRACK && ts.LA(2).getType() == RBRACK) {
+                LocatableToken lb = ts.nextToken();
+                LocatableToken rb = ts.nextToken();
+                if (ttokens != null) { ttokens.add(lb); ttokens.add(rb); }
+                la = ts.LA(1);
+            }
+
+            // Break after one primary type for our minimal needs
+            break;
+        }
+
+        if (consumed && ttokens != null && !ttokens.isEmpty()) {
+            parser.gotTypeSpec(ttokens);
+        }
+        return consumed;
     }
 
     /**
@@ -1170,16 +1286,16 @@ public class KotlinParser implements ParserBehavior
     {
         // For now, just skip to the next semicolon or closing brace
         LocatableToken token = nextToken();
-        while (token.getType() != JavaTokenTypes.SEMI && 
-               token.getType() != JavaTokenTypes.RCURLY &&
-               token.getType() != JavaTokenTypes.RPAREN &&
-               token.getType() != JavaTokenTypes.EOF &&
-                token.getType() != JavaTokenTypes.LITERAL_in
+        while (token.getType() != SEMI &&
+               token.getType() != RCURLY &&
+               token.getType() != RPAREN &&
+               token.getType() != EOF &&
+                token.getType() != LITERAL_in
                 ) {
             token = nextToken();
         }
 
-        if (token.getType() == JavaTokenTypes.RCURLY || token.getType() == JavaTokenTypes.RPAREN || token.getType() == JavaTokenTypes.LITERAL_in) {
+        if (token.getType() == RCURLY || token.getType() == RPAREN || token.getType() == LITERAL_in) {
             getTokenStream().pushBack(token);
         }
     }
@@ -1205,13 +1321,13 @@ public class KotlinParser implements ParserBehavior
     {
         // For now, just skip to the next semicolon or closing brace
         LocatableToken token = first;
-        while (token.getType() != JavaTokenTypes.SEMI && 
-               token.getType() != JavaTokenTypes.RCURLY &&
-               token.getType() != JavaTokenTypes.EOF) {
+        while (token.getType() != SEMI &&
+               token.getType() != RCURLY &&
+               token.getType() != EOF) {
             token = nextToken();
         }
 
-        if (token.getType() == JavaTokenTypes.RCURLY) {
+        if (token.getType() == RCURLY) {
             getTokenStream().pushBack(token);
         }
 
@@ -1227,11 +1343,11 @@ public class KotlinParser implements ParserBehavior
         LocatableToken token = nextToken();
         int braceCount = 0;
 
-        while (token.getType() != JavaTokenTypes.EOF) {
-            if (token.getType() == JavaTokenTypes.LCURLY) {
+        while (token.getType() != EOF) {
+            if (token.getType() == LCURLY) {
                 braceCount++;
             }
-            else if (token.getType() == JavaTokenTypes.RCURLY) {
+            else if (token.getType() == RCURLY) {
                 braceCount--;
                 if (braceCount == 0) {
                     break;
@@ -1243,43 +1359,48 @@ public class KotlinParser implements ParserBehavior
 
     private void processPackage()
     {
-        List<LocatableToken> pkgTokens = new ArrayList<>();
-        LocatableToken token = null;
-        boolean foundPackageEnd = false;
-        boolean foundSemicolon = false;
+        try (ParseScope scope = createScope(ScopeType.PACKAGE, getLastToken())) {
+            List<LocatableToken> pkgTokens = new ArrayList<>();
+            LocatableToken token = null;
+            boolean foundPackageEnd = false;
+            boolean foundSemicolon = false;
 
-        // Collect package name tokens
-        while (!foundPackageEnd) {
-            token = getTokenStream().nextToken();
+            // Collect package name tokens
+            while (!foundPackageEnd) {
+                token = getTokenStream().nextToken();
 
-            // Check for end of package declaration
-            if (token.getType() == JavaTokenTypes.SEMI ||
-                token.getType() == JavaTokenTypes.LITERAL_class ||
-                token.getType() == JavaTokenTypes.LITERAL_interface ||
-                token.getType() == JavaTokenTypes.LITERAL_fun ||
-                token.getType() == JavaTokenTypes.LITERAL_val ||
-                token.getType() == JavaTokenTypes.LITERAL_var ||
-                token.getType() == JavaTokenTypes.EOF) {
+                // Check for end of package declaration
+                if (token.getType() == SEMI ||
+                    token.getType() == LITERAL_class ||
+                    token.getType() == LITERAL_interface ||
+                    token.getType() == LITERAL_fun ||
+                    token.getType() == LITERAL_val ||
+                    token.getType() == LITERAL_var ||
+                    token.getType() == EOF) {
 
-                foundPackageEnd = true;
+                    foundPackageEnd = true;
 
-                // If we found a semicolon, remember it
-                if (token.getType() == JavaTokenTypes.SEMI) {
-                    foundSemicolon = true;
+                    // If we found a semicolon, remember it
+                    if (token.getType() == SEMI) {
+                        foundSemicolon = true;
+                    }
+                    // If we found a class/interface/function/property, push it back so it can be processed later
+                    else if (token.getType() != EOF) {
+                        getTokenStream().pushBack(token);
+                    }
+                } else if (token.getType() == IDENT) {
+                    pkgTokens.add(token);
                 }
-                // If we found a class/interface/function/property, push it back so it can be processed later
-                else if (token.getType() != JavaTokenTypes.EOF) {
-                    getTokenStream().pushBack(token);
-                }
-            } else if (token.getType() == IDENT) {
-                pkgTokens.add(token);
             }
-        }
 
-        parser.gotPackage(pkgTokens);
-        // Only call gotPackageSemi if we actually found a semicolon
-        if (foundSemicolon) {
-            parser.gotPackageSemi(token);
+            parser.gotPackage(pkgTokens);
+            // Only call gotPackageSemi if we actually found a semicolon
+            if (foundSemicolon) {
+                parser.gotPackageSemi(token);
+            }
+            
+            // Complete the scope before automatic close
+            scope.complete();
         }
     }
 
@@ -1302,15 +1423,15 @@ public class KotlinParser implements ParserBehavior
 
         // Process superclass or interfaces
         List<LocatableToken> typeTokens = new ArrayList<>();
-        while (token.getType() != JavaTokenTypes.LCURLY &&
-               token.getType() != JavaTokenTypes.EOF) {
+        while (token.getType() != LCURLY &&
+               token.getType() != EOF) {
             // Check if we've reached the start of a new class definition
-            if (token.getType() == JavaTokenTypes.LITERAL_class ||
-                token.getType() == JavaTokenTypes.LITERAL_interface ||
-                token.getType() == JavaTokenTypes.LITERAL_enum ||
-                token.getType() == JavaTokenTypes.LITERAL_fun ||
-                token.getType() == JavaTokenTypes.LITERAL_val ||
-                token.getType() == JavaTokenTypes.LITERAL_var) {
+            if (token.getType() == LITERAL_class ||
+                token.getType() == LITERAL_interface ||
+                token.getType() == LITERAL_enum ||
+                token.getType() == LITERAL_fun ||
+                token.getType() == LITERAL_val ||
+                token.getType() == LITERAL_var) {
                 // Found the start of a new declaration
                 // Push it back so it can be consumed by the parser
                 getTokenStream().pushBack(token);
@@ -1326,37 +1447,37 @@ public class KotlinParser implements ParserBehavior
 
                 // Check for constructor arguments after the type
                 token = getTokenStream().nextToken();
-                if (token.getType() == JavaTokenTypes.LPAREN) {
+                if (token.getType() == LPAREN) {
                     // Skip constructor arguments
                     int parenCount = 1;
-                    while (parenCount > 0 && token.getType() != JavaTokenTypes.EOF) {
+                    while (parenCount > 0 && token.getType() != EOF) {
                         token = getTokenStream().nextToken();
-                        if (token.getType() == JavaTokenTypes.LPAREN) {
+                        if (token.getType() == LPAREN) {
                             parenCount++;
-                        } else if (token.getType() == JavaTokenTypes.RPAREN) {
+                        } else if (token.getType() == RPAREN) {
                             parenCount--;
                         }
                     }
                     // Continue to the next token after the closing parenthesis
-                    if (token.getType() != JavaTokenTypes.EOF) {
+                    if (token.getType() != EOF) {
                         token = getTokenStream().nextToken();
                     }
                     continue;
-                } else if (token.getType() == JavaTokenTypes.COMMA) {
+                } else if (token.getType() == COMMA) {
                     // Multiple inheritance, continue with the next type
                     token = getTokenStream().nextToken();
                     continue;
-                } else if (token.getType() == JavaTokenTypes.LCURLY) {
+                } else if (token.getType() == LCURLY) {
                     // Found the opening brace of the class body
                     // Push it back so it can be consumed by the parser
                     getTokenStream().pushBack(token);
                     return;
-                } else if (token.getType() == JavaTokenTypes.LITERAL_class ||
-                           token.getType() == JavaTokenTypes.LITERAL_interface ||
-                           token.getType() == JavaTokenTypes.LITERAL_enum ||
-                           token.getType() == JavaTokenTypes.LITERAL_fun ||
-                           token.getType() == JavaTokenTypes.LITERAL_val ||
-                           token.getType() == JavaTokenTypes.LITERAL_var) {
+                } else if (token.getType() == LITERAL_class ||
+                           token.getType() == LITERAL_interface ||
+                           token.getType() == LITERAL_enum ||
+                           token.getType() == LITERAL_fun ||
+                           token.getType() == LITERAL_val ||
+                           token.getType() == LITERAL_var) {
                     // Found the start of a new declaration
                     // Push it back so it can be consumed by the parser
                     getTokenStream().pushBack(token);
@@ -1365,11 +1486,11 @@ public class KotlinParser implements ParserBehavior
                     // No constructor arguments, continue with the current token
                     continue;
                 }
-            } else if (token.getType() == JavaTokenTypes.COMMA) {
+            } else if (token.getType() == COMMA) {
                 // Multiple inheritance, continue with the next type
                 token = getTokenStream().nextToken();
                 continue;
-            } else if (token.getType() == JavaTokenTypes.LCURLY) {
+            } else if (token.getType() == LCURLY) {
                 // Found the opening brace of the class body
                 // Push it back so it can be consumed by the parser
                 getTokenStream().pushBack(token);
@@ -1382,141 +1503,201 @@ public class KotlinParser implements ParserBehavior
         getTokenStream().pushBack(token);
     }
 
+    private boolean isInsideType() {
+        // Determine whether we are currently inside any CLASS or INTERFACE scope
+        synchronized (scopeStack) {
+            for (ScopeInfo s : scopeStack) {
+                if (s.type == ScopeType.CLASS || s.type == ScopeType.INTERFACE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void processFunction(LocatableToken funToken)
     {
-//        parser.gotDeclBegin(funToken);
-
         // Get function name
         LocatableToken nameToken = getTokenStream().nextToken();
         if (nameToken.getType() != IDENT) {
             parser.endDecl(nameToken);
             return;
         }
+        
+        String functionName = nameToken.getText();
+        
+        // If this is a top-level function (not inside a class/object), do not emit method callbacks
+        if (!isInsideType()) {
+            try (ParseScope scope = createScope(ScopeType.TOP_LEVEL_FUNCTION, funToken, functionName)) {
+                // Parse parameters and (optional) return type, but don't emit method events
+                LocatableToken token = getTokenStream().nextToken();
 
-        // Process return type if present
-        List<LocatableToken> typeTokens = new ArrayList<>();
-        boolean hasReturnType = false;
-        List<LocatableToken> paramNameTokens = new ArrayList<>();
-        List<List<LocatableToken>> paramTypeTokensList = new ArrayList<>();
-
-        // Process parameters and return type
-        LocatableToken token = getTokenStream().nextToken();
-
-        // Check for parameters
-        if (token.getType() == JavaTokenTypes.LPAREN) {
-            // Parse parameter list
-            token = getTokenStream().nextToken();
-            while (token.getType() != JavaTokenTypes.RPAREN && token.getType() != JavaTokenTypes.EOF) {
-                // Parse parameter
-                if (token.getType() == IDENT) {
-                    LocatableToken paramNameToken = token;
-                    paramNameTokens.add(paramNameToken);
-
-                    // Check for parameter type
-                    token = getTokenStream().nextToken();
-                    if (token.getType() == COLON) {
-                        // Parameter has a type
+                if (token.getType() == LPAREN) {
+                    // Skip parameter list, including nested parens just in case
+                    int parenCount = 1;
+                    while (parenCount > 0 && token.getType() != EOF) {
                         token = getTokenStream().nextToken();
-                        if (token.getType() == IDENT) {
-                            List<LocatableToken> paramTypeTokens = new ArrayList<>();
-                            paramTypeTokens.add(token);
-                            paramTypeTokensList.add(paramTypeTokens);
-                        } else {
-                            paramTypeTokensList.add(null);
-                        }
-                    } else {
-                        paramTypeTokensList.add(null);
-                        continue;
+                        if (token.getType() == LPAREN) parenCount++;
+                        else if (token.getType() == RPAREN) parenCount--;
+                    }
+                    token = getTokenStream().nextToken();
+                }
+
+                // Optional return type after ':'
+                if (token.getType() == COLON) {
+                    // Skip a simple return type token sequence (IDENT or primitive)
+                    token = getTokenStream().nextToken();
+                    // If generic or more complex, just keep consuming until we see '{' or '=' or EOF
+                    while (token.getType() != LCURLY && token.getType() != EOF && token.getType() != ASSIGN) {
+                        token = getTokenStream().nextToken();
                     }
                 }
 
-                // Move to next parameter or closing parenthesis
+                if (token.getType() == ASSIGN) {
+                    // Expression body: skip until end-of-line or semicolon
+                    token = getTokenStream().nextToken();
+                    while (token.getType() != SEMI && token.getType() != EOF) {
+                        token = getTokenStream().nextToken();
+                    }
+                    parser.endDecl(token);
+                    scope.complete();
+                    return;
+                }
+
+                // Expect and skip block body
+                while (token.getType() != LCURLY && token.getType() != EOF) {
+                    token = getTokenStream().nextToken();
+                }
+                if (token.getType() == LCURLY) {
+                    int braceCount = 1;
+                    while (braceCount > 0 && token.getType() != EOF) {
+                        token = getTokenStream().nextToken();
+                        if (token.getType() == LCURLY) braceCount++;
+                        else if (token.getType() == RCURLY) braceCount--;
+                    }
+                }
+
+                // Finish the top-level declaration placeholder:
+                parser.endDecl(token);
+                scope.complete();
+            }
+            return;
+        }
+        
+        try (ParseScope scope = createScope(ScopeType.METHOD, funToken, functionName)) {
+            // Process return type if present
+            List<LocatableToken> typeTokens = new ArrayList<>();
+            boolean hasReturnType = false;
+            List<LocatableToken> paramNameTokens = new ArrayList<>();
+            List<List<LocatableToken>> paramTypeTokensList = new ArrayList<>();
+
+            // Process parameters and return type
+            LocatableToken token = getTokenStream().nextToken();
+
+            // Check for parameters
+            if (token.getType() == LPAREN) {
+                // Parse parameter list
                 token = getTokenStream().nextToken();
-                if (token.getType() == JavaTokenTypes.COMMA) {
+                while (token.getType() != RPAREN && token.getType() != EOF) {
+                    // Parse parameter
+                    if (token.getType() == IDENT) {
+                        LocatableToken paramNameToken = token;
+                        paramNameTokens.add(paramNameToken);
+
+                        // Check for parameter type
+                        token = getTokenStream().nextToken();
+                        if (token.getType() == COLON) {
+                            // Parameter has a type
+                            token = getTokenStream().nextToken();
+                            if (token.getType() == IDENT) {
+                                List<LocatableToken> paramTypeTokens = new ArrayList<>();
+                                paramTypeTokens.add(token);
+                                paramTypeTokensList.add(paramTypeTokens);
+                            } else {
+                                paramTypeTokensList.add(null);
+                            }
+                        } else {
+                            paramTypeTokensList.add(null);
+                            continue;
+                        }
+                    }
+
+                    // Move to next parameter or closing parenthesis
+                    token = getTokenStream().nextToken();
+                    if (token.getType() == COMMA) {
+                        token = getTokenStream().nextToken();
+                    }
+                }
+
+                // After parameters, look for return type
+                token = getTokenStream().nextToken();
+                if (token.getType() == COLON) {
+                    // Process return type
+                    token = getTokenStream().nextToken();
+                    if (token.getType() == IDENT || isPrimitiveType(token)) {
+                        typeTokens.add(token);
+                        hasReturnType = true;
+                    }
+                }
+
+                // Find the opening curly brace
+                while (token.getType() != LCURLY && token.getType() != EOF) {
+                    token = getTokenStream().nextToken();
+                }
+            } else if (token.getType() == COLON) {
+                // Process return type without parameters
+                token = getTokenStream().nextToken();
+                if (token.getType() == IDENT) {
+                    typeTokens.add(token);
+                    hasReturnType = true;
+                }
+
+                // Find the opening curly brace
+                while (token.getType() != LCURLY && token.getType() != EOF) {
                     token = getTokenStream().nextToken();
                 }
             }
 
-            // After parameters, look for return type
-            token = getTokenStream().nextToken();
-            if (token.getType() == COLON) {
-                // Process return type
-                token = getTokenStream().nextToken();
-                if (token.getType() == IDENT || isPrimitiveType(token)) {
-                    typeTokens.add(token);
-                    hasReturnType = true;
-                }
+            if (token.getType() == EOF) {
+                parser.endDecl(token);
+                return;
             }
 
-            // Find the opening curly brace
-            while (token.getType() != JavaTokenTypes.LCURLY && token.getType() != JavaTokenTypes.EOF) {
-                token = getTokenStream().nextToken();
+            if (hasReturnType) {
+                parser.gotTypeSpec(typeTokens);
+            } else {
+                parser.gotTypeSpec(null);
             }
-        } else if (token.getType() == COLON) {
-            // Process return type without parameters
-            token = getTokenStream().nextToken();
-            if (token.getType() == IDENT) {
-                typeTokens.add(token);
-                hasReturnType = true;
-            }
-
-            // Find the opening curly brace
-            while (token.getType() != JavaTokenTypes.LCURLY && token.getType() != JavaTokenTypes.EOF) {
-                token = getTokenStream().nextToken();
-            }
-        }
-
-        if (token.getType() == JavaTokenTypes.EOF) {
-            parser.endDecl(token);
-            return;
-        }
-
-        if (hasReturnType) {
-            parser.gotTypeSpec(typeTokens);
-        } else {
-            parser.gotTypeSpec(null);
-        }
-        parser.gotMethodDeclaration(nameToken, funToken.getHiddenBefore());
+            parser.gotMethodDeclaration(nameToken, funToken.getHiddenBefore());
 
             parser.modifiersConsumed();
 
-        // Now process the parameters after the method context is set up
-        for (int i = 0; i < paramNameTokens.size(); i++) {
-            List<LocatableToken> paramTypeTokens = paramTypeTokensList.get(i);
-            if (paramTypeTokens != null) {
-                parser.gotTypeSpec(paramTypeTokens);
+            // Now process the parameters after the method context is set up
+            for (int i = 0; i < paramNameTokens.size(); i++) {
+                List<LocatableToken> paramTypeTokens = paramTypeTokensList.get(i);
+                if (paramTypeTokens != null) {
+                    parser.gotTypeSpec(paramTypeTokens);
+                }
+                parser.gotMethodParameter(paramNameTokens.get(i), null);
             }
-            parser.gotMethodParameter(paramNameTokens.get(i), null);
-        }
 
-        parser.gotAllMethodParameters();
+            parser.gotAllMethodParameters();
 
-        // Process function body
-        parser.beginMethodBody(token);
-        processBody();
-        LocatableToken lastToken = getLastToken();
-        parser.endMethodBody(lastToken, true);
+            // Process function body
+            parser.beginMethodBody(token);
+            processBody();
+            LocatableToken lastToken = getLastToken();
+            parser.endMethodBody(lastToken, true);
 
-        // For top-level functions, we need to be careful not to call endMethodDecl
-        // if we're not inside a class, as it will cause a ClassCastException
-        try {
-            parser.endMethodDecl(lastToken, lastToken.getType() == JavaTokenTypes.RCURLY);
-        } catch (ClassCastException e) {
-            // This is a top-level function, not inside a class
-            // Just end the element instead
-            parser.endElement(lastToken, lastToken.getType() == JavaTokenTypes.RCURLY);
-//
-//            // Mark that this file has top-level functions
-//            if (parser instanceof InfoParser) {
-//                ((InfoParser) parser).setHasTopLevelFunctions(true);
-//            }
+            // Complete the scope before automatic close
+            scope.complete();
         }
     }
 
     private void processVariableDeclaration(LocatableToken propertyToken)
     {
         parser.gotDeclBegin(propertyToken);
-        boolean isVal = propertyToken.getType() == JavaTokenTypes.LITERAL_val;
+        boolean isVal = propertyToken.getType() == LITERAL_val;
 
         // Get property name
         LocatableToken nameToken = getTokenStream().nextToken();
@@ -1524,53 +1705,55 @@ public class KotlinParser implements ParserBehavior
             parser.endDecl(nameToken);
             return;
         }
+        
+        String varName = nameToken.getText();
+        
+        try (ParseScope scope = createScope(ScopeType.FIELD, propertyToken, varName)) {
+            // Process type and initializer
+            LocatableToken token;
+            List<LocatableToken> typeTokens = new ArrayList<>();
+            boolean hasType = false;
 
-        // Begin field declarations
-        parser.beginFieldDeclarations(propertyToken);
-
-        // Process type and initializer
-        LocatableToken token;
-        List<LocatableToken> typeTokens = new ArrayList<>();
-        boolean hasType = false;
-
-        while ((token = getTokenStream().nextToken()).getType() != JavaTokenTypes.SEMI &&
-               token.getType() != JavaTokenTypes.EOF) {
-            if (token.getType() == COLON) {
-                // Process type
-                token = getTokenStream().nextToken();
-                if (token.getType() == IDENT || isPrimitiveType(token)) {
-                    typeTokens.add(token);
-                    hasType = true;
+            while ((token = getTokenStream().nextToken()).getType() != SEMI &&
+                   token.getType() != EOF) {
+                if (token.getType() == COLON) {
+                    // Process type
+                    token = getTokenStream().nextToken();
+                    if (token.getType() == IDENT || isPrimitiveType(token)) {
+                        typeTokens.add(token);
+                        hasType = true;
+                    }
+                } else if (token.getType() == ASSIGN) {
+                    break; // We'll process the initializer after setting up the field
                 }
-            } else if (token.getType() == ASSIGN) {
-                break; // We'll process the initializer after setting up the field
             }
+
+            // If we found a type, tell the parser about it
+            if (hasType) {
+                parser.gotTypeSpec(typeTokens);
+            }
+
+            // Now that we've processed the type, we can create the field
+            parser.gotField(propertyToken, nameToken, true);
+
+            // If we found an assignment, process the initializer
+            if (token.getType() == ASSIGN) {
+                parser.beginExpression(token, false);
+                skipToSemicolon();
+                parser.endExpression(token, false);
+            }
+
+            // End field declaration
+            parser.endField(token, true);
+            
+            // Complete the scope before automatic close
+            scope.complete();
         }
-
-        // If we found a type, tell the parser about it
-        if (hasType) {
-            parser.gotTypeSpec(typeTokens);
-        }
-
-        // Now that we've processed the type, we can create the field
-        parser.gotField(propertyToken, nameToken, true);
-
-        // If we found an assignment, process the initializer
-        if (token.getType() == ASSIGN) {
-            parser.beginExpression(token, false);
-            skipToSemicolon();
-            parser.endExpression(token, false);
-        }
-
-        // End field declaration
-        parser.endField(token, true);
-        parser.endFieldDeclarations(token, true);
     }
 
     private void processProperty(LocatableToken propertyToken)
     {
-//        parser.gotDeclBegin(propertyToken);
-        boolean isVal = propertyToken.getType() == JavaTokenTypes.LITERAL_val;
+        boolean isVal = propertyToken.getType() == LITERAL_val;
 
         // Get property name
         LocatableToken nameToken = getTokenStream().nextToken();
@@ -1578,107 +1761,121 @@ public class KotlinParser implements ParserBehavior
             parser.endDecl(nameToken);
             return;
         }
+        
+        String propertyName = nameToken.getText();
+        
+        try (ParseScope scope = createScope(ScopeType.PROPERTY, propertyToken, propertyName)) {
+            // Process type and initializer
+            LocatableToken token;
+            List<LocatableToken> typeTokens = new ArrayList<>();
+            boolean hasType = false;
 
-        // Begin field declarations
-        parser.beginFieldDeclarations(propertyToken);
-
-        // Process type and initializer
-        LocatableToken token;
-        List<LocatableToken> typeTokens = new ArrayList<>();
-        boolean hasType = false;
-
-        while ((token = getTokenStream().nextToken()).getType() != JavaTokenTypes.SEMI &&
-                token.getType() != JavaTokenTypes.EOF) {
-            if (at(token, COLON)) {
-                // Process type
-                token = nextToken();
-                if (at(token, IDENT) || isPrimitiveType(token)) {
-                    typeTokens.add(token);
-                    hasType = true;
+            while ((token = getTokenStream().nextToken()).getType() != SEMI &&
+                    token.getType() != EOF) {
+                if (at(token, COLON)) {
+                    // Process type
+                    token = nextToken();
+                    if (at(token, IDENT) || isPrimitiveType(token)) {
+                        typeTokens.add(token);
+                        hasType = true;
+                    }
+                } else if (at(token, ASSIGN)) {
+                    break; // We'll process the initializer after setting up the field
+                } else if (token.getType() == IDENT && ("get".equals(token.getText()) || "set".equals(token.getText()))) {
+                    // Beginning of accessor; break to handle after creating field
+                    break;
                 }
-            } else if (at(token, ASSIGN)) {
-                break; // We'll process the initializer after setting up the field
-            } else if (at(token, "get", "set")) {
-                break;
             }
+
+            // If we found a type, tell the parser about it
+            if (hasType) {
+                parser.gotTypeSpec(typeTokens);
+            }
+
+            // Now that we've processed the type, we can create the field
+            parser.gotField(propertyToken, nameToken, true);
+
+            // If we found an assignment, process the initializer
+            if (at(token, ASSIGN)) {
+                parser.beginExpression(token, false);
+                skipToSemicolon();
+                parser.endExpression(token, false);
+            }
+
+            // Process any accessors (getter/setter) that follow:
+            LocatableToken lastAccessorEnd = null;
+            // If the scanning loop already consumed a 'get'/'set' token, handle it first:
+            if (token.getType() == IDENT && ("get".equals(token.getText()) || "set".equals(token.getText()))) {
+                LocatableToken firstEnd = processGetterOrSetter(token, isVal);
+                if (firstEnd != null) {
+                    lastAccessorEnd = firstEnd;
+                }
+            }
+            while (true) {
+                LocatableToken next = getTokenStream().LA(1);
+                if (next.getType() == IDENT && ("get".equals(next.getText()) || "set".equals(next.getText()))) {
+                    LocatableToken accessorToken = getTokenStream().nextToken();
+                    LocatableToken accessorEnd = processGetterOrSetter(accessorToken, isVal);
+                    if (accessorEnd != null) {
+                        lastAccessorEnd = accessorEnd;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            // End field declaration at the last consumed token (prefer end of last accessor if present)
+            LocatableToken endTok = (lastAccessorEnd != null) ? lastAccessorEnd : token;
+            parser.endField(endTok, true);
+            
+            // Complete the scope before automatic close
+            scope.complete();
         }
-
-        // If we found a type, tell the parser about it
-        if (hasType) {
-            parser.gotTypeSpec(typeTokens);
-        }
-
-        // Now that we've processed the type, we can create the field
-        parser.gotField(propertyToken, nameToken, true);
-
-        // If we found an assignment, process the initializer
-        if (at(token, ASSIGN)) {
-            parser.beginExpression(token, false);
-            skipToSemicolon();
-            parser.endExpression(token, false);
-        }
-
-        if (token.getType() == JavaTokenTypes.IDENT && (token.getText().equals("get"))) {
-            token = getTokenStream().nextToken();
-            if (token.getType() != JavaTokenTypes.LPAREN) {
-                parser.endDecl(token);
-                error("Expected '('");
-                return;
-            }
-            token = getTokenStream().nextToken();
-            if (token.getType() != JavaTokenTypes.RPAREN) {
-                parser.endDecl(token);
-                error("Expected ')'");
-                return;
-            }
-
-            token = getTokenStream().nextToken();
-            if (token.getType() != JavaTokenTypes.LCURLY) {
-                parser.endDecl(token);
-                error("Expected '{'");
-                return;
-            }
-
-            getTokenStream().pushBack(token);
-
-            parseStmtBlock();
-            token = getTokenStream().nextToken();
-            if (token.getType() != JavaTokenTypes.RCURLY) {
-                parser.endDecl(token);
-                error("Expected '}'");
-                return;
-            }
-        }
-
-
-        // End field declaration
-        parser.endField(token, true);
-        parser.endFieldDeclarations(token, true);
     }
 
-    private boolean processGetterOrSetter(LocatableToken token, boolean isVal) {
+    private LocatableToken processGetterOrSetter(LocatableToken token, boolean isVal) {
         boolean isGetter = at(token, "get");
         if (!isGetter && isVal) {
             error("Val property cannot have setter");
-            return false;
+            return null;
         }
-        token = getTokenStream().nextToken();
-        if(endDeclWithErrorUnlessAt(token, LPAREN, "Expected '('"))
-            return false;
-        token = getTokenStream().nextToken();
-        if(!isGetter && at(token, IDENT))
-            token = getTokenStream().nextToken(); // skip setter parameter
-        if(endDeclWithErrorUnlessAt(token, RPAREN, "Expected ')'"))
-            return false;
-        token = getTokenStream().nextToken();
-        if(isGetter && at(token, COLON))
-            parseTypeSpec(false);
-        if(endDeclWithErrorUnlessAt(token, LCURLY, "Expected '{'"))
-            return false;
-        getTokenStream().pushBack(token);
-        parseStmtBlock();
-        token = getTokenStream().nextToken();
-        return !endDeclWithErrorUnlessAt(token, RCURLY, "Expected '}'");
+        
+        String accessorName = isGetter ? "get" : "set";
+        
+        try (ParseScope scope = createScope(ScopeType.ACCESSOR, token, accessorName)) {
+            token = getTokenStream().nextToken();
+            if(endDeclWithErrorUnlessAt(token, LPAREN, "Expected '('")) {
+                scope.complete();
+                return null;
+            }
+            token = getTokenStream().nextToken();
+            if(!isGetter && at(token, IDENT))
+                token = getTokenStream().nextToken(); // skip setter parameter
+            if(endDeclWithErrorUnlessAt(token, RPAREN, "Expected ')'")) {
+                scope.complete();
+                return null;
+            }
+            token = getTokenStream().nextToken();
+            if(isGetter && at(token, COLON)) {
+                // Parse explicit return type for getter
+                parseTypeSpec(false);
+                token = getTokenStream().nextToken();
+            }
+            if(endDeclWithErrorUnlessAt(token, LCURLY, "Expected '{'")) {
+                scope.complete();
+                return null;
+            }
+            getTokenStream().pushBack(token);
+            parseStmtBlock();
+            token = getTokenStream().nextToken();
+            boolean success = !endDeclWithErrorUnlessAt(token, RCURLY, "Expected '}'");
+            
+            // Complete the scope before automatic close
+            scope.complete();
+            return success ? token : null;
+        }
     }
 
     private void processBody()
@@ -1687,22 +1884,22 @@ public class KotlinParser implements ParserBehavior
 
         while (true) {
             LocatableToken token = getTokenStream().nextToken();
-            if (token.getType() == JavaTokenTypes.EOF) {
+            if (token.getType() == EOF) {
                 return;
-            } else if (token.getType() == JavaTokenTypes.RCURLY) {
+            } else if (token.getType() == RCURLY) {
                 parser.setLastToken(token);
                 return;
-            } else if (token.getType() == JavaTokenTypes.LITERAL_class) {
+            } else if (token.getType() == LITERAL_class) {
                 // Process nested class
                 processClass(token);
-            } else if (token.getType() == JavaTokenTypes.LITERAL_interface) {
+            } else if (token.getType() == LITERAL_interface) {
                 // Process nested interface
                 processInterface(token);
-            } else if (token.getType() == JavaTokenTypes.LITERAL_fun) {
+            } else if (token.getType() == LITERAL_fun) {
                 // Process function
                 processFunction(token);
-            } else if (token.getType() == JavaTokenTypes.LITERAL_val ||
-                       token.getType() == JavaTokenTypes.LITERAL_var) {
+            } else if (token.getType() == LITERAL_val ||
+                       token.getType() == LITERAL_var) {
                 // Process property
                 processVariableDeclaration(token);
             } else {
@@ -1715,18 +1912,19 @@ public class KotlinParser implements ParserBehavior
     private void skipToSemicolon()
     {
         LocatableToken token;
-        while ((token = getTokenStream().nextToken()).getType() != JavaTokenTypes.SEMI) {
-            if (token.getType() == JavaTokenTypes.EOF) {
+        while ((token = getTokenStream().nextToken()).getType() != SEMI) {
+            if (token.getType() == EOF) {
                 return;
             }
             // In Kotlin, semicolons are optional, and a property declaration can end with a newline
             // So we should stop at a newline or the start of a new declaration
-            if (token.getType() == JavaTokenTypes.LITERAL_var ||
-                token.getType() == JavaTokenTypes.LITERAL_val ||
-                token.getType() == JavaTokenTypes.LITERAL_fun ||
-                token.getType() == JavaTokenTypes.LITERAL_class ||
-                token.getType() == JavaTokenTypes.LITERAL_interface ||
-                token.getType() == JavaTokenTypes.LITERAL_init) {
+            if (token.getType() == LITERAL_var ||
+                token.getType() == LITERAL_val ||
+                token.getType() == LITERAL_fun ||
+                token.getType() == LITERAL_class ||
+                token.getType() == LITERAL_interface ||
+                token.getType() == LITERAL_init ||
+                (token.getType() == IDENT && ("get".equals(token.getText()) || "set".equals(token.getText())))) {
                 getTokenStream().pushBack(token);
                 return;
             }
@@ -1741,48 +1939,51 @@ public class KotlinParser implements ParserBehavior
      */
     private void processCompanionObject(LocatableToken companionToken, LocatableToken objectToken)
     {
-        // Notify the parser that we've found an inner type
-        parser.gotInnerType(companionToken);
-
-        // Begin type definition
-        parser.gotTypeDef(companionToken, TYPEDEF_CLASS);
-        parser.modifiersConsumed();
-
         // Check for a name (optional for companion objects)
-        LocatableToken token = getTokenStream().LA(1);
-        if (token.getType() == IDENT) {
-            // Named companion object
-            token = getTokenStream().nextToken();
-            parser.gotTypeDefName(token);
-            token = getTokenStream().nextToken();
-        } else {
-            // Anonymous companion object, use "Companion" as the name
-            parser.gotTypeDefName(objectToken);
-            token = getTokenStream().nextToken();
+        LocatableToken peekToken = getTokenStream().LA(1);
+        String objectName = "Companion";
+        if (peekToken.getType() == IDENT) {
+            peekToken = getTokenStream().nextToken();
+            objectName = peekToken.getText();
         }
+        
+        try (ParseScope scope = createScope(ScopeType.CLASS, companionToken, objectName)) {
+            // Notify the parser that we've found an inner type
+            parser.gotInnerType(companionToken);
 
-        // Process inheritance if present
-        while (token.getType() != JavaTokenTypes.LCURLY) {
-            if (token.getType() == COLON) {
-                // Process inheritance (Kotlin uses ':' instead of 'extends'/'implements')
-                processInheritance();
-            }
-            else if (token.getType() == JavaTokenTypes.EOF) {
-                error("Unexpected end-of-file in companion object definition");
-                return;
-            }
-            token = getTokenStream().nextToken();
-        }
+            // Begin type definition
+            parser.gotTypeDef(companionToken, TYPEDEF_CLASS);
+            parser.modifiersConsumed();
 
-        // Process the body
-        parser.beginTypeBody(token);
-        parseClassBody();
-        token = nextToken();
-        if (token.getType() != JavaTokenTypes.RCURLY) {
-            error("Expected '}' (in companion object definition)");
+            // Set the name
+            if (objectName.equals("Companion")) {
+                parser.gotTypeDefName(objectToken);
+            } else {
+                parser.gotTypeDefName(peekToken);
+            }
+
+            LocatableToken token = getTokenStream().nextToken();
+            
+            // Process inheritance if present
+            while (token.getType() != LCURLY) {
+                if (token.getType() == COLON) {
+                    // Process inheritance (Kotlin uses ':' instead of 'extends'/'implements')
+                    processInheritance();
+                }
+                else if (token.getType() == EOF) {
+                    error("Unexpected end-of-file in companion object definition");
+                    scope.complete();
+                    return;
+                }
+                token = getTokenStream().nextToken();
+            }
+
+            // Process the body using the standard type-body handling so callbacks are balanced
+            token = parseTypeBody(TYPEDEF_CLASS, token);
+            
+            // Complete the scope before automatic close
+            scope.complete();
         }
-        parser.endTypeBody(token, token.getType() == JavaTokenTypes.RCURLY);
-        parser.gotTypeDefEnd(token, token.getType() == JavaTokenTypes.RCURLY);
     }
 
     /**
@@ -1792,46 +1993,47 @@ public class KotlinParser implements ParserBehavior
      */
     private void processObjectDeclaration(LocatableToken objectToken)
     {
-        // Notify the parser that we've found an inner type
-        parser.gotInnerType(objectToken);
-
-        // Begin type definition
-        parser.gotTypeDef(objectToken, TYPEDEF_CLASS);
-        parser.modifiersConsumed();
-
         // Get object name
-        LocatableToken token = getTokenStream().nextToken();
-        if (token.getType() != IDENT) {
-            getTokenStream().pushBack(token);
-            parser.gotTypeDefEnd(token, false);
+        LocatableToken nameToken = getTokenStream().nextToken();
+        if (nameToken.getType() != IDENT) {
+            getTokenStream().pushBack(nameToken);
+            parser.gotTypeDefEnd(nameToken, false);
             error("Expected identifier (in object declaration)");
             return;
         }
-        parser.gotTypeDefName(token);
+        
+        String objectName = nameToken.getText();
+        
+        try (ParseScope scope = createScope(ScopeType.CLASS, objectToken, objectName)) {
+            // Notify the parser that we've found an inner type
+            parser.gotInnerType(objectToken);
 
-        // Process inheritance if present
-        token = getTokenStream().nextToken();
-        while (token.getType() != JavaTokenTypes.LCURLY) {
-            if (token.getType() == COLON) {
-                // Process inheritance (Kotlin uses ':' instead of 'extends'/'implements')
-                processInheritance();
-            }
-            else if (token.getType() == JavaTokenTypes.EOF) {
-                error("Unexpected end-of-file in object declaration");
-                return;
-            }
-            token = getTokenStream().nextToken();
-        }
+            // Begin type definition
+            parser.gotTypeDef(objectToken, TYPEDEF_CLASS);
+            parser.modifiersConsumed();
+            parser.gotTypeDefName(nameToken);
 
-        // Process the body
-        parser.beginTypeBody(token);
-        parseClassBody();
-        token = nextToken();
-        if (token.getType() != JavaTokenTypes.RCURLY) {
-            error("Expected '}' (in object declaration)");
+            // Process inheritance if present
+            LocatableToken token = getTokenStream().nextToken();
+            while (token.getType() != LCURLY) {
+                if (token.getType() == COLON) {
+                    // Process inheritance (Kotlin uses ':' instead of 'extends'/'implements')
+                    processInheritance();
+                }
+                else if (token.getType() == EOF) {
+                    error("Unexpected end-of-file in object declaration");
+                    scope.complete();
+                    return;
+                }
+                token = getTokenStream().nextToken();
+            }
+
+            // Process the body using the standard type-body handling so callbacks are balanced
+            token = parseTypeBody(TYPEDEF_CLASS, token);
+            
+            // Complete the scope before automatic close
+            scope.complete();
         }
-        parser.endTypeBody(token, token.getType() == JavaTokenTypes.RCURLY);
-        parser.gotTypeDefEnd(token, token.getType() == JavaTokenTypes.RCURLY);
     }
 
     private boolean endDeclWithErrorUnlessAt(LocatableToken token, int expected_ttype, String error_msg) {
@@ -1841,5 +2043,265 @@ public class KotlinParser implements ParserBehavior
             return true;
         }
         return false;
+    }
+
+    // ***********************************
+    //
+    //       KITCHEN SINK OF CRUFT
+    //
+    // ***********************************
+
+    /**
+     * Creates a new ParseScope instance for use with try-with-resources.
+     *
+     * @param type The type of scope
+     * @param token The token marking the beginning of the scope
+     * @param name Optional name for the scope
+     * @return A new ParseScope instance
+     */
+    private ParseScope createScope(ScopeType type, LocatableToken token, String name) {
+        // Create scope info with position from token
+        int startPos = token != null ? token.getPosition() : -1;
+        ScopeInfo scopeInfo = new ScopeInfo(type, startPos, name);
+
+        // Thread-safe push to stack
+        synchronized (scopeStack) {
+            scopeStack.push(scopeInfo);
+        }
+
+        // Trigger appropriate begin callback through parser delegation
+        // This is done outside the synchronized block to avoid deadlock
+        triggerEnterCallback(type, token);
+
+        // Return ParseScope for try-with-resources
+        return new ParseScope(scopeInfo);
+    }
+
+    /**
+     * Creates a new ParseScope instance without a name.
+     */
+    private ParseScope createScope(ScopeType type, LocatableToken token) {
+        return createScope(type, token, null);
+    }
+
+
+    /**
+     * Enum representing different types of scopes in Kotlin parsing.
+     * These correspond to the various structural elements that require callback pairing.
+     */
+    public enum ScopeType {
+        CLASS,
+        INTERFACE,
+        METHOD,
+        PROPERTY,
+        FIELD,
+        BLOCK,
+        COMPANION_OBJECT,
+        OBJECT,
+        ACCESSOR,
+        PACKAGE,
+        ENUM_CONSTANTS,
+        LAMBDA,
+        WHEN_EXPRESSION,
+        IF_EXPRESSION,
+        CONSTRUCTOR,
+        INIT_BLOCK,
+        TOP_LEVEL_FUNCTION
+    }
+
+    /**
+     * Static nested class containing scope metadata.
+     * Holds information about a scope's type, position, and name.
+     */
+    public static class ScopeInfo {
+        public final ScopeType type;
+        public final int startPos;
+        public final String name;
+        public int endPos;  // Mutable to allow setting when scope ends
+
+        public ScopeInfo(ScopeType type, int startPos, String name) {
+            this.type = type;
+            this.startPos = startPos;
+            this.name = name;
+            this.endPos = -1;  // Initially unknown
+        }
+
+        public void setEndPos(int endPos) {
+            this.endPos = endPos;
+        }
+    }
+
+
+    /**
+     * AutoCloseable scope tracking class for managing scope stack.
+     * Implements AutoCloseable to enable try-with-resources usage.
+     */
+    private class ParseScope implements AutoCloseable {
+        private final ScopeInfo scopeInfo;
+        private boolean closed = false;
+
+        private ParseScope(ScopeInfo scopeInfo) {
+            this.scopeInfo = scopeInfo;
+        }
+
+        /**
+         * Closes the scope and pops from stack.
+         * This method is called automatically when used in try-with-resources.
+         * Note: This method does NOT call thread-sensitive parser methods to avoid
+         * thread safety issues with the AutoCloseable contract.
+         *
+         * @throws RuntimeException if stack corruption is detected
+         */
+        @Override
+        @SuppressWarnings("threadchecker")
+        public void close() {
+            if (!closed) {
+                closed = true;
+
+                // Thread-safe scope stack management
+                synchronized (scopeStack) {
+                    // Ensure we're popping the correct scope
+                    if (!scopeStack.isEmpty() && scopeStack.peek() == scopeInfo) {
+                        scopeStack.pop();
+                        // Note: endPos and exit callbacks are handled externally
+                        // to avoid thread safety issues with AutoCloseable
+                    } else {
+                        // Stack corruption detected - throw exception for proper error handling
+                        throw new RuntimeException("ParseScope: Stack corruption detected for " + scopeInfo.type);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Gets the scope info for this scope.
+         */
+        public ScopeInfo getScopeInfo() {
+            return scopeInfo;
+        }
+
+        /**
+         * Completes the scope by updating end position and triggering exit callback.
+         * This should be called just before the try-with-resources block ends,
+         * while we still have access to thread-sensitive parser methods.
+         */
+        public void complete() {
+            // Update end position if we have a last token
+            LocatableToken lastToken = getLastToken();
+            if (lastToken != null) {
+                scopeInfo.setEndPos(lastToken.getEndPosition());
+            }
+
+            // Trigger exit callback through parser delegation
+            triggerExitCallback(scopeInfo.type, lastToken);
+        }
+    }
+
+    /**
+     * Triggers the appropriate enter/begin callback based on scope type.
+     * Delegates through the parser field to maintain proper callback chain.
+     */
+    private void triggerEnterCallback(ScopeType type, LocatableToken token) {
+        switch (type) {
+            case CLASS:
+            case INTERFACE:
+                // These are handled by parseTypeDef which calls gotTypeDef
+                break;
+            case METHOD:
+                // Method begin is handled by gotMethodDeclaration
+                break;
+            case PROPERTY:
+            case FIELD:
+                parser.beginFieldDeclarations(token);
+                break;
+            case BLOCK:
+                parser.beginStmtblockBody(token);
+                break;
+            case COMPANION_OBJECT:
+            case OBJECT:
+                // For Kotlin object/companion declarations, we manage type body begin/end
+                // when we encounter the '{' via parseTypeBody. Do not begin here.
+                break;
+            case ACCESSOR:
+                // Accessor begin - may need custom callback
+                parser.beginElement(token);
+                break;
+            case PACKAGE:
+                parser.beginPackageStatement(token);
+                break;
+            case ENUM_CONSTANTS:
+                parser.beginFieldDeclarations(token);
+                break;
+            case LAMBDA:
+                parser.beginExpression(token, true);
+                break;
+            case WHEN_EXPRESSION:
+            case IF_EXPRESSION:
+                parser.beginExpression(token, false);
+                break;
+            case CONSTRUCTOR:
+                // Constructor is a special case of method
+                parser.beginElement(token);
+                break;
+            case INIT_BLOCK:
+                parser.beginInitBlock(token, token);
+                break;
+            case TOP_LEVEL_FUNCTION:
+                // No callbacks for top-level functions; InfoParser marks presence via gotTopLevelDecl
+                break;
+        }
+    }
+
+    /**
+     * Triggers the appropriate exit/end callback based on scope type.
+     * Delegates through the parser field to maintain proper callback chain.
+     */
+    private void triggerExitCallback(ScopeType type, LocatableToken token) {
+        boolean success = token != null;
+
+        switch (type) {
+            case CLASS:
+            case INTERFACE:
+                parser.gotTypeDefEnd(token, success);
+                break;
+            case METHOD:
+                parser.endMethodDecl(token, success);
+                break;
+            case PROPERTY:
+            case FIELD:
+                parser.endFieldDeclarations(token, success);
+                break;
+            case BLOCK:
+                parser.endStmtblockBody(token, success);
+                break;
+            case COMPANION_OBJECT:
+            case OBJECT:
+                // For Kotlin object/companion declarations, endTypeBody is handled when we
+                // encounter the matching '}' via parseTypeBody. Do not end here.
+                break;
+            case ACCESSOR:
+                parser.endElement(token, success);
+                break;
+            case PACKAGE:
+                // Package end is handled by gotPackageSemi
+                break;
+            case ENUM_CONSTANTS:
+                parser.endFieldDeclarations(token, success);
+                break;
+            case LAMBDA:
+            case WHEN_EXPRESSION:
+            case IF_EXPRESSION:
+                parser.endExpression(token, success);
+                break;
+            case CONSTRUCTOR:
+                parser.endElement(token, success);
+                break;
+            case INIT_BLOCK:
+                parser.endInitBlock(token, success);
+                break;
+            case TOP_LEVEL_FUNCTION:
+                // No callbacks for top-level functions
+                break;
+        }
     }
 }
