@@ -335,6 +335,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     }
 
     @Override
+    public void setEmitRangeEnd(int line, int column) {
+
+    }
+
+    @Override
+    public void clearEmitRangeEnd() {
+
+    }
+
+    @Override
     public boolean isInEmitRange(int line, int column) {
         return true;
     }
@@ -592,6 +602,15 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
         params.put("hiddenToken", hiddenToken);
         record("gotConstructorDecl", params);
     }
+
+    @Override
+    public void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken, String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        params.put("hiddenToken", hiddenToken);
+        params.put("name", name);
+        record("gotConstructorDecl", params);
+    }
     
     @Override
     public void beginFieldDeclarations(LocatableToken first) {
@@ -639,17 +658,26 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void reachedCUstate(int state) {
-        record("reachedCUstate", Map.of("state", state));
+        Map<String, Object> params = new HashMap<>();
+        params.put("state", state);
+        record("reachedCUstate", params);
     }
     
     @Override
     public void finishedCU(int state) {
-        record("finishedCU", Map.of("state", state));
+        Map<String, Object> params = new HashMap<>();
+        params.put("state", state);
+        record("finishedCU", params);
     }
     
     @Override
     public void gotImportStmtSemi(LocatableToken token) {
-        record("gotImportStmtSemi", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotImportStmtSemi", params);
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        endElement(token, true);
     }
     
     @Override
@@ -667,12 +695,22 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginForLoop(LocatableToken token) {
-        record("beginForLoop", Map.of("token", token));
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        // beginElement(token);
+
+        // TODO2: `EditorParser` actually overrides it not emit the `beginElement` which makes it even more funky
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginForLoop", params);
     }
     
     @Override
     public void beginForLoopBody(LocatableToken token) {
-        record("beginForLoopBody", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginForLoopBody", params);
     }
     
     @Override
@@ -693,12 +731,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginWhileLoop(LocatableToken token) {
-        record("beginWhileLoop", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginWhileLoop", params);
     }
     
     @Override
     public void beginWhileLoopBody(LocatableToken token) {
-        record("beginWhileLoopBody", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginWhileLoopBody", params);
     }
     
     @Override
@@ -719,12 +761,20 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginDoWhile(LocatableToken token) {
-        record("beginDoWhile", Map.of("token", token));
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        beginElement(token);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginDoWhile", params);
     }
     
     @Override
     public void beginDoWhileBody(LocatableToken token) {
-        record("beginDoWhileBody", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginDoWhileBody", params);
     }
     
     @Override
@@ -747,12 +797,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginIfStmt(LocatableToken token) {
-        record("beginIfStmt", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginIfStmt", params);
     }
     
     @Override
     public void beginIfCondBlock(LocatableToken token) {
-        record("beginIfCondBlock", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginIfCondBlock", params);
     }
     
     @Override
@@ -765,7 +819,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotElseIf(LocatableToken token) {
-        record("gotElseIf", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotElseIf", params);
     }
     
     @Override
@@ -786,12 +842,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginSwitchBlock(LocatableToken token) {
-        record("beginSwitchBlock", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginSwitchBlock", params);
     }
     
     @Override
     public void endSwitchBlock(LocatableToken token) {
-        record("endSwitchBlock", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("endSwitchBlock", params);
     }
     
     @Override
@@ -804,7 +864,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginSwitchCase(LocatableToken token) {
-        record("beginSwitchCase", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginSwitchCase", params);
     }
     
     @Override
@@ -840,7 +902,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginTryBlock(LocatableToken token) {
-        record("beginTryBlock", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginTryBlock", params);
     }
     
     @Override
@@ -861,22 +925,30 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotCatchFinally(LocatableToken token) {
-        record("gotCatchFinally", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotCatchFinally", params);
     }
     
     @Override
     public void gotMultiCatch(LocatableToken token) {
-        record("gotMultiCatch", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotMultiCatch", params);
     }
     
     @Override
     public void gotCatchVarName(LocatableToken token) {
-        record("gotCatchVarName", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotCatchVarName", params);
     }
     
     @Override
     public void beginSynchronizedBlock(LocatableToken token) {
-        record("beginSynchronizedBlock", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginSynchronizedBlock", params);
     }
     
     @Override
@@ -891,12 +963,26 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotDeclBegin(LocatableToken token) {
-        record("gotDeclBegin", Map.of("token", token));
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+//        beginElement(token);
+
+        // TODO2: `EditorParser` actually overrides it not emit the `beginElement` which makes it even more funky
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotDeclBegin", params);
     }
     
     @Override
     public void endDecl(LocatableToken token) {
-        record("endDecl", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("endDecl", params);
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        // endElement(token, included);
+        // TODO2: `EditorParser` actually overrides it not emit the `endElement` which makes it even more funky
     }
     
     @Override
@@ -905,11 +991,17 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
         params.put("token", token);
         params.put("included", included);
         record("gotTypeDefEnd", params);
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        // endElement(token, included);
+        // TODO2: `EditorParser` actually overrides it not emit the `endElement` which makes it even more funky
     }
     
     @Override
     public void beginTypeDefExtends(LocatableToken extendsToken) {
-        record("beginTypeDefExtends", Map.of("extendsToken", extendsToken));
+        Map<String, Object> params = new HashMap<>();
+        params.put("extendsToken", extendsToken);
+        record("beginTypeDefExtends", params);
     }
     
     @Override
@@ -919,7 +1011,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginTypeDefImplements(LocatableToken implementsToken) {
-        record("beginTypeDefImplements", Map.of("implementsToken", implementsToken));
+        Map<String, Object> params = new HashMap<>();
+        params.put("implementsToken", implementsToken);
+        record("beginTypeDefImplements", params);
     }
     
     @Override
@@ -929,7 +1023,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginTypeDefPermits(LocatableToken permitsToken) {
-        record("beginTypeDefPermits", Map.of("permitsToken", permitsToken));
+        Map<String, Object> params = new HashMap<>();
+        params.put("permitsToken", permitsToken);
+        record("beginTypeDefPermits", params);
     }
     
     @Override
@@ -939,19 +1035,25 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotInnerType(LocatableToken start) {
-        record("gotInnerType", Map.of("start", start));
+        Map<String, Object> params = new HashMap<>();
+        params.put("start", start);
+        record("gotInnerType", params);
     }
     
     @Override
     public void gotTopLevelDecl(LocatableToken token) {
-        record("gotTopLevelDecl", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotTopLevelDecl", params);
     }
     
     // ==================== Variable Declaration Callbacks ====================
     
     @Override
     public void beginVariableDecl(LocatableToken first) {
-        record("beginVariableDecl", Map.of("first", first));
+        Map<String, Object> params = new HashMap<>();
+        params.put("first", first);
+        record("beginVariableDecl", params);
     }
     
     @Override
@@ -990,7 +1092,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginForInitDecl(LocatableToken first) {
-        record("beginForInitDecl", Map.of("first", first));
+        Map<String, Object> params = new HashMap<>();
+        params.put("first", first);
+        record("beginForInitDecl", params);
     }
     
     @Override
@@ -1018,13 +1122,13 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
         record("endForInit", params);
     }
     
-    @Override
-    public void endForInitDecl(LocatableToken token, boolean included) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("token", token);
-        params.put("included", included);
-        record("endForInitDecl", params);
-    }
+//    @Override
+//    public void endForInitDecl(LocatableToken token, boolean included) {
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("token", token);
+//        params.put("included", included);
+//        record("endForInitDecl", params);
+//    }
     
     @Override
     public void endForInitDecls(LocatableToken token, boolean included) {
@@ -1036,12 +1140,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotForTest(boolean isPresent) {
-        record("gotForTest", Map.of("isPresent", isPresent));
+        Map<String, Object> params = new HashMap<>();
+        params.put("isPresent", isPresent);
+        record("gotForTest", params);
     }
     
     @Override
     public void gotForIncrement(boolean isPresent) {
-        record("gotForIncrement", Map.of("isPresent", isPresent));
+        Map<String, Object> params = new HashMap<>();
+        params.put("isPresent", isPresent);
+        record("gotForIncrement", params);
     }
     
     @Override
@@ -1091,57 +1199,79 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotLiteral(LocatableToken token) {
-        record("gotLiteral", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotLiteral", params);
     }
     
     @Override
     public void gotPrimitiveTypeLiteral(LocatableToken token) {
-        record("gotPrimitiveTypeLiteral", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotPrimitiveTypeLiteral", params);
     }
     
     @Override
     public void gotIdentifier(LocatableToken token) {
-        record("gotIdentifier", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotIdentifier", params);
     }
     
     @Override
     public void gotIdentifierEOF(LocatableToken token) {
-        record("gotIdentifierEOF", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotIdentifierEOF", params);
     }
     
     @Override
     public void gotMemberAccessEOF(LocatableToken token) {
-        record("gotMemberAccessEOF", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotMemberAccessEOF", params);
     }
     
     @Override
     public void gotCompoundIdent(LocatableToken token) {
-        record("gotCompoundIdent", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotCompoundIdent", params);
     }
     
     @Override
     public void gotCompoundComponent(LocatableToken token) {
-        record("gotCompoundComponent", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotCompoundComponent", params);
     }
     
     @Override
     public void completeCompoundValue(LocatableToken token) {
-        record("completeCompoundValue", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("completeCompoundValue", params);
     }
     
     @Override
     public void completeCompoundValueEOF(LocatableToken token) {
-        record("completeCompoundValueEOF", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("completeCompoundValueEOF", params);
     }
     
     @Override
     public void completeCompoundClass(LocatableToken token) {
-        record("completeCompoundClass", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("completeCompoundClass", params);
     }
     
     @Override
     public void gotMemberAccess(LocatableToken token) {
-        record("gotMemberAccess", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotMemberAccess", params);
     }
     
     @Override
@@ -1154,17 +1284,23 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotMethodCall(LocatableToken token) {
-        record("gotMethodCall", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotMethodCall", params);
     }
     
     @Override
     public void gotConstructorCall(LocatableToken token) {
-        record("gotConstructorCall", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotConstructorCall", params);
     }
     
     @Override
     public void gotDotEOF(LocatableToken token) {
-        record("gotDotEOF", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotDotEOF", params);
     }
     
     @Override
@@ -1174,37 +1310,51 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotClassLiteral(LocatableToken token) {
-        record("gotClassLiteral", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotClassLiteral", params);
     }
     
     @Override
     public void gotBinaryOperator(LocatableToken token) {
-        record("gotBinaryOperator", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotBinaryOperator", params);
     }
     
     @Override
     public void gotUnaryOperator(LocatableToken token) {
-        record("gotUnaryOperator", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotUnaryOperator", params);
     }
     
     @Override
     public void gotQuestionOperator(LocatableToken token) {
-        record("gotQuestionOperator", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotQuestionOperator", params);
     }
     
     @Override
     public void gotQuestionColon(LocatableToken token) {
-        record("gotQuestionColon", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotQuestionColon", params);
     }
     
     @Override
     public void gotInstanceOfOperator(LocatableToken token) {
-        record("gotInstanceOfOperator", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotInstanceOfOperator", params);
     }
     
     @Override
     public void gotInstanceOfVar(LocatableToken token) {
-        record("gotInstanceOfVar", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotInstanceOfVar", params);
     }
     
     @Override
@@ -1214,29 +1364,39 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotPostOperator(LocatableToken token) {
-        record("gotPostOperator", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotPostOperator", params);
     }
     
     @Override
     public void gotTypeCast(List<LocatableToken> tokens) {
-        record("gotTypeCast", Map.of("tokens", tokens));
+        Map<String, Object> params = new HashMap<>();
+        params.put("tokens", tokens);
+        record("gotTypeCast", params);
     }
     
     @Override
     public void gotArrayTypeIdentifier(LocatableToken token) {
-        record("gotArrayTypeIdentifier", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotArrayTypeIdentifier", params);
     }
     
     @Override
     public void gotParentIdentifier(LocatableToken token) {
-        record("gotParentIdentifier", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotParentIdentifier", params);
     }
     
     // ==================== Argument/Parameter Callbacks ====================
     
     @Override
     public void beginArgumentList(LocatableToken token) {
-        record("beginArgumentList", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginArgumentList", params);
     }
     
     @Override
@@ -1246,7 +1406,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void endArgumentList(LocatableToken token) {
-        record("endArgumentList", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("endArgumentList", params);
     }
     
     @Override
@@ -1264,7 +1426,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotNewArrayDeclarator(boolean withDimension) {
-        record("gotNewArrayDeclarator", Map.of("withDimension", withDimension));
+        Map<String, Object> params = new HashMap<>();
+        params.put("withDimension", withDimension);
+        record("gotNewArrayDeclarator", params);
     }
     
     @Override
@@ -1274,19 +1438,25 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginFormalParameter(LocatableToken token) {
-        record("beginFormalParameter", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginFormalParameter", params);
     }
     
     // ==================== Type Parameter Callbacks ====================
     
     @Override
     public void gotTypeParam(LocatableToken idToken) {
-        record("gotTypeParam", Map.of("idToken", idToken));
+        Map<String, Object> params = new HashMap<>();
+        params.put("idToken", idToken);
+        record("gotTypeParam", params);
     }
     
     @Override
     public void gotTypeParamBound(List<LocatableToken> tokens) {
-        record("gotTypeParamBound", Map.of("tokens", tokens));
+        Map<String, Object> params = new HashMap<>();
+        params.put("tokens", tokens);
+        record("gotTypeParamBound", params);
     }
     
     @Override
@@ -1303,7 +1473,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotExprNew(LocatableToken token) {
-        record("gotExprNew", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotExprNew", params);
     }
     
     @Override
@@ -1316,12 +1488,16 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginArrayInitList(LocatableToken token) {
-        record("beginArrayInitList", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginArrayInitList", params);
     }
     
     @Override
     public void endArrayInitList(LocatableToken token) {
-        record("endArrayInitList", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("endArrayInitList", params);
     }
     
     @Override
@@ -1342,7 +1518,13 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void beginStmtblockBody(LocatableToken token) {
-        record("beginStmtblockBody", Map.of("token", token));
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        beginElement(token);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginStmtblockBody", params);
     }
     
     @Override
@@ -1351,6 +1533,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
         params.put("token", token);
         params.put("included", included);
         record("endStmtblockBody", params);
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        endElement(token, included);
     }
     
     @Override
@@ -1373,7 +1558,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotThrow(LocatableToken token) {
-        record("gotThrow", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotThrow", params);
     }
     
     @Override
@@ -1386,7 +1573,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotReturnStatement(boolean hasValue) {
-        record("gotReturnStatement", Map.of("hasValue", hasValue));
+        Map<String, Object> params = new HashMap<>();
+        params.put("hasValue", hasValue);
+        record("gotReturnStatement", params);
     }
     
     @Override
@@ -1426,7 +1615,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void endLambdaBody(LocatableToken closeCurly) {
-        record("endLambdaBody", Map.of("closeCurly", closeCurly));
+        Map<String, Object> params = new HashMap<>();
+        params.put("closeCurly", closeCurly);
+        record("endLambdaBody", params);
     }
     
     @Override
@@ -1436,19 +1627,25 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotLambdaFormalName(LocatableToken name) {
-        record("gotLambdaFormalName", Map.of("name", name));
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        record("gotLambdaFormalName", params);
     }
     
     @Override
     public void gotLambdaFormalType(List<LocatableToken> type) {
-        record("gotLambdaFormalType", Map.of("type", type));
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", type);
+        record("gotLambdaFormalType", params);
     }
     
     // ==================== Record Callbacks ====================
     
     @Override
     public void beginRecordParameters(LocatableToken parenToken) {
-        record("beginRecordParameters", Map.of("parenToken", parenToken));
+        Map<String, Object> params = new HashMap<>();
+        params.put("parenToken", parenToken);
+        record("beginRecordParameters", params);
     }
     
     @Override
@@ -1462,7 +1659,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void endRecordParameters(LocatableToken closeParen) {
-        record("endRecordParameters", Map.of("closeParen", closeParen));
+        Map<String, Object> params = new HashMap<>();
+        params.put("closeParen", closeParen);
+        record("endRecordParameters", params);
     }
     
     // ==================== Method Declaration Callbacks ====================
@@ -1473,11 +1672,17 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
         params.put("token", token);
         params.put("included", included);
         record("endMethodDecl", params);
+        // `JavaParserCallbacksBase` calls it and we need to track it
+        // TODO: how to not do this manually here?
+        // endElement(token, included);
+        // TODO2: `EditorParser` actually overrides it not emit the `endElement` which makes it even more funky
     }
     
     @Override
     public void beginThrows(LocatableToken token) {
-        record("beginThrows", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("beginThrows", params);
     }
     
     @Override
@@ -1489,7 +1694,9 @@ public class CallbackRecorder implements JavaParserCallbacksAdapter {
     
     @Override
     public void gotComment(LocatableToken token) {
-        record("gotComment", Map.of("token", token));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        record("gotComment", params);
     }
     
     // ==================== Error Callback ====================
