@@ -21,25 +21,51 @@
  */
 package bluej.parser;
 
+import bluej.editor.flow.FlowSource;
 import bluej.editor.flow.HoleDocument;
 import bluej.editor.flow.JavaSyntaxView;
 import bluej.editor.flow.ScopeColors;
+import bluej.extensions2.SourceType;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.nodes.ReparseableDocument;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class TestableDocument extends JavaSyntaxView implements ReparseableDocument
 {
     boolean parsingSuspended = false;
+    private List<String> parseErrors = new ArrayList<>();
+
+
+    public TestableDocument(EntityResolver entityResolver, SourceType sourceType)
+    {
+        super(new HoleDocument(), null, ScopeColors.dummy(), entityResolver, new ReadOnlyBooleanWrapper(true), sourceType);
+    }
+
+    @Override
+    public String getVirtualPath() {
+        UUID uuid = UUID.randomUUID();
+
+        return uuid.toString() + "." + getSourceType().getExtension();
+    }
+
+    @Override
+    public Charset getCharset() {
+        return Charset.defaultCharset();
+    }
 
     public TestableDocument(EntityResolver entityResolver)
     {
-        super(new HoleDocument(), null, ScopeColors.dummy(), entityResolver, new ReadOnlyBooleanWrapper(true));
+        this(entityResolver, SourceType.Java);
     }
 
     public TestableDocument()
     {
-        this(null);
+        this(null, SourceType.Java);
     }
 
     public void insertString(int pos, String content)
@@ -58,4 +84,15 @@ public class TestableDocument extends JavaSyntaxView implements ReparseableDocum
         if (!parsingSuspended)
             super.flushReparseQueue();
     }
+
+    @Override
+    public void addParseError(String error) {
+        parseErrors.add(error);
+    }
+
+    @Override
+    public List<String> getParseErrors() {
+        return List.copyOf(parseErrors);
+    }
+
 }

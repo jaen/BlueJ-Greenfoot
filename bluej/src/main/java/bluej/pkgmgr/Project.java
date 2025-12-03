@@ -42,6 +42,7 @@ import bluej.editor.stride.FrameShelfStorage;
 import bluej.extensions2.BProject;
 import bluej.extensions2.ExternalFileLauncher;
 import bluej.extensions2.ExtensionBridge;
+import bluej.extensions2.SourceType;
 import bluej.extmgr.ExtensionsManager;
 import bluej.groupwork.Repository;
 import bluej.groupwork.TeamSettingsController;
@@ -167,6 +168,9 @@ public class Project implements DebuggerListener, DebuggerThreadListener, Inspec
     private boolean inTestMode = false;
     private BPClassLoader currentClassLoader;
     private List<URL> libraryUrls;
+    // Having a single Kotlin source in the project requires
+    // running a Kotlin compiler before any Java compilation.
+    private boolean hasKotlinSources = false;
     // the TeamSettingsController for this project
     private TeamSettingsController teamSettingsController = null;
     private CommitAndPushFrame commitCommentsFrame = null;
@@ -2717,6 +2721,15 @@ public class Project implements DebuggerListener, DebuggerThreadListener, Inspec
     public Map<String, ExternalFileLauncher.OpenExternalFileHandler> getProjectExternalFileOpenMap()
     {
         return projectExternalFileOpenMap;
+    }
+
+    public boolean hasKotlinSources() {
+        return getProjectPackages().stream().flatMap(pkg -> pkg.getClassTargets().stream()).anyMatch(target -> target.getSourceType() == SourceType.Kotlin);
+//        return hasKotlinSources;
+    }
+
+    public void setHasKotlinSources(boolean hasKotlinSources) {
+        this.hasKotlinSources = hasKotlinSources;
     }
 
     /**

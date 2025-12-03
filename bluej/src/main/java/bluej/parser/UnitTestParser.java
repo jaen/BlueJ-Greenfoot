@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import bluej.extensions2.SourceType;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.psi.SourceInput;
 
 /**
  * A parser which extracts certain information needed for BlueJ's unit test
@@ -37,7 +39,7 @@ import bluej.parser.lexer.LocatableToken;
  * 
  * @author Davin McCall
  */
-public class UnitTestParser extends JavaParser
+public class UnitTestParser extends SourceParser
 {
     private int classLevel = 0; // level of class nesting
     private boolean inMethod = false; // are we in an interesting method
@@ -55,7 +57,7 @@ public class UnitTestParser extends JavaParser
 
     public UnitTestParser(Reader r)
     {
-        super(r);
+        super(SourceInput.fromReader(r, SourceType.Java)); // TODO SourceType To be decided later
         try {
             parseCU();
         }

@@ -62,13 +62,17 @@ import bluej.extensions2.event.CompileEvent;
 import bluej.extensions2.event.CompileEvent.EventType;
 import bluej.extmgr.ExtensionsManager;
 import bluej.parser.symtab.ClassInfo;
+import bluej.parser.psi.SourceInput;
 import bluej.pkgmgr.target.*;
 import bluej.prefmgr.PrefMgr;
 import bluej.utility.*;
 import bluej.utility.filefilter.FrameSourceFilter;
 import bluej.utility.filefilter.JavaClassFilter;
 import bluej.utility.filefilter.JavaSourceFilter;
+import bluej.utility.filefilter.KotlinSourceFilter;
 import bluej.utility.filefilter.SubPackageFilter;
+import bluej.parser.entity.EntityResolver;
+import bluej.parser.entity.PackageResolver;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -629,20 +633,38 @@ public final class Package
     }
 
     /**
+     * A class to hold the results of finding targets in a directory.
+     * This includes the set of target names and a map of target names to Kotlin source files.
+     */
+    private static class TargetFinderResult {
+        public final Set<String> targetNames;
+        public final Map<String, String> kotlinSourceFileMap;
+
+        public TargetFinderResult(Set<String> targetNames, Map<String, String> kotlinSourceFileMap) {
+            this.targetNames = targetNames;
+            this.kotlinSourceFileMap = kotlinSourceFileMap;
+        }
+    }
+
+    /**
      * Search a directory for Java source and class files and add their names to
      * a set which is returned. Will delete any __SHELL files which are found in
      * the directory and will ignore any single .class files which do not
      * contain public classes.
      *
-     * The returned set is guaranteed to be only valid Java identifiers.
+     * The returned result contains a set of valid Java identifiers and a map of target names to Kotlin source files.
      */
-    private Set<String> findTargets(File path)
+    private TargetFinderResult findTargets(File path)
     {
         File javaSrcFiles[] = path.listFiles(new JavaSourceFilter());
         File frameSrcFiles[] = path.listFiles(new FrameSourceFilter());
+        File kotlinSrcFiles[] = path.listFiles(new KotlinSourceFilter());
         File classFiles[] = path.listFiles(new JavaClassFilter());
 
         Set<String> interestingSet = new HashSet<String>();
+
+        // Map to keep track of which class targets come from which Kotlin file
+        Map<String, String> kotlinSourceFileMap = new HashMap<String, String>();
 
         // process all *.java files
         for (int i = 0; i < javaSrcFiles.length; i++) {
@@ -651,7 +673,7 @@ public final class Package
                 javaSrcFiles[i].delete();
                 continue;
             }
-            String javaFileName = JavaNames.stripSuffix(javaSrcFiles[i].getName(), "." + SourceType.Java.toString().toLowerCase());
+            String javaFileName = JavaNames.stripSuffix(javaSrcFiles[i].getName(), "." + SourceType.Java.getExtension());
 
             // check if the name would be a valid java name
             if (!JavaNames.isIdentifier(javaFileName))
@@ -664,13 +686,54 @@ public final class Package
         }
 
         for (int i = 0; i < frameSrcFiles.length; i++) {
-            String frameFileName = JavaNames.stripSuffix(frameSrcFiles[i].getName(), "." + SourceType.Stride.toString().toLowerCase());
+            String frameFileName = JavaNames.stripSuffix(frameSrcFiles[i].getName(), "." + SourceType.Stride.getExtension());
 
             // check if the name would be a valid java name
             if (!JavaNames.isIdentifier(frameFileName))
                 continue;
 
             interestingSet.add(frameFileName);
+        }
+
+        // process all *.kt files
+        for (int i = 0; i < kotlinSrcFiles.length; i++) {
+            String kotlinFileName = JavaNames.stripSuffix(kotlinSrcFiles[i].getName(), "." + SourceType.Kotlin.getExtension());
+
+            // check if the name would be a valid java name
+            if (!JavaNames.isIdentifier(kotlinFileName))
+                continue;
+
+            try {
+                // Parse the Kotlin file to get information about all public classes and top-level functions
+                EntityResolver resolver = new PackageResolver(project.getEntityResolver(), getQualifiedName());
+
+                // Get all public class names from the file
+                List<String> publicClassNames = List.of();
+
+                // TODO: Deal with  bluej.parser.InfoParser.getPublicClassNames(kotlinSrcFiles[i], resolver);
+
+                // Add all public class names to the set of targets and map them to the source file
+                for (String className : publicClassNames) {
+                    interestingSet.add(className);
+                    kotlinSourceFileMap.put(className, kotlinSrcFiles[i].getName());
+                }
+
+                // Check if the file has top-level functions
+                SourceInput input = SourceInput.fromFile(kotlinSrcFiles[i], SourceType.Kotlin, project.getProjectCharset(), this);
+                java.util.Optional<ClassInfo> info = bluej.parser.InfoParser.parse(input);
+                if (info.map(ClassInfo::hasTopLevelFunctions).orElse(false)) {
+                    // Add a file facade target with the name as file name + "Kt" suffix
+                    String facadeName = kotlinFileName + "Kt";
+                    interestingSet.add(facadeName);
+                    kotlinSourceFileMap.put(facadeName, kotlinSrcFiles[i].getName());
+                }
+            } catch (Exception e) {
+                // If parsing fails, fall back to just using the file name + "Kt" suffix
+                String facadeName = kotlinFileName + "Kt";
+                interestingSet.add(facadeName);
+                kotlinSourceFileMap.put(facadeName, kotlinSrcFiles[i].getName());
+                Debug.message("Error parsing Kotlin file " + kotlinSrcFiles[i] + ": " + e);
+            }
         }
 
 
@@ -708,7 +771,7 @@ public final class Package
             }
         }
 
-        return interestingSet;
+        return new TargetFinderResult(interestingSet, kotlinSourceFileMap);
     }
 
     /**
@@ -916,7 +979,9 @@ public final class Package
 
             // now look for Java source files that may have been
             // added to the directory
-            Set<String> interestingSet = findTargets(getPath());
+            TargetFinderResult result = findTargets(getPath());
+            Set<String> interestingSet = result.targetNames;
+            Map<String, String> kotlinSourceFileMap = result.kotlinSourceFileMap;
 
             // also we migrate targets from propTargets across
             // to our real list of targets in this loop.
@@ -932,6 +997,16 @@ public final class Package
                         targetsToPlace.add(target);
                     }
                 }
+
+                // If this is a ClassTarget and it has a Kotlin source file, set it
+                if (target instanceof ClassTarget) {
+                    ClassTarget classTarget = (ClassTarget) target;
+                    String kotlinSourceFileName = kotlinSourceFileMap.get(targetName);
+                    if (kotlinSourceFileName != null) {
+                        classTarget.setKotlinSourceFileName(kotlinSourceFileName);
+                    }
+                }
+
                 addTarget(target);
             }
 
@@ -1147,7 +1222,9 @@ public final class Package
             }
         }
 
-        Set<String> interestingSet = findTargets(getPath());
+        TargetFinderResult result = findTargets(getPath());
+        Set<String> interestingSet = result.targetNames;
+        Map<String, String> kotlinSourceFileMap = result.kotlinSourceFileMap;
 
         for (Iterator<String> it = interestingSet.iterator(); it.hasNext();) {
             String targetName = it.next();
@@ -1160,6 +1237,16 @@ public final class Package
 
             if (target == null) {
                 Target newtarget = addClass(targetName);
+
+                // If this is a ClassTarget and it has a Kotlin source file, set it
+                if (newtarget instanceof ClassTarget) {
+                    ClassTarget classTarget = (ClassTarget) newtarget;
+                    String kotlinSourceFileName = kotlinSourceFileMap.get(targetName);
+                    if (kotlinSourceFileName != null) {
+                        classTarget.setKotlinSourceFileName(kotlinSourceFileName);
+                    }
+                }
+
                 if (getEditor() != null)
                 {
                     getEditor().findSpaceForVertex(newtarget);
@@ -1334,6 +1421,8 @@ public final class Package
             className = fileName.substring(0, fileName.length() - SourceType.Java.getExtension().length() - 1);
         else if (fileName.endsWith("." + SourceType.Stride.getExtension())) // it's a Stride source file
             className = fileName.substring(0, fileName.length() - SourceType.Stride.getExtension().length() - 1);
+        else if (fileName.endsWith("." + SourceType.Kotlin.getExtension())) // it's a Kotlin source file
+            className = fileName.substring(0, fileName.length() - SourceType.Kotlin.getExtension().length() - 1);
         else
             return ILLEGAL_FORMAT;
 
@@ -1760,7 +1849,7 @@ public final class Package
         List<CompileInputFile> srcFiles = Utility.mapList(targetList, ClassTarget::getCompileInputFile);
         if (srcFiles.size() > 0 && srcFiles.stream().allMatch(CompileInputFile::isValid))
         {
-            JobQueue.getJobQueue().addJob(srcFiles.toArray(new CompileInputFile[0]), observer, project.getClassLoader(), project.getProjectDir(),
+            JobQueue.getJobQueue().addJob(srcFiles, project.hasKotlinSources(), observer, project.getClassLoader(), project.getProjectDir(),
                 ! PrefMgr.getFlag(PrefMgr.SHOW_UNCHECKED), project.getProjectCharset(), reason, type);
         }
     }
@@ -2048,6 +2137,10 @@ public final class Package
         if (identifierName == null)
             return null;
         Target t = targets.get(identifierName);
+        // Second attempt: the target might be Kotlin file facade
+        if (t == null) {
+            t = targets.get(identifierName + "Kt");
+        }
         return t;
     }
 
@@ -2589,18 +2682,9 @@ public final class Package
 
         private void markAsCompiling(CompileInputFile[] sources, int compilationSequence)
         {
-            for (int i = 0; i < sources.length; i++) {
-                String fileName = sources[i].getJavaCompileInputFile().getPath();
-                String fullName = getProject().convertPathToPackageName(fileName);
-
-                if (fullName != null) {
-                    Target t = getTarget(JavaNames.getBase(fullName));
-
-                    if (t instanceof ClassTarget) {
-                        ClassTarget ct = (ClassTarget) t;
-                        ct.markCompiling(compilationSequence);
-                    }
-                }
+            for (CompileInputFile source : sources) {
+                ClassTarget ct = source.getClassTarget();
+                ct.markCompiling(compilationSequence);
             }
         }
 
@@ -2628,7 +2712,7 @@ public final class Package
         public void startCompile(CompileInputFile[] sources, CompileReason reason, CompileType type, int compilationSequence)
         {
             // Send a compilation starting event to extensions.
-            CompileEvent aCompileEvent = new CompileEvent(CompileEvent.EventType.COMPILE_START_EVENT, type.keepClasses(), Utility.mapList(Arrays.asList(sources), CompileInputFile::getJavaCompileInputFile).toArray(new File[0]));
+            CompileEvent aCompileEvent = new CompileEvent(CompileEvent.EventType.COMPILE_START_EVENT, type.keepClasses(), Utility.mapList(Arrays.asList(sources), CompileInputFile::getCompileInputFile).toArray(new File[0]));
             ExtensionsManager.getInstance().delegateEvent(aCompileEvent);
 
             // Set BlueJ status bar message
@@ -2695,17 +2779,19 @@ public final class Package
             List<ClassTarget> targetsToAnalyse = new ArrayList<>();
             List<ClassTarget> readyToCompileList = new ArrayList<>();
             for (int i = 0; i < sources.length; i++) {
-                String filename = sources[i].getJavaCompileInputFile().getPath();
-
-                String fullName = getProject().convertPathToPackageName(filename);
-                if (fullName == null) {
-                    continue;
-                }
-
-                ClassTarget t = (ClassTarget) targets.get(JavaNames.getBase(fullName));
+                ClassTarget t = sources[i].getClassTarget();
 
                 if (t == null) {
-                    continue;
+                    // Fall back to the old method if the ClassTarget is not available
+                    String filename = sources[i].getCompileInputFile().getPath();
+                    String fullName = getProject().convertPathToPackageName(filename);
+                    if (fullName == null) {
+                        continue;
+                    }
+                    t = (ClassTarget) targets.get(JavaNames.getBase(fullName));
+                    if (t == null) {
+                        continue;
+                    }
                 }
 
                 t.markCompiled(successful, type);
@@ -2753,7 +2839,7 @@ public final class Package
                      * names)
                      */
                     try {
-                        ClassInfo info = t.getSourceInfo().getInfo(t.getJavaSourceFile(), t.getPackage());
+                        ClassInfo info = t.getSourceInfo().getInfo(t.getSourceFile(), t.getPackage());
 
                         if (info != null) {
                             // Use ClassTarget method to create and save context
@@ -2781,7 +2867,7 @@ public final class Package
 
             // Send a compilation done event to extensions.
             EventType eventType = successful ? CompileEvent.EventType.COMPILE_DONE_EVENT : CompileEvent.EventType.COMPILE_FAILED_EVENT;
-            CompileEvent aCompileEvent = new CompileEvent(eventType, type.keepClasses(), Utility.mapList(Arrays.asList(sources), CompileInputFile::getJavaCompileInputFile).toArray(new File[0]));
+            CompileEvent aCompileEvent = new CompileEvent(eventType, type.keepClasses(), Utility.mapList(Arrays.asList(sources), CompileInputFile::getCompileInputFile).toArray(new File[0]));
             ExtensionsManager.getInstance().delegateEvent(aCompileEvent);
 
             for (FXCompileObserver chainedObserver : chainedObservers)
@@ -2923,9 +3009,12 @@ public final class Package
     public SourceType getDefaultSourceType()
     {
         // Our heuristic is: if the package contains any Stride files, the default is Stride,
+        // if it contains any Kotlin files, the default is Kotlin,
         // otherwise it's Java
         if (getClassTargets().stream().anyMatch(c -> c.getSourceType() == SourceType.Stride))
             return SourceType.Stride;
+        else if (getClassTargets().stream().anyMatch(c -> c.getSourceType() == SourceType.Kotlin))
+            return SourceType.Kotlin;
         else
             return SourceType.Java;
     }

@@ -75,6 +75,7 @@ public final class ClassInfo
     private boolean isAbstract = false;
     private boolean isUnitTest = false;
     private boolean isEnum = false;
+    private boolean hasTopLevelFunctions = false;
 
     private boolean hadParseError = false;
 
@@ -91,7 +92,7 @@ public final class ClassInfo
 
         @OnThread(value = Tag.Any, ignoreParent = true)
         public final String paramnames;  // if this is a method or constructor, then
-                                         // this is a comma seperated list of name
+                                         // this is a comma seperated list of namehadParseError
                                          // associated with the parameters
 
         public SavedComment(String target, String comment, String paramnames)
@@ -533,6 +534,16 @@ public final class ClassInfo
     public boolean isEnum()
     {
         return this.isEnum;
+    }
+
+    public boolean hasTopLevelFunctions()
+    {
+        return this.hasTopLevelFunctions;
+    }
+
+    public void setHasTopLevelFunctions(boolean b)
+    {
+        this.hasTopLevelFunctions = b;
     }
 
     public boolean hadParseError()

@@ -27,6 +27,7 @@ import bluej.editor.base.LineDisplay.LineDisplayListener;
 import bluej.editor.base.TextLine.StyledSegment;
 import bluej.editor.flow.JavaSyntaxView.SyntaxEvent.NodeChangeRecord;
 import bluej.editor.flow.MultilineStringTracker.TextBlockRelation;
+import bluej.extensions2.SourceType;
 import bluej.parser.Token;
 import bluej.parser.Token.TokenType;
 import bluej.parser.entity.EntityResolver;
@@ -55,10 +56,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -107,6 +110,7 @@ public class JavaSyntaxView implements ReparseableDocument, LineDisplayListener
     private NodeTree<ReparseRecord> reparseRecordTree;
     private final ScopeColors scopeColors;
     private final BooleanExpression syntaxHighlighting;
+    private final SourceType sourceType;
     private final Display display;
 
     /* Scope painting colours */
@@ -330,7 +334,7 @@ public class JavaSyntaxView implements ReparseableDocument, LineDisplayListener
      * @param parentResolver The resolver to pass to the parser
      * @param syntaxHighlighting
      */
-    public JavaSyntaxView(Document document, Display display, ScopeColors scopeColors, EntityResolver parentResolver, BooleanExpression syntaxHighlighting)
+    public JavaSyntaxView(Document document, Display display, ScopeColors scopeColors, EntityResolver parentResolver, BooleanExpression syntaxHighlighting, SourceType sourceType)
     {
         this.parentResolver = parentResolver;
         this.scopeBackgrounds = new LiveScopeBackgrounds();
@@ -340,6 +344,7 @@ public class JavaSyntaxView implements ReparseableDocument, LineDisplayListener
         this.multilineStringTracker = new MultilineStringTracker(this.document, () -> styledLines.clear());
         this.display = display;
         this.syntaxHighlighting = syntaxHighlighting;
+        this.sourceType = sourceType;
         this.scopeColors = scopeColors;
         resetColors();
         if (this.display != null)
@@ -2268,6 +2273,29 @@ public class JavaSyntaxView implements ReparseableDocument, LineDisplayListener
         return document.getLength();
     }
 
+    @Override
+    public int getLineFromPosition(int position) {
+        return this.getDefaultRootElement().getElementIndex(position) + 1;
+    }
+
+    @Override
+    public int getColumnFromPosition(int position) {
+        var line = this.getLineFromPosition(position);
+
+        return position - this.getDefaultRootElement().getElement(line - 1).getStartOffset() + 1;
+    }
+
+    @Override
+    public @NotNull String getVirtualPath() {
+        return document.getVirtualPath();
+    }
+
+    @Override
+    public @NotNull Charset getCharset() {
+        return document.getCharset();
+    }
+
+
     /**
      * Mark a portion of the document as having been parsed. This removes any
      * scheduled re-parses as appropriate and repaints the appropriate area.
@@ -2313,6 +2341,11 @@ public class JavaSyntaxView implements ReparseableDocument, LineDisplayListener
             existing.getNode().remove();
             existing = next;
         }
+    }
+
+    @Override
+    public SourceType getSourceType() {
+        return sourceType;
     }
 
     private void repaintLines(int offset, int length, boolean restyle)

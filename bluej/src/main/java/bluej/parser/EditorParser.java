@@ -22,23 +22,20 @@
 package bluej.parser;
 
 import bluej.debugger.gentype.Reflective;
+import bluej.extensions2.SourceType;
+import bluej.parser.entity.*;
+import bluej.parser.lexer.LineColPos;
 import bluej.parser.nodes.ReparseableDocument.Element;
-import bluej.parser.entity.EntityResolver;
-import bluej.parser.entity.IntersectionTypeEntity;
-import bluej.parser.entity.JavaEntity;
-import bluej.parser.entity.ParsedReflective;
-import bluej.parser.entity.PositionedResolver;
-import bluej.parser.entity.TparEntity;
-import bluej.parser.entity.TypeEntity;
-import bluej.parser.entity.UnresolvedArray;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.*;
 import bluej.parser.nodes.NodeTree.NodeAndPosition;
+import bluej.parser.psi.SourceInput;
 import bluej.parser.symtab.Selection;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -53,7 +50,7 @@ import java.util.Stack;
  * 
  * @author Davin McCall
  */
-public class EditorParser extends JavaParser
+public class EditorParser extends SourceParser
 {
     private final NodeStructureListener nodeStructureListener;
     protected Stack<JavaParentNode> scopeStack = new Stack<JavaParentNode>();
@@ -105,11 +102,15 @@ public class EditorParser extends JavaParser
     private int currentModifiers = 0;
 
     /**
-     * Constructor for use by subclasses (InfoReader).
+     * Constructor for SourceInput-based parsing.
+     *
+     * @param input Source input encapsulating file and metadata
+     * @param resolver Entity resolver for type resolution
+     * @throws IOException if source cannot be read
      */
-    protected EditorParser(Reader r, EntityResolver resolver)
+    protected EditorParser(SourceInput input, EntityResolver resolver) throws IOException
     {
-        super(r);
+        super(input);  // Calls SourceParser(SourceInput)
         nodeStructureListener = new NodeStructureListener()
         {
             @Override
@@ -130,14 +131,55 @@ public class EditorParser extends JavaParser
         pcuNode = new ParsedCUNode(resolver);
     }
 
-    public EditorParser(ReparseableDocument document, Reader r, int line, int col, int pos, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
+//    /**
+//     * Constructor for use by subclasses (InfoReader).
+//     */
+//    protected EditorParser(Reader r, EntityResolver resolver, SourceType sourceType)
+//    {
+//        super(r, sourceType);
+//        nodeStructureListener = new NodeStructureListener()
+//        {
+//            @Override
+//            public void nodeAdded(NodeAndPosition<ParsedNode> node)
+//            {
+//            }
+//
+//            @Override
+//            public void nodeRemoved(NodeAndPosition<ParsedNode> node)
+//            {
+//            }
+//
+//            @Override
+//            public void nodeChangedLength(NodeAndPosition<ParsedNode> node, int oldPos, int oldSize)
+//            {
+//            }
+//        };
+//        pcuNode = new ParsedCUNode(resolver);
+//    }
+
+    public EditorParser(SourceInput input, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
     {
-        super(r, line, col, pos);
-        this.document = document;
-        this.scopeStack = scopeStack;
-        this.nodeStructureListener = nodeStructureListener;
-        pcuNode = (ParsedCUNode) scopeStack.get(0);
+        super(input);
+
+        if (input instanceof SourceInput.DocumentSource source) {
+            this.document = source.document();
+            this.scopeStack = scopeStack;
+            this.nodeStructureListener = nodeStructureListener;
+            pcuNode = (ParsedCUNode) scopeStack.get(0);
+        } else {
+            throw new IllegalArgumentException("Invalid SourceInput type: " + input);
+        }
     }
+
+
+//    public EditorParser(ReparseableDocument document, Reader r, int line, int col, int pos, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
+//    {
+//        super(r, document.getSourceType(), line, col, pos);
+//        this.document = document;
+//        this.scopeStack = scopeStack;
+//        this.nodeStructureListener = nodeStructureListener;
+//        pcuNode = (ParsedCUNode) scopeStack.get(0);
+//    }
 
     /**
      * Get the types following the "extends" keyword, if we have some. Used in incremental parsing.
@@ -153,6 +195,7 @@ public class EditorParser extends JavaParser
     @OnThread(value = Tag.FXPlatform, ignoreParent = true)
     protected void error(String msg, int beginLine, int beginColumn, int endLine, int endColumn)
     {
+        document.addParseError("EditorParser.error: " + msg + " beginLine=" + beginLine + " beginColumn=" + beginColumn + " endLine=" + endLine + " endColumn=" + endColumn);
         Element lineEl = document.getDefaultRootElement().getElement(beginLine - 1);
         int position = lineEl.getStartOffset() + beginColumn - 1;
         if (endLine != beginLine) {
@@ -805,7 +848,7 @@ public class EditorParser extends JavaParser
     }
 
     @Override
-    protected void beginTryCatchSmt(LocatableToken token, boolean hasResource)
+    protected void beginTryCatchStmt(LocatableToken token, boolean hasResource)
     {
         JavaParentNode tryNode = new ContainerNode(scopeStack.peek(), ParsedNode.NODETYPE_SELECTION);
         int curOffset = getTopNodeOffset();
@@ -998,6 +1041,14 @@ public class EditorParser extends JavaParser
     protected void gotConstructorDecl(LocatableToken token,
                                       LocatableToken hiddenToken)
     {
+        gotConstructorDecl(token, hiddenToken, token.getText());
+    }
+
+    @Override
+    protected void gotConstructorDecl(LocatableToken token,
+                                      LocatableToken hiddenToken,
+                                      String name)
+    {
         endDecl(token); // remove placeholder
         LocatableToken start = pcuStmtBegin;
         String jdcomment = null;
@@ -1006,7 +1057,7 @@ public class EditorParser extends JavaParser
             jdcomment = hiddenToken.getText();
         }
 
-        MethodNode pnode = new MethodNode(scopeStack.peek(), token.getText(), jdcomment);
+        MethodNode pnode = new MethodNode(scopeStack.peek(), name, jdcomment);
         pnode.setModifiers(currentModifiers);
         int curOffset = getTopNodeOffset();
         int insPos = lineColToPosition(start.getLine(), start.getColumn());
@@ -1031,7 +1082,14 @@ public class EditorParser extends JavaParser
         int insPos = lineColToPosition(start.getLine(), start.getColumn());
 
         MethodNode pnode = new MethodNode(scopeStack.peek(), token.getText(), jdcomment);
-        JavaEntity returnType = ParseUtils.getTypeEntity(pnode, currentQuerySource(), lastTypeSpec);
+
+        JavaEntity returnType;
+        if (lastTypeSpec != null && !lastTypeSpec.isEmpty()) {
+            returnType = ParseUtils.getTypeEntity(pnode, currentQuerySource(), lastTypeSpec);
+        } else {
+            returnType = pcuNode.resolveQualifiedClass("kotlin.Unit");
+        }
+
         pnode.setReturnType(returnType);
         pnode.setModifiers(currentModifiers);
         pnode.setTypeParams(getTparList(pnode));
@@ -1167,7 +1225,7 @@ public class EditorParser extends JavaParser
         boolean declaredVar = isVariable && initExpressionFollows && typeSpecIsVar(lastTypeSpec);
 
         JavaEntity fieldType;
-        if (declaredVar)
+        if (declaredVar || lastTypeSpec == null || lastTypeSpec.isEmpty())
         {
             fieldType = null; // we will infer the type from the expression
             lastField = new FieldNode(scopeStack.peek(), idToken.getText(), arrayDecls,

@@ -25,11 +25,13 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.function.Consumer;
 
-import bluej.parser.JavaParser;
+import bluej.extensions2.SourceType;
 import bluej.parser.ParseFailure;
+import bluej.parser.SourceParser;
 import bluej.parser.lexer.JavaLexer;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.psi.SourceInput;
 import bluej.stride.framedjava.convert.ConversionWarning;
 import bluej.stride.framedjava.convert.JavaStrideParser;
 import bluej.stride.framedjava.elements.CodeElement;
@@ -45,9 +47,13 @@ public class Parser
         return parseableAs(s, p -> p.parseTypeSpec(true));
     }
 
-    public static boolean parseableAs(String s, Consumer<JavaParser> parse)
+    public static boolean parseableAs(String s, Consumer<SourceParser> parse)
     {
-        JavaParser p = new JavaParser(new StringReader(s), false);
+        SourceInput input = SourceInput.fromString(s, SourceType.Java);
+        SourceParser p = new SourceParser(input);
+
+        p.setHandleComments(false);
+
         try
         {
             parse.accept(p);
@@ -90,15 +96,14 @@ public class Parser
         JavaLexer lexer = new JavaLexer(new StringReader(s));
         LocatableToken t = lexer.nextToken();
         LocatableToken t2 = lexer.nextToken();
-        if (t.getType() == JavaTokenTypes.IDENT && t2.getType() == JavaTokenTypes.EOF)
-            return true;
-        else
-            return false;
+
+        return t.getType() == JavaTokenTypes.IDENT && t2.getType() == JavaTokenTypes.EOF;
     }
 
     public static boolean parseableAsExpression(String e)
     {
-        return Parser.parseAsExpression(new JavaParser(new StringReader(e), false));
+        SourceInput input = SourceInput.fromString(e, SourceType.Java);
+        return Parser.parseAsExpression(new SourceParser(input).setHandleComments(false));
     }
 
     /**
@@ -109,7 +114,7 @@ public class Parser
      * true is only returned if there is no ParseFailure, and we parse
      * all the way to EOF
      */
-    public static boolean parseAsExpression(JavaParser p)
+    public static boolean parseAsExpression(SourceParser p)
     {
         try
         {

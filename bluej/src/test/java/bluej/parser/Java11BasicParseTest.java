@@ -23,6 +23,8 @@ package bluej.parser;
 
 import java.io.StringReader;
 
+import bluej.extensions2.SourceType;
+import bluej.parser.psi.SourceInput;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -41,11 +43,12 @@ public class Java11BasicParseTest
     @Test
     public void testVarDecl1()
     {
-        StringReader sr = new StringReader(
-                "var v = \"hello\";"
+        SourceInput input = SourceInput.fromString(
+                "var v = \"hello\";",
+                SourceType.Java
         );
-        JavaParser ip = new JavaParser(sr);
-        ip.parseStatement();
+        SourceParser parser = new SourceParser(input);
+        parser.parseStatement();
     }
 
     /**
@@ -54,11 +57,12 @@ public class Java11BasicParseTest
     @Test
     public void testVarDecl2()
     {
-        StringReader sr = new StringReader(
-                "String var = \"hello\";"
+        SourceInput input = SourceInput.fromString(
+                "String var = \"hello\";",
+                SourceType.Java
         );
-        JavaParser ip = new JavaParser(sr);
-        ip.parseStatement();
+        SourceParser parser = new SourceParser(input);
+        parser.parseStatement();
     }
 
     /**
@@ -67,11 +71,12 @@ public class Java11BasicParseTest
     @Test
     public void testVarDecl3()
     {
-        StringReader sr = new StringReader(
-                "var var = \"var\" + var();"
+        SourceInput input = SourceInput.fromString(
+                "var var = \"var\" + var();",
+                SourceType.Java
         );
-        JavaParser ip = new JavaParser(sr);
-        ip.parseStatement();
+        SourceParser parser = new SourceParser(input);
+        parser.parseStatement();
     }
 
 }

@@ -21,27 +21,27 @@
  */
 package bluej.parser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 
+import bluej.extensions2.SourceType;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.PackageResolver;
+
+import static bluej.parser.SourceInputTestUtils.*;
 import bluej.parser.nodes.ParsedCUNode;
+import bluej.parser.psi.SourceInput;
 import bluej.parser.symtab.ClassInfo;
 import bluej.parser.symtab.Selection;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static bluej.utility.ResourceFileReader.getResourceFile;
 
 /**
  * Run a whole directory of sample source files through our parser.
@@ -52,19 +52,6 @@ public class BasicParseTest
 {
 
 
-    /**
-     * Get a data or result file from our hidden stash..
-     * NOTE: the stash of data files is in the ast/data directory.
-     */
-    private File getFile(String name)
-    {
-        URL url = getClass().getResource("/bluej/parser/" + name);
-
-        if (url == null || url.getFile().equals(""))
-            return null;
-        else
-            return new File(url.getFile());
-    }
 
     /**
      * Find a target method/class in the comments and return its index (or -1 if not found).
@@ -94,18 +81,18 @@ public class BasicParseTest
     {
         // this file came from some guys web page.. it just includes lots of
         // Java constructs
-        assertNotNull(InfoParser.parse(getFile("java_basic.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/java_basic.dat")));
 
         // these files came from the test suite accompanying antlr
-        assertNotNull(InfoParser.parse(getFile("A.dat")));
-        assertNotNull(InfoParser.parse(getFile("B.dat")));
-        assertNotNull(InfoParser.parse(getFile("C.dat")));
-        assertNotNull(InfoParser.parse(getFile("D.dat")));
-        assertNotNull(InfoParser.parse(getFile("E.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/A.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/B.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/C.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/D.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/E.dat")));
 
         // these files were added later
-        assertNotNull(InfoParser.parse(getFile("F.dat")));
-        assertNotNull(InfoParser.parse(getFile("G.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/F.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/G.dat")));
     }
 
     @Test
@@ -113,11 +100,11 @@ public class BasicParseTest
         throws Exception
     {
         // Parse generics
-        assertNotNull(InfoParser.parse(getFile("15_generic.dat")));
+        assertNotNull(InfoParser.parse(getResourceFile(getClass(), "/bluej/parser/15_generic.dat")));
     }
 
     @Test
-    public void testCode()
+    public void testCode() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -129,7 +116,8 @@ public class BasicParseTest
                 "  Class<int[]> cc = int[].class;" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, ter, "testpkg");
+        SourceInput input = createFromReader(sr, SourceType.Java, ter);
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         assertNotNull(info);
     }
 
@@ -148,8 +136,8 @@ public class BasicParseTest
         references.add("Dummy1");
         references.add("Dummy2");
 
-        File file = getFile("AffinedTransformer.dat");
-        ClassInfo info = InfoParser.parse(file, new ClassLoaderResolver(this.getClass().getClassLoader()));
+        SourceInput input = getResourceFile(getClass(), "/bluej/parser/AffinedTransformer.dat");
+        ClassInfo info = InfoParser.parse(input).orElse(null);
 
         assertEquals("AffinedTransformer",info.getName());
         assertEquals("javax.swing.JFrame",info.getSuperclass());
@@ -213,8 +201,8 @@ public class BasicParseTest
          * Second file - no superclass, multiple interfaces
          */
 
-        file = getFile("multi_interface.dat");
-        info = InfoParser.parse(file);
+        input = getResourceFile(getClass(), "/bluej/parser/multi_interface.dat");
+        info = InfoParser.parse(input).orElse(null);
 
         extendsInsert = info.getExtendsInsertSelection();
         assertEquals(10, extendsInsert.getEndColumn());
@@ -288,8 +276,8 @@ public class BasicParseTest
                 "  }\n" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr,
-                new ClassLoaderResolver(this.getClass().getClassLoader()), null);
+        SourceInput input = createFromReader(sr, SourceType.Java, new ClassLoaderResolver(this.getClass().getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         List<String> implemented = info.getImplements();
         assertNotNull(implemented);
         assertEquals(2, implemented.size());
@@ -303,8 +291,8 @@ public class BasicParseTest
         StringReader sr = new StringReader(
                 "interface A extends Runnable, Iterable {\n" +
                 "}\n");
-        ClassInfo info = InfoParser.parse(sr,
-                new ClassLoaderResolver(this.getClass().getClassLoader()), null);
+        SourceInput input = createFromReader(sr, SourceType.Java, new ClassLoaderResolver(this.getClass().getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         List<String> implemented = info.getImplements();
         assertNotNull(implemented);
         assertEquals(2, implemented.size());
@@ -322,10 +310,9 @@ public class BasicParseTest
     @Test
     public void testValidClassInfo4() throws Exception
     {
-        StringReader sr = new StringReader(
-                "interface A {}"
-        );
-        ClassInfo info = InfoParser.parse(sr, null, null);
+        String aSrc = "interface A {}";
+        SourceInput input = createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(SourceInputTestUtils.class.getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         assertTrue(info.isInterface());
     }
 
@@ -335,10 +322,9 @@ public class BasicParseTest
     @Test
     public void testValidClassInfo5() throws Exception
     {
-        StringReader sr = new StringReader(
-                "enum A { monday { public int getAnInt() { return 3;} }, tuesday() {}, wednesday }"
-        );
-        ClassInfo info = InfoParser.parse(sr, null, null);
+        String aSrc = "enum A { monday { public int getAnInt() { return 3;} }, tuesday() {}, wednesday }";
+        SourceInput input = createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(SourceInputTestUtils.class.getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         assertNotNull(info);
         assertTrue(info.isEnum());
     }
@@ -346,8 +332,8 @@ public class BasicParseTest
     @Test
     public void testMultiDimensionalArrayParam() throws Exception
     {
-        File file = getFile("I.dat");
-        ClassInfo info = InfoParser.parse(file);
+        SourceInput input = getResourceFile(getClass(), "/bluej/parser/I.dat");
+        ClassInfo info = InfoParser.parse(input).orElse(null);
 
         // Check that comment is created with parameter names
         Properties comments = info.getComments();
@@ -368,7 +354,7 @@ public class BasicParseTest
             + "  void method3(String [] a) { }\n"
             + "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         Properties comments = info.getComments();
         assertTrue(findTarget(comments, "void method1(int[])") != -1);
         assertTrue(findTarget(comments, "void method2(int[])") != -1);
@@ -383,7 +369,7 @@ public class BasicParseTest
             + "  <U> void method2(U a[]) { }\n"
             + "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         Properties comments = info.getComments();
         assertTrue(findTarget(comments, "void method1(java.lang.Object[])") != -1);
         assertTrue(findTarget(comments, "void method2(java.lang.Object[])") != -1);
@@ -397,7 +383,7 @@ public class BasicParseTest
                 + "  void method1(List<List<Integer>> a) { }\n"
                 + "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         Properties comments = info.getComments();
         assertTrue(findTarget(comments, "void method1(java.util.List)") != -1);
     }
@@ -410,7 +396,7 @@ public class BasicParseTest
                 + "  void method2(A<? super T> a) { }\n"
                 + "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         Properties comments = info.getComments();
         assertTrue(findTarget(comments, "void method1(A)") != -1);
         assertTrue(findTarget(comments, "void method2(A)") != -1);
@@ -420,8 +406,8 @@ public class BasicParseTest
     public void testMultipleInterfaceExtends() throws Exception
     {
         String aSrc = "interface A extends B, C { }";
-
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), null, null);
+        SourceInput input = createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(SourceInputTestUtils.class.getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         assertNotNull(info);
     }
 
@@ -432,11 +418,11 @@ public class BasicParseTest
                 + "  <T> void method1(A<? extends T> a) { }\n"
                 + "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertTrue(info.getTypeParameterTexts().isEmpty());
 
         aSrc = "class B<U extends Runnable> { }";
-        info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertTrue(info.getTypeParameterTexts().size() == 1);
         assertEquals("U", info.getTypeParameterTexts().get(0));
     }
@@ -450,7 +436,7 @@ public class BasicParseTest
     }
 
     @Test
-    public void testInterfaceSelections()
+    public void testInterfaceSelections() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -463,7 +449,7 @@ public class BasicParseTest
         //ter.addCompilationUnit("", cuForSource("interface JJ extends I, J {}", pkgr));
 
         String IIsrc = "interface II extends I { public void sampleMethod(); }";
-        ClassInfo info = InfoParser.parse(new StringReader(IIsrc), pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(new StringReader(IIsrc), SourceType.Java, pkgr)).orElse(null);
 
         List<Selection> isels = info.getInterfaceSelections();
         assertEquals(2, isels.size());
@@ -471,7 +457,7 @@ public class BasicParseTest
         assertEquals(22, isels.get(1).getColumn());
 
         String JJsrc = "interface JJ extends I, J { public void sampleMethod(); }";
-        info = InfoParser.parse(new StringReader(JJsrc), pkgr, "");
+        info = InfoParser.parse(createFromReader(new StringReader(JJsrc), SourceType.Java, pkgr)).orElse(null);
         isels = info.getInterfaceSelections();
         assertEquals(4, isels.size());
         assertEquals(14, isels.get(0).getColumn());  // "extends"
@@ -495,8 +481,8 @@ public class BasicParseTest
         ter.addCompilationUnit("", cuForSource("class L {}", pkgr));
         ter.addCompilationUnit("", cuForSource("class M {}", pkgr));
 
-        FileInputStream fis = new FileInputStream(getFile("H.dat"));
-        ClassInfo info = InfoParser.parse(new InputStreamReader(fis), pkgr, "");
+        SourceInput input = createFromResource(getClass(), "/bluej/parser/H.dat", SourceType.Java, pkgr);
+        ClassInfo info = InfoParser.parse(input).orElse(null);
 
         List<String> used = info.getUsed();
         assertTrue(used.contains("I"));
@@ -519,15 +505,14 @@ public class BasicParseTest
                 new ClassLoaderResolver(this.getClass().getClassLoader())
                 );
         ter.addCompilationUnit("", cuForSource("class I {}", ter));
-        StringReader sr = new StringReader(
-                "class A {\n" +
+        String aSrc = "class A {\n" +
                 "  void someMethod() {\n" +
                 "    I i = new I();\n" +
                 "  }\n" +
                 "  class I { }\n" +
-                "}\n"
-        );
-        ClassInfo info = InfoParser.parse(sr, null, null);
+                "}\n";
+        SourceInput input = createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(SourceInputTestUtils.class.getClassLoader()));
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         List<String> used = info.getUsed();
 
         assertFalse(used.contains("I"));
@@ -554,7 +539,7 @@ public class BasicParseTest
                         "  }\n" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
@@ -581,7 +566,7 @@ public class BasicParseTest
                         "  }\n" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("JJ"));
@@ -599,12 +584,11 @@ public class BasicParseTest
                 );
         ter.addCompilationUnit("", cuForSource("class T {}", ter));
 
-        StringReader sr = new StringReader(
-                        "class A<T> {\n" +
+        String aSrc = "class A<T> {\n" +
                         "  public T someVar;" +
-                        "}\n"
-        );
-        ClassInfo info = InfoParser.parse(sr, ter, "");
+                        "}\n";
+        SourceInput input = createFromString(aSrc, SourceType.Java, ter);
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         List<String> used = info.getUsed();
 
         assertFalse(used.contains("T"));
@@ -629,7 +613,7 @@ public class BasicParseTest
                         "  public N someVar;" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "testpkg");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("N"));
@@ -657,7 +641,7 @@ public class BasicParseTest
                         "  public otherpkg.M otherVar;" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "testpkg");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("N"));
@@ -684,7 +668,8 @@ public class BasicParseTest
                         "  public N someVar;" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, ter, "testpkg");
+        SourceInput input = createFromReader(sr, SourceType.Java, ter);
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         List<String> used = info.getUsed();
 
         assertFalse(used.contains("N"));
@@ -708,7 +693,7 @@ public class BasicParseTest
                         "  int n = I.xyz;" +
                         "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
@@ -718,7 +703,7 @@ public class BasicParseTest
      * Test that a type argument generates a dependency.
      */
     @Test
-    public void testDependencyAnalysis10()
+    public void testDependencyAnalysis10() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -733,7 +718,7 @@ public class BasicParseTest
                 "  List<I> list;" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
@@ -743,7 +728,7 @@ public class BasicParseTest
      * Test that a type parameter bound generates a dependency.
      */
     @Test
-    public void testDependencyAnalysis11()
+    public void testDependencyAnalysis11() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -756,14 +741,14 @@ public class BasicParseTest
                 "class A<T extends I> {\n" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
     }
 
     @Test
-    public void testDependencyAnalysis12()
+    public void testDependencyAnalysis12() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -780,7 +765,7 @@ public class BasicParseTest
                 "  Class<?> cc2 = testpkg.J.class;" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "testpkg");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
@@ -788,7 +773,7 @@ public class BasicParseTest
     }
 
     @Test
-    public void testDependencyAnalysis13()
+    public void testDependencyAnalysis13() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -805,7 +790,7 @@ public class BasicParseTest
                 "  Class<? super J> cc2;" +
                 "}\n"
         );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "testpkg");
+        ClassInfo info = InfoParser.parse(createFromReader(sr, SourceType.Java, pkgr)).orElse(null);
         List<String> used = info.getUsed();
 
         assertTrue(used.contains("I"));
@@ -813,7 +798,7 @@ public class BasicParseTest
     }
 
     @Test
-    public void testClassModifiers()
+    public void testClassModifiers() throws Exception
     {
         InitConfig.init();
         TestEntityResolver ter = new TestEntityResolver(
@@ -821,11 +806,10 @@ public class BasicParseTest
                 );
         PackageResolver pkgr = new PackageResolver(ter, "");
 
-        StringReader sr = new StringReader(
-                "abstract class A {\n" +
-                "}\n"
-        );
-        ClassInfo info = InfoParser.parse(sr, pkgr, "");
+        String aSrc = "abstract class A {\n" +
+                "}\n";
+        SourceInput input = createFromString(aSrc, SourceType.Java, pkgr);
+        ClassInfo info = InfoParser.parse(input).orElse(null);
         assertTrue(info.isAbstract());
         assertFalse(info.isInterface());
         assertFalse(info.isEnum());
@@ -847,7 +831,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -869,7 +853,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -894,7 +878,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -910,7 +894,7 @@ public class BasicParseTest
             public abstract sealed class Shape permits Circle, Rectangle, Square { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -928,7 +912,7 @@ public class BasicParseTest
                         com.example.quad.simple.Square { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -945,7 +929,7 @@ public class BasicParseTest
             }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -972,7 +956,7 @@ public class BasicParseTest
             public non-sealed class WeirdShape extends Shape { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -990,7 +974,7 @@ public class BasicParseTest
             final class Comet  implements Celestial { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1011,7 +995,7 @@ public class BasicParseTest
             public final class NegExpr      implements Expr { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1032,7 +1016,7 @@ public class BasicParseTest
             public record NegExpr(Expr e)           implements Expr { }
             """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1050,7 +1034,7 @@ public class BasicParseTest
             "    String ff = \"another string\";\n" +
             "}\n";
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1065,7 +1049,7 @@ public class BasicParseTest
                 "  <T> fff(List<\n" +
                 "  void xyz(int n) { }\n" +
                 "}\n";
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1082,7 +1066,7 @@ public class BasicParseTest
         }
         """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1099,7 +1083,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1116,7 +1100,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1139,7 +1123,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1160,7 +1144,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1187,7 +1171,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1217,7 +1201,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1253,7 +1237,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1286,7 +1270,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1308,7 +1292,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1330,7 +1314,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1354,7 +1338,7 @@ public class BasicParseTest
                  }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1378,7 +1362,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1408,7 +1392,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1447,7 +1431,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1473,7 +1457,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1494,7 +1478,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1520,7 +1504,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1571,7 +1555,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1590,7 +1574,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1611,7 +1595,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertFalse(info.hadParseError());
     }
@@ -1629,7 +1613,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1647,7 +1631,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1665,7 +1649,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1685,7 +1669,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }
@@ -1705,7 +1689,7 @@ public class BasicParseTest
                 }
                 """;
 
-        ClassInfo info = InfoParser.parse(new StringReader(aSrc), new ClassLoaderResolver(getClass().getClassLoader()), null);
+        ClassInfo info = InfoParser.parse(createFromString(aSrc, SourceType.Java, new ClassLoaderResolver(getClass().getClassLoader()))).orElse(null);
         assertNotNull(info);
         assertTrue(info.hadParseError());
     }

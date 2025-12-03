@@ -33,14 +33,16 @@ import java.util.stream.Stream;
 
 import bluej.editor.fixes.Correction;
 import bluej.editor.stride.FrameEditor;
+import bluej.extensions2.SourceType;
+import bluej.parser.SourceParser;
 import bluej.parser.lexer.JavaTokenTypes;
+import bluej.parser.psi.SourceInput;
 import bluej.stride.framedjava.elements.LocatableElement.LocationMap;
 import bluej.stride.framedjava.errors.*;
 import bluej.stride.framedjava.frames.MethodFrameWithBody;
 import bluej.stride.generic.FrameCanvas;
 import bluej.utility.javafx.FXPlatformConsumer;
 import javafx.application.Platform;
-import bluej.parser.JavaParser;
 import bluej.parser.lexer.LocatableToken;
 import bluej.stride.framedjava.elements.CodeElement;
 import bluej.stride.framedjava.frames.AssignFrame;
@@ -70,8 +72,8 @@ public abstract class ExpressionSlotFragment extends StructuredSlotFragment
         super(content, javaCode);
         this.slot = slot;
 
-        Parser.parseAsExpression(new JavaParser(new StringReader(wrapForParse(this.getJavaCode())), false)
-        {
+        SourceInput input = SourceInput.fromString(wrapForParse(this.getJavaCode()), SourceType.Java);
+        SourceParser parser = new SourceParser(input) {
             // Used to ignore the method name following the "::" method reference operator:
             boolean ignoreNext = false;
 
@@ -166,9 +168,11 @@ public abstract class ExpressionSlotFragment extends StructuredSlotFragment
             {
                 types.add(Utility.mapList(tokens, ExpressionSlotFragment.this::unwrapForParse));
             }
+        };
 
+        parser.setHandleComments(false);
 
-        });
+        Parser.parseAsExpression(parser);
     }
 
     // Constructor when deserialised from XML

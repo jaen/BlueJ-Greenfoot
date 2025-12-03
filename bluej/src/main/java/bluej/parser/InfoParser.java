@@ -21,18 +21,16 @@
  */
 package bluej.parser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import bluej.extensions2.SourceType;
+import bluej.parser.psi.SourceInput;
+import org.jetbrains.annotations.NotNull;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 import bluej.debugger.gentype.GenTypeClass;
@@ -40,10 +38,8 @@ import bluej.debugger.gentype.GenTypeParameter;
 import bluej.debugger.gentype.GenTypeSolid;
 import bluej.debugger.gentype.JavaType;
 import bluej.debugger.gentype.Reflective;
-import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.JavaEntity;
-import bluej.parser.entity.PackageResolver;
 import bluej.parser.entity.PositionedResolver;
 import bluej.parser.entity.TypeEntity;
 import bluej.parser.entity.UnresolvedArray;
@@ -54,8 +50,10 @@ import bluej.parser.nodes.JavaParentNode;
 import bluej.parser.nodes.MethodNode;
 import bluej.parser.symtab.ClassInfo;
 import bluej.parser.symtab.Selection;
-import bluej.pkgmgr.Package;
 import bluej.utility.JavaNames;
+
+import static bluej.parser.JavaParser.TYPEDEF_ENUM;
+import static bluej.parser.JavaParser.TYPEDEF_INTERFACE;
 
 /**
  * The main BlueJ parser, which extracts various information from source code including:
@@ -133,76 +131,45 @@ public class InfoParser extends EditorParser
     private LocatableToken pkgSemiToken;
 
     /**
-     * Construct an InfoParser which reads Java source using the given reader, and resolves
-     * reference via the given resolver.
+     * Constructor for SourceInput-based parsing.
+     *
+     * @param input Source input encapsulating file and metadata
+     * @throws IOException if source cannot be read
      */
-    public InfoParser(Reader r, EntityResolver resolver)
+    public InfoParser(SourceInput input) throws IOException
     {
-        super(r, resolver);
+        super(input, input.getEntityResolver());
     }
 
     /**
-     * Attempt to parse the specified source file. Returns null if the file could not be parsed.
-     */
-    public static ClassInfo parse(File f) throws FileNotFoundException
-    {
-        return parse(f, new ClassLoaderResolver(InfoParser.class.getClassLoader()));
-    }
-
-    /**
-     * Attempt to parse the specified source file, and resolve references via the specified
-     * resolver. Returns null if the file could not be parsed.
-     */
-    public static ClassInfo parse(File f, EntityResolver resolver) throws FileNotFoundException
-    {
-        FileInputStream fis = new FileInputStream(f);
-        ClassInfo info = parse(new BufferedReader(new InputStreamReader(fis)), resolver, null);
-        try {
-            fis.close();
-        }
-        catch (IOException ioe) {}
-        return info;
-    }
-
-    /**
-     * Attempt to parse the specified source file, and resolve references via the specified
-     * package (and its project). Returns null if the file could not be parsed.
+     * Attempt to parse the specified source input, resolving references via the
+     * package contained in the input (and its project).
+     *
+     * @return Optional of ClassInfo if parsing succeeded, or Optional.empty() otherwise.
      */
     @OnThread(Tag.FXPlatform)
-    public static ClassInfo parseWithPkg(File f, Package pkg) throws FileNotFoundException
-    {
-        FileInputStream fis = new FileInputStream(f);
-        EntityResolver resolver = new PackageResolver(pkg.getProject().getEntityResolver(),
-                pkg.getQualifiedName());
-        Reader reader = new InputStreamReader(fis, pkg.getProject().getProjectCharset());
-        reader = new BufferedReader(reader);
-        ClassInfo info = parse(reader, resolver, pkg.getQualifiedName());
+    public static @NotNull Optional<ClassInfo> parse(@NotNull SourceInput input) {
         try {
-            fis.close();
-        }
-        catch (IOException ioe) {}
-        return info;
-    }
+            InfoParser infoParser = new InfoParser(input);
+            if (input.hasPackage()) {
+                infoParser.targetPkg = input.getPackage().getQualifiedName();
+            }
+            // For test scenarios with PackageResolver but no Package, extract package name
+            else if (input.getEntityResolver() instanceof bluej.parser.entity.PackageResolver) {
+                bluej.parser.entity.PackageResolver pkgr = (bluej.parser.entity.PackageResolver) input.getEntityResolver();
+                infoParser.targetPkg = pkgr.getPackageName();
+            }
+            infoParser.parseCU();
 
-    /**
-     * Attempt to parse the specified source file, and resolve references via the specified
-     * resolver. The source should be assumed to reside in the specified package.
-     * Returns null if the source could not be parsed.
-     */
-    @OnThread(Tag.FXPlatform)
-    public static ClassInfo parse(Reader r, EntityResolver resolver, String targetPkg)
-    {
-        InfoParser infoParser = null;
-        infoParser = new InfoParser(r, resolver);
-        infoParser.targetPkg = targetPkg;
-        infoParser.parseCU();
-
-        if (infoParser.info != null) {
-            infoParser.info.setParseError(infoParser.hadError);
-            infoParser.resolveComments();
-            return infoParser.info;
+            if (infoParser.info != null) {
+                infoParser.info.setParseError(infoParser.hadError);
+                infoParser.resolveComments();
+                return Optional.of(infoParser.info);
+            }
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.empty();
         }
-        return null;
     }
 
     /**
@@ -425,6 +392,9 @@ public class InfoParser extends EditorParser
         lastTypespecToks = tokens;
         super.gotTypeSpec(tokens);
 
+        if (lastTypespecToks == null || lastTypespecToks.isEmpty())
+            return;
+
         // Dependency tracking
         int tokpos = lineColToPosition(tokens.get(0).getLine(), tokens.get(0).getColumn());
         int topOffset = getTopNodeOffset();
@@ -460,8 +430,8 @@ public class InfoParser extends EditorParser
             if (interfaceEnt != null) {
                 interfaceEntities.add(interfaceEnt);
             }
-            if (tokenStream.LA(1).getType() == JavaTokenTypes.COMMA) {
-                lastCommaSelection = getSelection(tokenStream.LA(1));
+            if (getTokenStream().LA(1).getType() == JavaTokenTypes.COMMA) {
+                lastCommaSelection = getSelection(getTokenStream().LA(1));
             }
             else {
                 info.setInterfaceSelections(interfaceSelections);
@@ -590,10 +560,16 @@ public class InfoParser extends EditorParser
     @Override
     protected void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken)
     {
-        super.gotConstructorDecl(token, hiddenToken);
+        gotConstructorDecl(token, hiddenToken, token.getText());
+    }
+
+    @Override
+    protected void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken, String name)
+    {
+        super.gotConstructorDecl(token, hiddenToken, name);
         String lastComment = (hiddenToken != null) ? hiddenToken.getText() : null;
         currentMethod = new MethodDesc();
-        currentMethod.name = token.getText();
+        currentMethod.name = name;
         currentMethod.paramNames = "";
         currentMethod.paramTypes = new LinkedList<JavaEntity>();
         currentMethod.javadocText = lastComment;
@@ -639,7 +615,8 @@ public class InfoParser extends EditorParser
     @Override
     protected void gotTypeDef(LocatableToken firstToken, int tdType)
     {
-        isPublic = modPublic;
+        // TODO: Kotlin classes are public by default. This needs to be fixed
+        isPublic = (sourceType == SourceType.Kotlin) || modPublic;
         isAbstract = modAbstract;
         comment = firstToken.getHiddenBefore() == null ? "" : firstToken.getHiddenBefore().getText();
         super.gotTypeDef(firstToken, tdType);
@@ -660,6 +637,9 @@ public class InfoParser extends EditorParser
                 info.setEnum(lastTdType == TYPEDEF_ENUM);
                 info.setInterface(lastTdType == TYPEDEF_INTERFACE);
                 info.setAbstract(isAbstract);
+                if (hasTopLevelFunction) {
+                    info.setHasTopLevelFunctions(true);
+                }
                 info.addComment(info.getName(), comment, null);
                 Selection insertSelection = new Selection(nameToken.getLine(), nameToken.getEndColumn());
                 info.setExtendsInsertSelection(insertSelection);
@@ -683,8 +663,8 @@ public class InfoParser extends EditorParser
         if (classLevel == 0 && storeCurrentClassInfo) {
             gotExtends = true;
             SourceLocation extendsStart = info.getExtendsInsertSelection().getStartLocation();
-            int extendsEndCol = tokenStream.LA(1).getColumn();
-            int extendsEndLine = tokenStream.LA(1).getLine();
+            int extendsEndCol = getTokenStream().LA(1).getColumn();
+            int extendsEndLine = getTokenStream().LA(1).getLine();
             if (extendsStart.getLine() == extendsEndLine) {
                 info.setExtendsReplaceSelection(new Selection(extendsEndLine, extendsStart.getColumn(), extendsEndCol - extendsStart.getColumn()));
             }
@@ -763,6 +743,26 @@ public class InfoParser extends EditorParser
     {
         modPublic = false;
         modAbstract = false;
+    }
+
+    // Flag to track if we've seen a top-level function
+    private boolean hasTopLevelFunction = false;
+
+    @Override
+    protected void gotTopLevelDecl(LocatableToken token)
+    {
+        // Check if this is a top-level function declaration
+        if (token.getType() == JavaTokenTypes.LITERAL_fun) {
+            hasTopLevelFunction = true;
+            // If we already have a ClassInfo object, set the flag on it
+            if (info == null) {
+                info = new ClassInfo();
+                info.setName("", false);
+                info.setInterface(false);
+                info.setEnum(false);
+            }
+            info.setHasTopLevelFunctions(true);
+        }
     }
 
     private Selection getSelection(LocatableToken token)

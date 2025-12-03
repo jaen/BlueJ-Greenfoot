@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +41,8 @@ import javax.tools.ToolProvider;
 
 import bluej.Config;
 import bluej.compiler.Diagnostic.DiagnosticOrigin;
+
+import static java.util.Collections.singletonList;
 
 /**
  * A compiler implementation using the Compiler API introduced in Java 6.
@@ -73,8 +74,8 @@ public class CompilerAPICompiler extends Compiler
      * @return  true if successful
      */
     @Override
-    public boolean compile(final File[] sources, final CompileObserver observer,
-            final boolean internal, List<String> userOptions, Charset fileCharset, CompileType type)
+    public boolean compile(final List<File> sources, final CompileObserver observer,
+            final boolean internal, List<String> userOptions, Charset fileCharset, CompileType type, File outputDir)
     {
         boolean result = true;
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
@@ -107,7 +108,7 @@ public class CompilerAPICompiler extends Compiler
                         // See bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6419926
                         // JDK6 returns URIs without a scheme in some cases, so always resolve against a
                         // known "file:/" URI:
-                        URI srcUri = sources[0].toURI().resolve(diag.getSource().toUri());
+                        URI srcUri = sources.getFirst().toURI().resolve(diag.getSource().toUri());
                         src = new File(srcUri).getPath();
                     }
                 }
@@ -185,32 +186,16 @@ public class CompilerAPICompiler extends Compiler
         {  
             //setup the filemanager
             StandardJavaFileManager sjfm = jc.getStandardFileManager(diagListener, null, fileCharset);
+            sjfm.setLocation(StandardLocation.SOURCE_PATH, singletonList(getSourcePath()));
             List<File> pathList = new ArrayList<File>();
-            List<File> outputList = new ArrayList<File>();
-            outputList.add(getDestDir());
             pathList.addAll(getClassPath());
-
-            // In BlueJ, the destination directory and the source path are
-            // always the same
-            sjfm.setLocation(StandardLocation.SOURCE_PATH, outputList);
-            sjfm.setLocation(StandardLocation.CLASS_PATH, pathList);
-            File tempDir = null;
-            if (type.keepClasses())
-            {
-                sjfm.setLocation(StandardLocation.CLASS_OUTPUT, outputList);
-            }
-            else
-            {
-                // We could make a new file manager that memory-mapped the output files
-                // and discarded them... but creating a temporary dir is much more
-                // straightforward:
-                tempDir = Files.createTempDirectory("bluej").toFile();
-                sjfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tempDir));
-            }
+            pathList.add(outputDir);
+            sjfm.setLocation(StandardLocation.CLASS_PATH,pathList);
+            sjfm.setLocation(StandardLocation.CLASS_OUTPUT, singletonList(outputDir));
 
             //get the source files for compilation  
             Iterable<? extends JavaFileObject> compilationUnits1 =
-                sjfm.getJavaFileObjectsFromFiles(Arrays.asList(sources));
+                sjfm.getJavaFileObjectsFromFiles(sources);
             //add any options
             if(isDebug()) {
                 optionsList.add("-g");
@@ -229,8 +214,6 @@ public class CompilerAPICompiler extends Compiler
             //compile
             result = jc.getTask(null, sjfm, diagListener, optionsList, null, compilationUnits1).call();
             sjfm.close();
-            if (tempDir != null)
-                tempDir.delete();
         }
         catch(IOException e)
         {
