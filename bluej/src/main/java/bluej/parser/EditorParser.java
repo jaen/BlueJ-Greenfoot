@@ -257,7 +257,7 @@ public class EditorParser extends SourceParser
      */
     private boolean typeSpecIsVar(List<LocatableToken> typeSpec)
     {
-        if (typeSpec.size() == 1)
+        if (typeSpec != null && typeSpec.size() == 1)
         {
             if (typeSpec.get(0).getText().equals("var"))
             {
@@ -1183,7 +1183,7 @@ public class EditorParser extends SourceParser
         {
             // Currently, do nothing with this
         }
-        else if (! gotNewType) {
+        else if (! gotNewType && tokens != null && !tokens.isEmpty()) {
             gotNewType = true;
             newTypes.push(tokens);
         }
@@ -1468,7 +1468,7 @@ public class EditorParser extends SourceParser
     {
         super.gotLambdaFormalType(type);
         gotTypeSpec(type);
-        lastLambdaParamType = type.get(0);
+        lastLambdaParamType = type != null ? type.get(0) : null;
     }
 
     @Override

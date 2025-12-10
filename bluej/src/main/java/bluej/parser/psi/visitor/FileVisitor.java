@@ -21,7 +21,6 @@
  */
 package bluej.parser.psi.visitor;
 
-import bluej.debugmgr.ParameterList;
 import bluej.parser.JavaParserCallbacksBase;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
@@ -586,14 +585,14 @@ public class FileVisitor extends BaseVisitor {
 
         // 3. Return type (before method declaration as per callback protocol)
         KtTypeReference returnTypeRef = function.getTypeReference();
-        if (returnTypeRef != null) {
+//        if (returnTypeRef != null) {
             List<LocatableToken> returnTypeTokens = extractTypeTokens(returnTypeRef);
             callbacks.gotTypeSpec(returnTypeTokens);
-        }
-        else {
-            // This will be interpreted as unit and hopefully not blow up anything
-            callbacks.gotTypeSpec(null);
-        }
+//        }
+//        else {
+//            // This will be interpreted as unit and hopefully not blow up anything
+//            callbacks.gotTypeSpec(null);
+//        }
 
         // 4. Method declaration (name + javadoc)
         // HACK: BlueJ expects function to be only defined if `(` is present
@@ -1610,63 +1609,7 @@ public class FileVisitor extends BaseVisitor {
             }
         }
     }
-    
-    /**
-     * Extracts type reference as list of tokens.
-     *
-     * <p>Converts a Kotlin type reference into a list of {@link LocatableToken} instances
-     * suitable for {@code JavaParserCallbacks.gotTypeSpec(List)}. The type reference text
-     * may include:</p>
-     * <ul>
-     *   <li>Simple type: {@code String} → single token</li>
-     *   <li>Qualified type: {@code kotlin.String} → NOT split, single token with full text</li>
-     *   <li>Generic type: {@code List<String>} → single token with full text</li>
-     *   <li>Nullable type: {@code String?} → single token with full text</li>
-     * </ul>
-     *
-     * <p><b>Simplification Strategy:</b> Phase 4 treats type references as atomic tokens
-     * rather than decomposing them into constituent parts. This is acceptable because
-     * BlueJ's ClassInfo primarily needs the complete type string for signature matching.</p>
-     *
-     * <p><b>Future Enhancement:</b> Phase 5 or 6 may decompose complex types if needed
-     * for more sophisticated type analysis.</p>
-     *
-     * @param typeRef The type reference to extract (must not be null)
-     * @return List containing single token with complete type text
-     */
-    private List<LocatableToken> extractTypeTokens(KtTypeReference typeRef) {
-        if (typeRef == null) {
-            return List.of();
-        }
-        
-        // Extract complete type text
-        String typeText = typeRef.getText();
-        if (typeText == null || typeText.isEmpty()) {
-            return List.of();
-        }
 
-        // TODO: pretend we have primitives for now, as some existing tests assume that to check for method existence
-        var tokenType = switch (typeText) {
-            case "Byte" -> JavaTokenTypes.LITERAL_byte;
-            case "Short" -> JavaTokenTypes.LITERAL_short;
-            case "Int" -> JavaTokenTypes.LITERAL_int;
-            case "Long" -> JavaTokenTypes.LITERAL_long;
-
-            case "Float" -> JavaTokenTypes.LITERAL_float;
-            case "Double" -> JavaTokenTypes.LITERAL_double;
-
-            case "Boolean" -> JavaTokenTypes.LITERAL_boolean;
-
-            case "Char" -> JavaTokenTypes.LITERAL_char;
-
-            default -> JavaTokenTypes.IDENT;
-        };
-        
-        // Create single token with complete type reference
-        LocatableToken typeToken = createToken(typeRef, tokenType);
-        return List.of(typeToken);
-    }
-    
     /**
      * Processes method-level generic type parameters.
      *
@@ -1795,12 +1738,14 @@ public class FileVisitor extends BaseVisitor {
 
                 // Parameter type
                 KtTypeReference paramType = param.getTypeReference();
-                if (paramType != null) {
-                    callbacks.skipToToken(createToken(param.getColon(), JavaTokenTypes.COLON));
+//                if (paramType != null) {
+                    if (param.getColon() != null){
+                        callbacks.skipToToken(createToken(param.getColon(), JavaTokenTypes.COLON));
+                    }
 
                     List<LocatableToken> typeTokens = extractTypeTokens(paramType);
-                    callbacks.gotTypeSpec(typeTokens.isEmpty() ? null : typeTokens);
-                }
+                    callbacks.gotTypeSpec(typeTokens);
+//                }
 
                 callbacks.gotMethodParameter(nameToken, ellipsisToken);
             }
@@ -1976,10 +1921,10 @@ public class FileVisitor extends BaseVisitor {
 
             // Parameter type
             KtTypeReference paramType = param.getTypeReference();
-            if (paramType != null) {
+//            if (paramType != null) {
                 List<LocatableToken> typeTokens = extractTypeTokens(paramType);
                 callbacks.gotTypeSpec(typeTokens);
-            }
+//            }
             
             // Parameter name
             PsiElement nameIdentifier = param.getNameIdentifier();
@@ -2464,10 +2409,10 @@ public class FileVisitor extends BaseVisitor {
             
              // Type if specified
              KtTypeReference paramType = loopParam.getTypeReference();
-             if (paramType != null) {
+//             if (paramType != null) {
                  List<LocatableToken> typeTokens = extractTypeTokens(paramType);
                  callbacks.gotTypeSpec(typeTokens);
-             }
+//             }
             
              // Variable name
              PsiElement nameIdentifier = loopParam.getNameIdentifier();
@@ -2701,10 +2646,10 @@ public class FileVisitor extends BaseVisitor {
                          }
                      } else if (condition instanceof KtWhenConditionIsPattern) {
                          KtTypeReference typeRef = ((KtWhenConditionIsPattern) condition).getTypeReference();
-                         if (typeRef != null) {
+//                         if (typeRef != null) {
                              List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                              callbacks.gotTypeSpec(typeTokens);
-                         }
+//                         }
                      }
                  }
                 
@@ -2886,10 +2831,10 @@ public class FileVisitor extends BaseVisitor {
          if (parameter != null) {
              // Exception type
              KtTypeReference typeRef = parameter.getTypeReference();
-             if (typeRef != null) {
+//             if (typeRef != null) {
                  List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                  callbacks.gotTypeSpec(typeTokens);
-             }
+//             }
             
              // Exception variable name
              PsiElement nameIdentifier = parameter.getNameIdentifier();
@@ -3404,10 +3349,10 @@ public class FileVisitor extends BaseVisitor {
                     
                      // Parameter type (if specified)
                      KtTypeReference typeRef = param.getTypeReference();
-                     if (typeRef != null) {
+//                     if (typeRef != null) {
                          List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                          callbacks.gotLambdaFormalType(typeTokens);
-                     }
+//                     }
                  }
              }
             
@@ -3560,6 +3505,9 @@ public class FileVisitor extends BaseVisitor {
                  callbacks.gotInstanceOfOperator(opToken);
                  callbacks.gotTypeSpec(typeTokens);
              }
+         }
+         else if (typeRef == null) {
+             callbacks.gotTypeSpec(null);
          }
         
          callbacks.endExpression(token, false);

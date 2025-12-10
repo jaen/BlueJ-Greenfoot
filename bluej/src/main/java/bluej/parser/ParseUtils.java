@@ -488,6 +488,8 @@ public class ParseUtils
     public static JavaEntity getTypeEntity(EntityResolver resolver,
                                            Reflective querySource, List<LocatableToken> tokens)
     {
+        if (tokens == null) { return null; }
+
         DepthRef dr = new DepthRef();
         return getTypeEntity(resolver, querySource, tokens.listIterator(), dr);
     }

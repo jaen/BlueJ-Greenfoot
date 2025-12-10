@@ -445,4 +445,61 @@ public class BaseVisitor extends KtVisitorVoid implements PsiVisitor {
         };
 //        return JavaTokenTypes.LITERAL_void;
     }
+
+    /**
+     * Extracts type reference as list of tokens.
+     *
+     * <p>Converts a Kotlin type reference into a list of {@link LocatableToken} instances
+     * suitable for {@code JavaParserCallbacks.gotTypeSpec(List)}. The type reference text
+     * may include:</p>
+     * <ul>
+     *   <li>Simple type: {@code String} → single token</li>
+     *   <li>Qualified type: {@code kotlin.String} → NOT split, single token with full text</li>
+     *   <li>Generic type: {@code List<String>} → single token with full text</li>
+     *   <li>Nullable type: {@code String?} → single token with full text</li>
+     * </ul>
+     *
+     * <p><b>Simplification Strategy:</b> Phase 4 treats type references as atomic tokens
+     * rather than decomposing them into constituent parts. This is acceptable because
+     * BlueJ's ClassInfo primarily needs the complete type string for signature matching.</p>
+     *
+     * <p><b>Future Enhancement:</b> Phase 5 or 6 may decompose complex types if needed
+     * for more sophisticated type analysis.</p>
+     *
+     * @param typeRef The type reference to extract (must not be null)
+     * @return List containing single token with complete type text
+     */
+    protected List<LocatableToken> extractTypeTokens(KtTypeReference typeRef) {
+        if (typeRef == null) {
+            return null; // List.of();
+        }
+
+        // Extract complete type text
+        String typeText = typeRef.getText();
+        if (typeText == null || typeText.isEmpty()) {
+//            return List.of();
+            return null;
+        }
+
+        // TODO: pretend we have primitives for now, as some existing tests assume that to check for method existence
+        var tokenType = switch (typeText) {
+            case "Byte" -> JavaTokenTypes.LITERAL_byte;
+            case "Short" -> JavaTokenTypes.LITERAL_short;
+            case "Int" -> JavaTokenTypes.LITERAL_int;
+            case "Long" -> JavaTokenTypes.LITERAL_long;
+
+            case "Float" -> JavaTokenTypes.LITERAL_float;
+            case "Double" -> JavaTokenTypes.LITERAL_double;
+
+            case "Boolean" -> JavaTokenTypes.LITERAL_boolean;
+
+            case "Char" -> JavaTokenTypes.LITERAL_char;
+
+            default -> JavaTokenTypes.IDENT;
+        };
+
+        // Create single token with complete type reference
+        LocatableToken typeToken = createToken(typeRef, tokenType);
+        return List.of(typeToken);
+    }
 }
