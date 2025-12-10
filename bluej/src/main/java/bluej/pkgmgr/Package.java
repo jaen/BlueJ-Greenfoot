@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -707,20 +708,24 @@ public final class Package
                 // Parse the Kotlin file to get information about all public classes and top-level functions
                 EntityResolver resolver = new PackageResolver(project.getEntityResolver(), getQualifiedName());
 
-                // Get all public class names from the file
-                List<String> publicClassNames = List.of();
-
-                // TODO: Deal with  bluej.parser.InfoParser.getPublicClassNames(kotlinSrcFiles[i], resolver);
-
-                // Add all public class names to the set of targets and map them to the source file
-                for (String className : publicClassNames) {
-                    interestingSet.add(className);
-                    kotlinSourceFileMap.put(className, kotlinSrcFiles[i].getName());
-                }
 
                 // Check if the file has top-level functions
                 SourceInput input = SourceInput.fromFile(kotlinSrcFiles[i], SourceType.Kotlin, project.getProjectCharset(), this);
                 java.util.Optional<ClassInfo> info = bluej.parser.InfoParser.parse(input);
+
+                if (info.map(ClassInfo::foundPublicClass).orElse(false)) {
+                    // Get all public class names from the file
+                    List<String> publicClassNames = List.of(info.get().getName());
+
+                    // TODO: Deal with  bluej.parser.InfoParser.getPublicClassNames(kotlinSrcFiles[i], resolver);
+
+                    // Add all public class names to the set of targets and map them to the source file
+                    for (String className : publicClassNames) {
+                        interestingSet.add(className);
+                        kotlinSourceFileMap.put(className, kotlinSrcFiles[i].getName());
+                    }
+                }
+
                 if (info.map(ClassInfo::hasTopLevelFunctions).orElse(false)) {
                     // Add a file facade target with the name as file name + "Kt" suffix
                     String facadeName = kotlinFileName + "Kt";
@@ -732,7 +737,8 @@ public final class Package
                 String facadeName = kotlinFileName + "Kt";
                 interestingSet.add(facadeName);
                 kotlinSourceFileMap.put(facadeName, kotlinSrcFiles[i].getName());
-                Debug.message("Error parsing Kotlin file " + kotlinSrcFiles[i] + ": " + e);
+                var stacktrace = Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n  "));
+                Debug.message("Error parsing Kotlin file " + kotlinSrcFiles[i] + ": " + e + "\n  " + stacktrace);
             }
         }
 

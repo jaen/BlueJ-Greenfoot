@@ -65,31 +65,32 @@ public class MethodBodyVisitor extends BaseVisitor {
     public MethodBodyVisitor(JavaParserCallbacksAdapter callbacks) {
         super(callbacks);
     }
-    private List<LocatableToken> extractTypeTokens(KtTypeReference typeRef) {
-        if (typeRef == null) {
-            return List.of();
-        }
-        
-        String typeText = typeRef.getText();
-        if (typeText == null || typeText.isEmpty()) {
-            return List.of();
-        }
-        
-        var tokenType = switch (typeText) {
-            case "Byte" -> JavaTokenTypes.LITERAL_byte;
-            case "Short" -> JavaTokenTypes.LITERAL_short;
-            case "Int" -> JavaTokenTypes.LITERAL_int;
-            case "Long" -> JavaTokenTypes.LITERAL_long;
-            case "Float" -> JavaTokenTypes.LITERAL_float;
-            case "Double" -> JavaTokenTypes.LITERAL_double;
-            case "Boolean" -> JavaTokenTypes.LITERAL_boolean;
-            case "Char" -> JavaTokenTypes.LITERAL_char;
-            default -> JavaTokenTypes.IDENT;
-        };
-        
-        LocatableToken typeToken = createToken(typeRef, tokenType);
-        return List.of(typeToken);
-    }
+
+//    private List<LocatableToken> extractTypeTokens(KtTypeReference typeRef) {
+//        if (typeRef == null) {
+//            return List.of();
+//        }
+//
+//        String typeText = typeRef.getText();
+//        if (typeText == null || typeText.isEmpty()) {
+//            return List.of();
+//        }
+//
+//        var tokenType = switch (typeText) {
+//            case "Byte" -> JavaTokenTypes.LITERAL_byte;
+//            case "Short" -> JavaTokenTypes.LITERAL_short;
+//            case "Int" -> JavaTokenTypes.LITERAL_int;
+//            case "Long" -> JavaTokenTypes.LITERAL_long;
+//            case "Float" -> JavaTokenTypes.LITERAL_float;
+//            case "Double" -> JavaTokenTypes.LITERAL_double;
+//            case "Boolean" -> JavaTokenTypes.LITERAL_boolean;
+//            case "Char" -> JavaTokenTypes.LITERAL_char;
+//            default -> JavaTokenTypes.IDENT;
+//        };
+//
+//        LocatableToken typeToken = createToken(typeRef, tokenType);
+//        return List.of(typeToken);
+//    }
     
     private PsiElement findChildByText(PsiElement parent, String text) {
         if (parent == null || text == null) {
@@ -181,11 +182,12 @@ public class MethodBodyVisitor extends BaseVisitor {
         if (block == null) {
             return;
         }
-        
-        boolean isMethodBody = block.getParent() instanceof KtFunction;
+
+        var parent = block.getParent();
+        boolean skipBraces = parent instanceof KtFunction || parent instanceof KtAnonymousInitializer;
         
         PsiElement lBrace = block.getLBrace();
-        if (lBrace != null && !isMethodBody) {
+        if (lBrace != null && !skipBraces) {
             LocatableToken lBraceToken = createToken(lBrace, JavaTokenTypes.LCURLY);
             callbacks.beginStmtblockBody(lBraceToken);
         }
@@ -199,7 +201,7 @@ public class MethodBodyVisitor extends BaseVisitor {
         }
         
         PsiElement rBrace = block.getRBrace();
-        if (rBrace != null && !isMethodBody) {
+        if (rBrace != null && !skipBraces) {
             LocatableToken rBraceToken = createToken(rBrace, JavaTokenTypes.RCURLY);
             callbacks.endStmtblockBody(rBraceToken, true);
         }
@@ -376,10 +378,10 @@ public class MethodBodyVisitor extends BaseVisitor {
             callbacks.beginForInitDecl(forToken);
             
             KtTypeReference paramType = loopParam.getTypeReference();
-            if (paramType != null) {
+//            if (paramType != null) {
                 List<LocatableToken> typeTokens = extractTypeTokens(paramType);
                 callbacks.gotTypeSpec(typeTokens);
-            }
+//            }
             
             PsiElement nameIdentifier = loopParam.getNameIdentifier();
             LocatableToken idToken;
@@ -562,10 +564,10 @@ public class MethodBodyVisitor extends BaseVisitor {
                         }
                     } else if (condition instanceof KtWhenConditionIsPattern) {
                         KtTypeReference typeRef = ((KtWhenConditionIsPattern) condition).getTypeReference();
-                        if (typeRef != null) {
+//                        if (typeRef != null) {
                             List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                             callbacks.gotTypeSpec(typeTokens);
-                        }
+//                        }
                     }
                 }
                 
@@ -661,10 +663,10 @@ public class MethodBodyVisitor extends BaseVisitor {
         KtParameter parameter = catchClause.getCatchParameter();
         if (parameter != null) {
             KtTypeReference typeRef = parameter.getTypeReference();
-            if (typeRef != null) {
+//            if (typeRef != null) {
                 List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                 callbacks.gotTypeSpec(typeTokens);
-            }
+//            }
             
             PsiElement nameIdentifier = parameter.getNameIdentifier();
             if (nameIdentifier != null) {
@@ -991,10 +993,10 @@ public class MethodBodyVisitor extends BaseVisitor {
                     }
                     
                     KtTypeReference typeRef = param.getTypeReference();
-                    if (typeRef != null) {
+//                    if (typeRef != null) {
                         List<LocatableToken> typeTokens = extractTypeTokens(typeRef);
                         callbacks.gotLambdaFormalType(typeTokens);
-                    }
+//                    }
                 }
             }
             
@@ -1090,11 +1092,15 @@ public class MethodBodyVisitor extends BaseVisitor {
                 callbacks.gotTypeSpec(typeTokens);
             }
         }
+        else if (typeRef == null) {
+            callbacks.gotTypeSpec(null);
+        }
+
         
         callbacks.endExpression(token, false);
     }
     
-    /**
+    /**typeRef != null
      * Visits an object literal expression (anonymous object).
      */
     @Override
