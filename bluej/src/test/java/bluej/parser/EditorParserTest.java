@@ -29,6 +29,7 @@ import java.util.Set;
 
 import bluej.debugger.gentype.GenTypeClass;
 import bluej.debugger.gentype.MethodReflective;
+import bluej.extensions2.SourceType;
 import bluej.parser.entity.ClassLoaderResolver;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.JavaEntity;
@@ -38,9 +39,12 @@ import bluej.parser.entity.TypeEntity;
 import bluej.parser.nodes.ParsedCUNode;
 import bluej.parser.nodes.ParsedNode;
 import bluej.parser.nodes.NodeTree.NodeAndPosition;
+
+import static bluej.parser.SourceInputTestUtils.*;
+
+import bluej.parser.psi.SourceInput;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -271,7 +275,7 @@ public class EditorParserTest
     }
 
     @Test
-    public void testRecursiveTypedef()
+    public void testRecursiveTypedef() throws Exception
     {
         String sourceCode = "interface Sort<T extends Comparable<T>> { }\n";
 
@@ -284,7 +288,8 @@ public class EditorParserTest
         TypeEntity tent = poc.resolveAsType();
         assertNotNull(tent);
 
-        InfoParser.parse(new StringReader(sourceCode), resolver, "");
+        SourceInput input = createFromReader(new StringReader(sourceCode), SourceType.Java, resolver);
+        InfoParser.parse(input).orElse(null);
     }
 
     @Test

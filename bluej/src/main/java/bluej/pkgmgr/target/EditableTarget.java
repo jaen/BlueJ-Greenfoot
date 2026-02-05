@@ -28,10 +28,7 @@ import bluej.Config;
 import bluej.editor.Editor;
 import bluej.editor.EditorWatcher;
 import bluej.pkgmgr.Package;
-import bluej.pkgmgr.target.actions.EditableTargetOperation;
 import bluej.prefmgr.PrefMgrDialog;
-import bluej.utility.javafx.ResizableCanvas;
-import javafx.scene.canvas.GraphicsContext;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -49,15 +46,25 @@ public abstract class  EditableTarget extends Target
     public final static String removeStr = Config.getString("pkgmgr.classmenu.remove");
     protected Editor editor;
 
-    protected EditableTarget(Package pkg, String name, String accessibleTargetType)
+    protected EditableTarget(Package pkg, String name, String accessibleTargetType) {
+        this(pkg, name, accessibleTargetType, name);
+    }
+
+    protected EditableTarget(Package pkg, String name, String accessibleTargetType, String displayName)
     {
-        super(pkg, name, accessibleTargetType);
+        super(pkg, name, accessibleTargetType, displayName);
     }
 
     /**
      * @return the name of the (text) file this target corresponds to.
      */
     protected abstract File getSourceFile();
+
+    public boolean hasSourceFile() {
+        var file = getSourceFile();
+
+        return file != null && file.exists();
+    }
 
     /**
      * @return the editor object associated with this target

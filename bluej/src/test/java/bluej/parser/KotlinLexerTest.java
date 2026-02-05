@@ -26,6 +26,7 @@ import bluej.parser.lexer.JavaTokenFilter;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LineColPos;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.psi.SourceInput;
 import com.google.common.collect.LinkedListMultimap;
 
 import java.io.StringReader;
@@ -46,13 +47,18 @@ public class KotlinLexerTest extends junit.framework.TestCase
 {
     private TokenStream getLexerFor(String s)
     {
-        TokenStream lexer = SourceParser.getLexer(new StringReader(s), SourceType.Kotlin);
-        return new JavaTokenFilter(lexer, null);
+        SourceInput input = SourceInput.fromString(s, SourceType.Kotlin);
+        SourceParser parser = new SourceParser(input);
+
+        return parser.getTokenStream();
     }
 
     private TokenStream getNonfilteringLexerFor(String s)
     {
-        return SourceParser.getLexer(new StringReader(s), SourceType.Kotlin);
+        SourceInput input = SourceInput.fromString(s, SourceType.Kotlin);
+        SourceParser parser = new SourceParser(input);
+
+        return parser.getLexer();
     }
 
     public void testKeywordParse()
@@ -61,16 +67,27 @@ public class KotlinLexerTest extends junit.framework.TestCase
         TokenStream ts = getLexerFor("public private protected internal abstract final");
         LocatableToken token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_public);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.LITERAL_private, token.getType());
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_protected);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_internal);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.ABSTRACT);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.FINAL);
+
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.EOF);
 
@@ -78,16 +95,27 @@ public class KotlinLexerTest extends junit.framework.TestCase
         ts = getLexerFor("return import package fun val var");
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_return);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_import);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_package);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_fun);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_val);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_var);
+
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.EOF);
 
@@ -95,22 +123,39 @@ public class KotlinLexerTest extends junit.framework.TestCase
         ts = getLexerFor("class interface object data constructor by companion init typealias");
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_class);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_interface);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_object);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_data);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_constructor);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_by);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_companion);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_init);
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.LITERAL_typealias);
+
         token = (LocatableToken) ts.nextToken();
         assertTrue(token.getType() == JavaTokenTypes.EOF);
     }
@@ -145,9 +190,11 @@ public class KotlinLexerTest extends junit.framework.TestCase
         LocatableToken token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.IDENT, token.getType());
         assertEquals("_abc", token.getText());
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.IDENT, token.getType());
         assertEquals("abc123", token.getText());
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.IDENT, token.getType());
         assertEquals("def123kjl98", token.getText());
@@ -158,15 +205,24 @@ public class KotlinLexerTest extends junit.framework.TestCase
         TokenStream ts = getLexerFor("\"a string\" an_identifier99 1234 0.34 .78");
         LocatableToken token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.STRING_LITERAL, token.getType());
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.IDENT, token.getType());
         assertEquals("an_identifier99", token.getText());
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.NUM_INT, token.getType());
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.NUM_DOUBLE, token.getType());
+
+        assertEquals(ts.nextToken().getType(), JavaTokenTypes.WHITESPACE);
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.NUM_DOUBLE, token.getType());
+
         token = (LocatableToken) ts.nextToken();
         assertEquals(JavaTokenTypes.EOF, token.getType());
     }

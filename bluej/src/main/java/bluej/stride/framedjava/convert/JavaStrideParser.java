@@ -34,11 +34,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import bluej.extensions2.SourceType;
-import bluej.parser.JavaParser;
-import bluej.parser.JavaParserCallbacks;
 import bluej.parser.ParseFailure;
 import bluej.parser.SourceParser;
 import bluej.parser.lexer.*;
+import bluej.parser.psi.SourceInput;
 import bluej.stride.framedjava.ast.AccessPermission;
 import bluej.stride.framedjava.ast.AccessPermissionFragment;
 import bluej.stride.framedjava.ast.FilledExpressionSlotFragment;
@@ -231,7 +230,7 @@ public class JavaStrideParser extends SourceParser
      */
     public JavaStrideParser(String java, boolean testing)
     {
-        super(new StringReader(java), SourceType.Java);
+        super(SourceInput.fromString(java, SourceType.Java));
         this.source = java;
         this.testing = testing;
         statementHandlers.push(result);
@@ -776,7 +775,13 @@ public class JavaStrideParser extends SourceParser
     @Override
     protected void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken)
     {
-        super.gotConstructorDecl(token, hiddenToken);
+        gotConstructorDecl(token, hiddenToken, token.getText());
+    }
+
+    @Override
+    protected void gotConstructorDecl(LocatableToken token, LocatableToken hiddenToken, String name)
+    {
+        super.gotConstructorDecl(token, hiddenToken, name);
         methods.push(new MethodBuilder(null, null, modifiers.peek(), statementHandlers.peek().getJavadoc()));
     }
 
@@ -1087,7 +1092,7 @@ public class JavaStrideParser extends SourceParser
     }
 
     @Override
-    protected void endTypeDefExtends()
+    public void endTypeDefExtends()
     {
         super.endTypeDefExtends();
         typeHandlers.pop();
@@ -1103,7 +1108,7 @@ public class JavaStrideParser extends SourceParser
     }
 
     @Override
-    protected void endTypeDefImplements()
+    public void endTypeDefImplements()
     {
         super.endTypeDefImplements();
         typeHandlers.pop();
@@ -1204,9 +1209,9 @@ public class JavaStrideParser extends SourceParser
     }
 
     @Override
-    protected void beginTryCatchSmt(LocatableToken token, boolean hasResource)
+    protected void beginTryCatchStmt(LocatableToken token, boolean hasResource)
     {
-        super.beginTryCatchSmt(token, hasResource);
+        super.beginTryCatchStmt(token, hasResource);
         if (hasResource)
             warnings.add(new ConversionWarning.UnsupportedFeature("try-with-resource"));
         tries.push(new TryBuilder());

@@ -23,155 +23,187 @@ package bluej.parser;
 
 import bluej.extensions2.SourceType;
 import bluej.parser.lexer.*;
+import bluej.parser.psi.SourceInput;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
+import java.util.Optional;
 
-public class SourceParser extends JavaParserCallbacks {
-    protected JavaTokenFilter tokenStream;
+public class SourceParser extends JavaParserCallbacksBase {
+    protected BufferedTokenStream tokenStream;
     protected LocatableToken lastToken;
     protected final SourceType sourceType;
+    protected Optional<Boolean> handleComments = Optional.empty();
+    protected Optional<Boolean> handleMultilineStrings = Optional.empty();
+    protected TokenStream lexer;
+    
+    /** Source input for file-based parsing (null for Reader-based parsing) */
+    private final SourceInput sourceInput;
 
-    ParserBehavior parser;
+    private ParserBehavior parser;
 
-    public static TokenStream getLexer(Reader r)
-    {
-        return new JavaLexer(r);
+    LineColPos getOffset() {
+        return this.tokenStream.getOffset();
     }
 
-    public static TokenStream getLexer(Reader r, boolean handleComments, boolean handleMultilineStrings)
-    {
-        return new JavaLexer(r, handleComments, handleMultilineStrings);
+//    public boolean isHandleComments() {
+//        return handleComments.orElseGet(() -> getTokenStream.ge);
+//    }
+
+    public SourceParser setHandleComments(boolean handleComments) {
+        this.handleComments = Optional.of(handleComments);
+        return this;
     }
 
-    private static TokenStream getLexer(Reader r, int line, int col, int pos)
-    {
-        return new JavaLexer(r, line, col, pos);
+//    public boolean isHandleMultilineStrings() {
+//        return handleMultilineStrings;
+//    }
+
+    public SourceParser setHandleMultilineStrings(boolean handleMultilineStrings) {
+        this.handleMultilineStrings = Optional.of(handleMultilineStrings);
+        return this;
     }
 
-    public static TokenStream getLexer(Reader r, SourceType sourceType)
-    {
-        Keywords kws = sourceType == SourceType.Kotlin ? new KotlinKeywords() : new JavaKeywords();
-        return new JavaLexer(r, kws);
+    /**
+     * Creates parser from SourceInput (recommended for file-based parsing).
+     *
+     * @param input Source input encapsulating file and metadata
+     */
+    public SourceParser(SourceInput input) {
+        if (input == null) {
+            throw new NullPointerException("input cannot be null");
+        }
+        
+        this.sourceInput = input;
+        this.sourceType = input.sourceType();
     }
 
-    public static TokenStream getLexer(Reader r, SourceType sourceType, boolean handleComments, boolean handleMultilineStrings)
-    {
-        Keywords kws = sourceType == SourceType.Kotlin ? new KotlinKeywords() : new JavaKeywords();
-        return new JavaLexer(r, kws, handleComments, handleMultilineStrings);
+    protected ParserBehavior getParserImplementation() {
+        if (parser != null) { return parser; }
+
+        return parser = sourceType == SourceType.Kotlin
+                ? new KotlinPsiParser(this)
+                : new JavaParser(this);
     }
 
-    private static TokenStream getLexer(Reader r, SourceType sourceType, int line, int col, int pos)
-    {
-        Keywords kws = sourceType == SourceType.Kotlin ? new KotlinKeywords() : new JavaKeywords();
-        return new JavaLexer(r, kws, line, col, pos);
-    }
+    public BufferedTokenStream getTokenStream() {
+        if (tokenStream != null) { return tokenStream; }
 
-    public SourceParser(Reader r) {
-        TokenStream lexer = getLexer(r);
-        tokenStream = new JavaTokenFilter(lexer, this);
-        parser = new JavaParser(this);
-        this.sourceType = SourceType.Java;
+        tokenStream = getParserImplementation().createTokenStream(getSourceInput());
 
-    }
+        if (tokenStream.getSourceStream() instanceof JavaLexer lexer) {
+            handleMultilineStrings.ifPresent(lexer::setHandleMultilineStrings);
+            handleMultilineStrings.ifPresent(lexer::setHandleComments);
+        }
 
-    public SourceParser(Reader r, SourceType sourceType) {
-        TokenStream lexer = getLexer(r, sourceType);
-        tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
-        this.sourceType = sourceType;
-    }
-
-    public SourceParser(Reader r, SourceType sourceType, boolean handleComments)
-    {
-        TokenStream lexer = getLexer(r, sourceType, handleComments, true);
-        tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
-        this.sourceType = sourceType;
-    }
-
-    public SourceParser(Reader r, SourceType sourceType, int line, int col, int pos) {
-        TokenStream lexer = getLexer(r, sourceType, line, col, pos);
-        tokenStream = new JavaTokenFilter(lexer, this);
-        parser = sourceType == SourceType.Kotlin ? new KotlinParser(this) : new JavaParser(this);
-        this.sourceType = sourceType;
-    }
-
-    public JavaTokenFilter getTokenStream() {
         return tokenStream;
     }
 
     public LocatableToken getLastToken() {
-        return lastToken;
+        return getTokenStream().getMostRecent();
     }
 
     public LocatableToken setLastToken(LocatableToken lastToken) {
-        this.lastToken = lastToken;
-        return lastToken;
+//        this.lastToken = lastToken;
+//        return lastToken;
+        return getLastToken();
     }
 
     public void parseCU() {
-        parser.parseCU();
+        getParserImplementation().parseCU();
     }
 
-    public void parseCUpart(int state) {
-        parser.parseCUpart(state);
+    public int parseCUpart(int state) {
+        return getParserImplementation().parseCUpart(state);
     }
 
     public int parseTypeDefBegin() {
-        return parser.parseTypeDefBegin();
+        return getParserImplementation().parseTypeDefBegin();
     }
 
     public LocatableToken parseTypeDefPart2(boolean b) {
-        return parser.parseTypeDefPart2(b);
+        return getParserImplementation().parseTypeDefPart2(b);
     }
 
     public LocatableToken parseTypeBody(int type, LocatableToken last) {
-        return parser.parseTypeBody(type, last);
+        return getParserImplementation().parseTypeBody(type, last);
     }
 
     public void parseClassElement(LocatableToken nextToken) {
-        parser.parseClassElement(nextToken);
+        getParserImplementation().parseClassElement(nextToken);
     }
 
     public LocatableToken parseStatement(LocatableToken last, boolean b) {
-        return parser.parseStatement(last, b);
+        return getParserImplementation().parseStatement(last, b);
     }
 
     public LocatableToken parseStatement() {
-        return parser.parseStatement(getTokenStream().nextToken(), false);
+        return getParserImplementation().parseStatement(getTokenStream().nextToken(), false);
     }
 
     public final boolean parseTypeSpec(boolean processArray) {
-        return parser.parseTypeSpec(processArray);
+        return getParserImplementation().parseTypeSpec(processArray);
     }
 
+    public final LocatableToken parsePackageStmt(LocatableToken token) {
+        return getParserImplementation().parsePackageStmt(token);
+    }
 
     public boolean parseTypeSpec(boolean b, boolean b1, List<LocatableToken> ll) {
-        return parser.parseTypeSpec(b, b1, ll);
+        return getParserImplementation().parseTypeSpec(b, b1, ll);
     }
 
     public void parseImportStatement() {
-        parser.parseImportStatement();
+        getParserImplementation().parseImportStatement();
+    }
+
+    public void parseImportStatement(LocatableToken token) {
+        getParserImplementation().parseImportStatement(token);
     }
 
     public void parseClassBody() {
-        parser.parseClassBody();
+        getParserImplementation().parseClassBody();
     }
 
     public void parseExpression() {
-        parser.parseExpression();
+        getParserImplementation().parseExpression();
     }
 
     public LocatableToken parseVariableDeclarations() {
-        return parser.parseVariableDeclarations();
+        return getParserImplementation().parseVariableDeclarations();
     }
 
     public void parseTypeDef() {
-        parser.parseTypeDef();
+        getParserImplementation().parseTypeDef();
+    }
+
+    public void parseTypeDef(LocatableToken token) {
+        getParserImplementation().parseTypeDef(token);
     }
 
     public void parseMethodParamsBody() {
-        parser.parseMethodParamsBody();
+        getParserImplementation().parseMethodParamsBody();
+    }
+    
+    /**
+     * Gets the source input for PSI access.
+     *
+     * @return Source input, or null if parser created from Reader
+     */
+    public SourceInput getSourceInput() {
+        return sourceInput;
+    }
+
+//    public boolean isModifier(LocatableToken lt) {
+//        return getParserImplementation().isModifier(lt);
+//    }
+//
+//    public boolean isPrimitiveType(LocatableToken lt) {
+//        return getParserImplementation().isPrimitiveType(lt);
+//    }
+
+    public Token.TokenType classifyToken(LocatableToken token) {
+        return getParserImplementation().classifyToken(token);
     }
 }

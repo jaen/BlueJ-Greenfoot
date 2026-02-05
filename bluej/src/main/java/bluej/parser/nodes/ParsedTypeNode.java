@@ -259,6 +259,10 @@ public class ParsedTypeNode extends IncrementalParsingNode
                 last = params.tokenStream.LA(1);
                 return PP_INCOMPLETE;
             }
+            if (token.getType() == JavaTokenTypes.EOF) {
+                last = token;
+                return PP_INCOMPLETE;
+            }
             last = token;
             params.tokenStream.pushBack(token);
             setExtendedTypes(params.parser.getExtendedTypes());

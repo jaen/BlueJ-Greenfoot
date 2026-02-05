@@ -23,7 +23,9 @@ package bluej.pkgmgr;
 
 import bluej.extensions2.SourceType;
 import bluej.parser.InfoParser;
+import bluej.parser.psi.SourceInput;
 import bluej.parser.symtab.ClassInfo;
+import bluej.parser.symtab.SourceInfo;
 import bluej.utility.Debug;
 import bluej.utility.DialogManager;
 import bluej.utility.JavaNames;
@@ -31,7 +33,6 @@ import bluej.utility.javafx.FXPlatformSupplier;
 import javafx.stage.Window;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -91,20 +92,29 @@ public class Import
         while (it.hasNext()) {
             File f = it.next();
 
+            ClassInfo info;
             try {
-                ClassInfo info = InfoParser.parse(f);
-                if (info != null && ! info.hadParseError()) {
+                java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(f)));
+                SourceInput input = SourceInput.fromReader(
+                    br,
+                    SourceType.Java,
+                    new bluej.parser.entity.ClassLoaderResolver(Import.class.getClassLoader())
+                );
+                info = InfoParser.parse(input).flatMap(SourceInfo::getSinglePublicClassInfo).orElse(null);
+            }
+            catch (java.io.IOException e) {
+                info = null;
+            }
+            if (info != null && ! info.hadParseError()) {
 
-                    String qf = JavaNames.convertFileToQualifiedName(path, f);
+                String qf = JavaNames.convertFileToQualifiedName(path, f);
 
-                    if (!JavaNames.getPrefix(qf).equals(info.getPackage())) {
-                        mismatchFiles.add(f);
-                        mismatchPackagesOriginal.add(info.getPackage());
-                        mismatchPackagesChanged.add(qf);
-                    }
+                if (!JavaNames.getPrefix(qf).equals(info.getPackage())) {
+                    mismatchFiles.add(f);
+                    mismatchPackagesOriginal.add(info.getPackage());
+                    mismatchPackagesChanged.add(qf);
                 }
             }
-            catch (FileNotFoundException fnfe) {}
         }
 
         // now ask if they want to continue if we have detected mismatches

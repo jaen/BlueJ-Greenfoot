@@ -21,7 +21,13 @@
  */
 package bluej.parser;
 
+import bluej.parser.lexer.BufferedTokenStream;
+import bluej.parser.lexer.JavaTokenFilter;
+import bluej.parser.lexer.LineColPos;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.psi.SourceInput;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -105,4 +111,21 @@ public interface ParserBehavior {
     boolean parseTypeSpec(boolean processArray);
 
     void parseMethodParamsBody();
+
+//    boolean isModifier(LocatableToken lt);
+//
+//    boolean isPrimitiveType(LocatableToken lt);
+
+    Token.TokenType classifyToken(LocatableToken token);
+
+    default BufferedTokenStream createTokenStream(SourceInput sourceInput) {
+        return createTokenStream(
+            sourceInput,
+            sourceInput.range()
+                .flatMap(SourceInput.Range::start)
+                .orElseGet(() -> new LineColPos(1, 1, 0))
+        );
+    }
+
+    BufferedTokenStream createTokenStream(SourceInput sourceInput, LineColPos position);
 }

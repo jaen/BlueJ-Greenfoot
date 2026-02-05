@@ -138,17 +138,23 @@ public abstract class Target
     private Line line1;
     private Line line2;
 
+    @OnThread(Tag.FXPlatform)
+    public Target(Package pkg, String identifierName, String accessibleTargetType)
+    {
+        this(pkg, identifierName, accessibleTargetType, identifierName);
+    }
+
     /**
      * Create a new target with default size.
      */
     @OnThread(Tag.FXPlatform)
-    public Target(Package pkg, String identifierName, String accessibleTargetType)
+    public Target(Package pkg, String identifierName, String accessibleTargetType, String displayName)
     {
         this.pkg = pkg;
         this.identifierName = identifierName;
-        this.displayName = identifierName;
+        this.displayName = displayName;
 
-        pane.setPrefWidth(calculateWidth(new Label(), identifierName, DEF_WIDTH));
+        pane.setPrefWidth(calculateWidth(new Label(), displayName, DEF_WIDTH));
         pane.setPrefHeight(DEF_HEIGHT);
         // We set this here rather than via CSS because we vary it dynamically:
         pane.setCursor(Cursor.HAND);
@@ -399,7 +405,7 @@ public abstract class Target
 
     protected void updateAccessibleName(String accessibleTargetType, String suffix)
     {
-        pane.setAccessibleText(getIdentifierName() + (accessibleTargetType != null && !accessibleTargetType.isEmpty() ? " " + accessibleTargetType : "") + (suffix == null ? "" : suffix));
+        pane.setAccessibleText(getDisplayName() + (accessibleTargetType != null && !accessibleTargetType.isEmpty() ? " " + accessibleTargetType : "") + (suffix == null ? "" : suffix));
     }
 
     @OnThread(Tag.FXPlatform)
@@ -496,7 +502,6 @@ public abstract class Target
         props.put(prefix + ".y", String.valueOf(getY()));
         props.put(prefix + ".width", String.valueOf(getWidth()));
         props.put(prefix + ".height", String.valueOf(getHeight()));
-
         props.put(prefix + ".name", getIdentifierName());
     }
 

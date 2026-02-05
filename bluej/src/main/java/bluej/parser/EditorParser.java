@@ -24,15 +24,18 @@ package bluej.parser;
 import bluej.debugger.gentype.Reflective;
 import bluej.extensions2.SourceType;
 import bluej.parser.entity.*;
+import bluej.parser.lexer.LineColPos;
 import bluej.parser.nodes.ReparseableDocument.Element;
 import bluej.parser.lexer.JavaTokenTypes;
 import bluej.parser.lexer.LocatableToken;
 import bluej.parser.nodes.*;
 import bluej.parser.nodes.NodeTree.NodeAndPosition;
+import bluej.parser.psi.SourceInput;
 import bluej.parser.symtab.Selection;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -99,11 +102,15 @@ public class EditorParser extends SourceParser
     private int currentModifiers = 0;
 
     /**
-     * Constructor for use by subclasses (InfoReader).
+     * Constructor for SourceInput-based parsing.
+     *
+     * @param input Source input encapsulating file and metadata
+     * @param resolver Entity resolver for type resolution
+     * @throws IOException if source cannot be read
      */
-    protected EditorParser(Reader r, EntityResolver resolver, SourceType sourceType)
+    protected EditorParser(SourceInput input, EntityResolver resolver) throws IOException
     {
-        super(r, sourceType);
+        super(input);  // Calls SourceParser(SourceInput)
         nodeStructureListener = new NodeStructureListener()
         {
             @Override
@@ -124,14 +131,55 @@ public class EditorParser extends SourceParser
         pcuNode = new ParsedCUNode(resolver);
     }
 
-    public EditorParser(ReparseableDocument document, Reader r, int line, int col, int pos, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
+//    /**
+//     * Constructor for use by subclasses (InfoReader).
+//     */
+//    protected EditorParser(Reader r, EntityResolver resolver, SourceType sourceType)
+//    {
+//        super(r, sourceType);
+//        nodeStructureListener = new NodeStructureListener()
+//        {
+//            @Override
+//            public void nodeAdded(NodeAndPosition<ParsedNode> node)
+//            {
+//            }
+//
+//            @Override
+//            public void nodeRemoved(NodeAndPosition<ParsedNode> node)
+//            {
+//            }
+//
+//            @Override
+//            public void nodeChangedLength(NodeAndPosition<ParsedNode> node, int oldPos, int oldSize)
+//            {
+//            }
+//        };
+//        pcuNode = new ParsedCUNode(resolver);
+//    }
+
+    public EditorParser(SourceInput input, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
     {
-        super(r, document.getSourceType(), line, col, pos);
-        this.document = document;
-        this.scopeStack = scopeStack;
-        this.nodeStructureListener = nodeStructureListener;
-        pcuNode = (ParsedCUNode) scopeStack.get(0);
+        super(input);
+
+        if (input instanceof SourceInput.DocumentSource source) {
+            this.document = source.document();
+            this.scopeStack = scopeStack;
+            this.nodeStructureListener = nodeStructureListener;
+            pcuNode = (ParsedCUNode) scopeStack.get(0);
+        } else {
+            throw new IllegalArgumentException("Invalid SourceInput type: " + input);
+        }
     }
+
+
+//    public EditorParser(ReparseableDocument document, Reader r, int line, int col, int pos, Stack<JavaParentNode> scopeStack, NodeStructureListener nodeStructureListener)
+//    {
+//        super(r, document.getSourceType(), line, col, pos);
+//        this.document = document;
+//        this.scopeStack = scopeStack;
+//        this.nodeStructureListener = nodeStructureListener;
+//        pcuNode = (ParsedCUNode) scopeStack.get(0);
+//    }
 
     /**
      * Get the types following the "extends" keyword, if we have some. Used in incremental parsing.
@@ -209,7 +257,7 @@ public class EditorParser extends SourceParser
      */
     private boolean typeSpecIsVar(List<LocatableToken> typeSpec)
     {
-        if (typeSpec.size() == 1)
+        if (typeSpec != null && typeSpec.size() == 1)
         {
             if (typeSpec.get(0).getText().equals("var"))
             {
@@ -800,7 +848,7 @@ public class EditorParser extends SourceParser
     }
 
     @Override
-    protected void beginTryCatchSmt(LocatableToken token, boolean hasResource)
+    protected void beginTryCatchStmt(LocatableToken token, boolean hasResource)
     {
         JavaParentNode tryNode = new ContainerNode(scopeStack.peek(), ParsedNode.NODETYPE_SELECTION);
         int curOffset = getTopNodeOffset();
@@ -993,6 +1041,14 @@ public class EditorParser extends SourceParser
     protected void gotConstructorDecl(LocatableToken token,
                                       LocatableToken hiddenToken)
     {
+        gotConstructorDecl(token, hiddenToken, token.getText());
+    }
+
+    @Override
+    protected void gotConstructorDecl(LocatableToken token,
+                                      LocatableToken hiddenToken,
+                                      String name)
+    {
         endDecl(token); // remove placeholder
         LocatableToken start = pcuStmtBegin;
         String jdcomment = null;
@@ -1001,7 +1057,7 @@ public class EditorParser extends SourceParser
             jdcomment = hiddenToken.getText();
         }
 
-        MethodNode pnode = new MethodNode(scopeStack.peek(), token.getText(), jdcomment);
+        MethodNode pnode = new MethodNode(scopeStack.peek(), name, jdcomment);
         pnode.setModifiers(currentModifiers);
         int curOffset = getTopNodeOffset();
         int insPos = lineColToPosition(start.getLine(), start.getColumn());
@@ -1070,8 +1126,11 @@ public class EditorParser extends SourceParser
         MethodNode mNode = (MethodNode) scopeStack.peek();
         mNode.setComplete(included);
         endTopNode(token, included);
-        TypeInnerNode topNode = (TypeInnerNode) scopeStack.peek();
-        topNode.methodAdded(mNode);
+        switch (scopeStack.peek()) {
+            case TypeInnerNode topNode -> topNode.methodAdded(mNode);
+            case ParsedCUNode topNode -> topNode.topLevelFunctionAdded(mNode);
+            default -> throw new UnsupportedOperationException("");
+        }
     }
 
     @Override
@@ -1411,6 +1470,9 @@ public class EditorParser extends SourceParser
     protected void gotLambdaFormalType(List<LocatableToken> type)
     {
         super.gotLambdaFormalType(type);
+
+        if (type == null) { return; }
+
         gotTypeSpec(type);
         lastLambdaParamType = type.get(0);
     }

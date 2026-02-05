@@ -1,6 +1,9 @@
 apply plugin: 'java-library'
+apply plugin: 'kotlin'
 apply plugin: 'org.openjfx.javafxplugin'
 apply plugin: 'application'
+
+def kotlinVersion = "2.1.10"
 
 dependencies {
     annotationProcessor project(':anns-threadchecker')
@@ -28,8 +31,9 @@ dependencies {
     implementation 'org.junit.platform:junit-platform-suite-api:1.5.2'
     implementation 'org.junit.vintage:junit-vintage-engine:5.5.2'
     implementation 'xom:xom:1.3.9'
-    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.10"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.10"
+    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-metadata-jvm:${kotlinVersion}"
     implementation("org.ow2.asm:asm:9.8")
     implementation("org.ow2.asm:asm-tree:9.8")
 
@@ -43,11 +47,18 @@ dependencies {
     testImplementation 'org.testfx:testfx-junit:4.0.15-alpha'
     testImplementation 'org.testfx:openjfx-monocle:21.0.2'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testCompileOnly 'org.mockito:mockito-inline:+'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 compileJava {
     options.compilerArgs += [
-        "-Xplugin:threadchecker.TCPlugin",
+//        "-Xplugin:threadchecker.TCPlugin",
+    ]
+    options.fork = true
+    options.forkOptions.jvmArgs += [
+//        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005'
     ]
 }
 tasks.withType(JavaCompile) {
@@ -88,6 +99,7 @@ test {
 
 repositories {
     mavenCentral()
+    maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
 }
 
 javafx {
@@ -213,3 +225,15 @@ task urlsRC(type: Exec) {
 
 distTar.enabled = false
 distZip.enabled = false
+buildscript {
+    ext.kotlin_version = '2.2.20'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+kotlin {
+    jvmToolchain(21)
+}

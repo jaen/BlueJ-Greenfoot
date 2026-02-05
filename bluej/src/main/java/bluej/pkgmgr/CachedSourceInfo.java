@@ -1,0 +1,132 @@
+/*
+ This file is part of the BlueJ program. 
+ Copyright (C) 1999-2009,2014,2016  Michael Kolling and John Rosenberg 
+
+ This program is free software; you can redistribute it and/or 
+ modify it under the terms of the GNU General Public License 
+ as published by the Free Software Foundation; either version 2 
+ of the License, or (at your option) any later version. 
+
+ This program is distributed in the hope that it will be useful, 
+ but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ GNU General Public License for more details. 
+
+ You should have received a copy of the GNU General Public License 
+ along with this program; if not, write to the Free Software 
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
+
+ This file is subject to the Classpath exception as provided in the  
+ LICENSE.txt file that accompanied this code.
+ */
+package bluej.pkgmgr;
+
+import bluej.parser.InfoParser;
+import bluej.parser.psi.SourceInput;
+import bluej.parser.symtab.ClassInfo;
+import bluej.parser.symtab.SourceInfo;
+import javafx.util.Pair;
+
+import java.util.Optional;
+
+/**
+ * A container holding information about a class's source file. The
+ * information is collected mainly by the class parser, and used for
+ * automatic editing of the source.
+ *
+ * @author  Michael Kolling
+ * @version $Id: SourceInfo.java 16066 2016-06-21 20:19:57Z nccb $
+ */
+public final class CachedSourceInfo
+{
+    private Optional<SourceInfo> currentInfo;
+    private Optional<SourceInfo> lastInfo;
+    private SourceInput inputFile;
+
+    public CachedSourceInfo(SourceInput inputFile)
+    {
+        currentInfo = Optional.empty();
+        lastInfo = Optional.empty();
+        this.inputFile = inputFile;
+    }
+
+    public void setSourceModified()
+    {
+        if (currentInfo.isEmpty()) { return; }
+
+        lastInfo = currentInfo;
+        currentInfo = Optional.empty();
+    }
+
+    private Optional<SourceInfo> getInfo() {
+        if (currentInfo.isPresent()) { return currentInfo; }
+
+        return (currentInfo = InfoParser.parse(inputFile));
+    }
+
+    public Optional<ClassInfo> getClassInfo(String identifier) {
+        return getInfo().flatMap(i -> i.getClassInfo(identifier));
+    }
+
+    public boolean hasClass(String identifier) {
+        return getInfo().map(i -> i.hasClass(identifier)).orElse(false);
+    }
+
+    public boolean didClassInfoChange() {
+        if (currentInfo.isPresent() != lastInfo.isPresent()) { return true; }
+
+        return currentInfo
+            .flatMap(i -> lastInfo.map(i2 -> new Pair<>(i, i2)))
+            .map(pair -> {
+                var currentInfo = pair.getKey();
+                var lastInfo = pair.getValue();
+                var currentClassNames = currentInfo.getAllClassNames();
+                var lastClassNames = lastInfo.getAllClassNames();
+                var currentSize = currentClassNames.size();
+                var lastSize = lastClassNames.size();
+
+                if (currentSize != lastSize) { return true; }
+
+                var renamed = currentClassNames.retainAll(lastClassNames);
+
+                if (renamed) { return true; }
+
+                var currentClasses = currentInfo.getAllClassInfosByName();
+                var lastClasses = lastInfo.getAllClassInfosByName();
+
+                return currentClassNames
+                    .stream()
+                    .anyMatch(name -> {
+                        var current = currentClasses.get(name);
+                        var last = lastClasses.get(name);
+                        var equals = current.isEquivalentTo(last);
+
+                        return !equals;
+                    });
+            })
+            .orElse(false);
+    }
+
+//    public ClassInfo getInfo(File sourceFile, Package pkg)
+//    {
+//        if (info == null)
+//        {
+//            String fileName = sourceFile.getName();
+//            SourceType sourceType = fileName.endsWith("." + SourceType.Kotlin.getExtension() ) ? SourceType.Kotlin : SourceType.Java;
+//            SourceInput input = SourceInput.fromFile(sourceFile, sourceType, pkg.getProject().getProjectCharset(), pkg);
+//
+//            info = InfoParser.parse(input).orElse(null);
+//        }
+//
+//        return info;
+//    }
+
+//    /**
+//     * Similar to getInfo, but do not parse if info is not available.
+//     * Instead, return null, if we got no info.
+//     */
+//    public ClassInfo getInfoIfAvailable()
+//    {
+//        return info;
+//    }
+}

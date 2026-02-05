@@ -28,10 +28,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import bluej.debugger.DebuggerObject;
+import bluej.parser.symtab.SourceInfo;
 import bluej.pkgmgr.dependency.Dependency;
 import bluej.pkgmgr.dependency.ExtendsDependency;
 import bluej.pkgmgr.dependency.ExtendsOrImplementsDependency;
@@ -62,6 +64,7 @@ import bluej.extensions2.event.CompileEvent;
 import bluej.extensions2.event.CompileEvent.EventType;
 import bluej.extmgr.ExtensionsManager;
 import bluej.parser.symtab.ClassInfo;
+import bluej.parser.psi.SourceInput;
 import bluej.pkgmgr.target.*;
 import bluej.prefmgr.PrefMgr;
 import bluej.utility.*;
@@ -72,6 +75,7 @@ import bluej.utility.filefilter.KotlinSourceFilter;
 import bluej.utility.filefilter.SubPackageFilter;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.PackageResolver;
+import kotlin.Metadata;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -695,45 +699,50 @@ public final class Package
         }
 
         // process all *.kt files
-        for (int i = 0; i < kotlinSrcFiles.length; i++) {
-            String kotlinFileName = JavaNames.stripSuffix(kotlinSrcFiles[i].getName(), "." + SourceType.Kotlin.getExtension());
-
-            // check if the name would be a valid java name
-            if (!JavaNames.isIdentifier(kotlinFileName))
-                continue;
+        for (File kotlinSrcFile : kotlinSrcFiles) {
+//            String kotlinFileName = JavaNames.stripSuffix(kotlinSrcFiles[i].getName(), "." + SourceType.Kotlin.getExtension());
+//
+//            // check if the name would be a valid java name
+//            if (!JavaNames.isIdentifier(kotlinFileName))
+//                continue;
 
             try {
                 // Parse the Kotlin file to get information about all public classes and top-level functions
                 EntityResolver resolver = new PackageResolver(project.getEntityResolver(), getQualifiedName());
 
-                // Get all public class names from the file
-                List<String> publicClassNames = List.of();
-
-                // TODO: Deal with  bluej.parser.InfoParser.getPublicClassNames(kotlinSrcFiles[i], resolver);
-
-                // Add all public class names to the set of targets and map them to the source file
-                for (String className : publicClassNames) {
-                    interestingSet.add(className);
-                    kotlinSourceFileMap.put(className, kotlinSrcFiles[i].getName());
-                }
-
                 // Check if the file has top-level functions
-                ClassInfo info = bluej.parser.InfoParser.parseWithPkg(kotlinSrcFiles[i], this, SourceType.Kotlin);
-                if (info != null && info.hasTopLevelFunctions()) {
-                    // Add a file facade target with the name as file name + "Kt" suffix
-                    String facadeName = kotlinFileName + "Kt";
-                    interestingSet.add(facadeName);
-                    kotlinSourceFileMap.put(facadeName, kotlinSrcFiles[i].getName());
-                }
+                SourceInput input = SourceInput.fromFile(kotlinSrcFile, SourceType.Kotlin, project.getProjectCharset(), this);
+
+                bluej.parser.InfoParser.parse(input).ifPresent(info -> {
+                    info.getAllClassInfos()
+                        .stream()
+                        .filter(ClassInfo::isPublic)
+                        .forEach(classInfo -> {
+                            var className = classInfo.getName();
+
+                            interestingSet.add(className);
+                            kotlinSourceFileMap.put(className, kotlinSrcFile.getName());
+                        });
+
+                    if (info.hasTopLevelFunctions()) {
+                        // Add a file facade target with the name as file name + "Kt" suffix
+                        String facadeName = info.getTopLevelFacadeClassName();
+
+                        interestingSet.add(facadeName);
+                        kotlinSourceFileMap.put(facadeName, kotlinSrcFile.getName());
+                    }
+                });
             } catch (Exception e) {
                 // If parsing fails, fall back to just using the file name + "Kt" suffix
+                String kotlinFileName = JavaNames.stripSuffix(kotlinSrcFile.getName(), "." + SourceType.Kotlin.getExtension());
                 String facadeName = kotlinFileName + "Kt";
+
                 interestingSet.add(facadeName);
-                kotlinSourceFileMap.put(facadeName, kotlinSrcFiles[i].getName());
-                Debug.message("Error parsing Kotlin file " + kotlinSrcFiles[i] + ": " + e);
+                kotlinSourceFileMap.put(facadeName, kotlinSrcFile.getName());
+                var stacktrace = Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n  "));
+                Debug.message("Error parsing Kotlin file " + kotlinSrcFile + ": " + e + "\n  " + stacktrace);
             }
         }
-
 
         // process all *.class files
         for (int i = 0; i < classFiles.length; i++) {
@@ -754,12 +763,20 @@ public final class Package
                     try {
                         Class<?> c = loadClass(getQualifiedName(classFileName));
 
+                        if (c == null) { continue; }
+
+                        var kotlinAnnotation = c.getAnnotation(Metadata.class);
+
+                        // Only add Kotlin classes that have source files backing them
+                        // TODO: verify if that makes sense
+                        if (kotlinAnnotation != null && !kotlinSourceFileMap.containsKey(c.getSimpleName())) { continue; }
+
                         // fix for bug 152
                         // check that this class is a public class which means
                         // that private and package .class files generated
                         // because there are multiple classes defined in a
                         // single file will not add a target
-                        if (c != null && Modifier.isPublic(c.getModifiers()))
+                        if (Modifier.isPublic(c.getModifiers()))
                             interestingSet.add(classFileName);
                     }
                     catch (LinkageError e) {
@@ -771,6 +788,12 @@ public final class Package
 
         return new TargetFinderResult(interestingSet, kotlinSourceFileMap);
     }
+
+//    private static  boolean isKotlinFileFacadeClass(Class<?> cl) {
+//        Metadata metadata = cl.getAnnotation(Metadata.class);
+//        if (metadata == null) return false;
+//        return metadata.k() == 2 && cl.getSimpleName().endsWith("Kt");
+//    }
 
     /**
      * Load the elements of a package from a specified directory. If the package
@@ -1199,7 +1222,7 @@ public final class Package
      * Any new source files will have their package lines updated to match the
      * package we are in.
      */
-    public void reload()
+    public void reload(boolean removeStaleTargets)
     {
         File subDirs[] = getPath().listFiles(new SubPackageFilter());
 
@@ -1223,6 +1246,23 @@ public final class Package
         TargetFinderResult result = findTargets(getPath());
         Set<String> interestingSet = result.targetNames;
         Map<String, String> kotlinSourceFileMap = result.kotlinSourceFileMap;
+
+        List<Target> targetsCopy;
+        synchronized (this)
+        {
+            targetsCopy = targets.toList();
+        }
+
+        if (removeStaleTargets) {
+            targetsCopy.stream()
+                    .filter(t -> !interestingSet.contains(t.getIdentifierName()))
+                    .filter(t -> switch (t) {
+                        case ClassTarget ct -> ct.hasSourceCode();
+                        case EditableTarget et -> et.hasSourceFile();
+                        default -> true;
+                    })
+                    .forEach(this::removeTarget);
+        }
 
         for (Iterator<String> it = interestingSet.iterator(); it.hasNext();) {
             String targetName = it.next();
@@ -1252,7 +1292,6 @@ public final class Package
             }
         }
 
-        List<Target> targetsCopy;
         synchronized (this)
         {
             targetsCopy = targets.toList();
@@ -1288,6 +1327,10 @@ public final class Package
         PackageEditor ed = getEditor();
         if (ed != null)
             ed.graphChanged();
+    }
+
+    public void reload() {
+        reload(false);
     }
 
     /**
@@ -1381,7 +1424,9 @@ public final class Package
         //Take special care of ReadmeTarget
         //see ReadmeTarget.isSaveable for explanation
         Target t = getTarget(ReadmeTarget.README_ID);
-        t.save(props, "readme");
+        if (t != null) {
+            t.save(props, "readme");
+        }
 
 
         for (int i = 0; i < usesArrows.size(); i++)
@@ -2051,7 +2096,8 @@ public final class Package
      */
     public void userAddImplementsClassDependency(ClassTarget from, ClassTarget to)
     {
-        ClassInfo info = from.getSourceInfo().getInfo(from.getJavaSourceFile(), this);
+        ClassInfo info = from.getClassInfo();
+
         if (info != null) {
             from.getEditor().addImplements(to.getBaseName(), info);
             from.analyseSource();
@@ -2066,7 +2112,8 @@ public final class Package
      */
     public void userAddExtendsInterfaceDependency(ClassTarget from, ClassTarget to)
     {
-        ClassInfo info = from.getSourceInfo().getInfo(from.getJavaSourceFile(), this);
+        ClassInfo info = from.getClassInfo();
+
         from.getEditor().addExtendsInterface(to.getBaseName(), info);
         from.analyseSource();
     }
@@ -2079,7 +2126,7 @@ public final class Package
      */
     public void userAddExtendsClassDependency(ClassTarget from, ClassTarget to)
     {
-        from.getEditor().setExtendsClass(to.getBaseName(), from.getSourceInfo().getInfo(from.getJavaSourceFile(), this));
+        from.getEditor().setExtendsClass(to.getBaseName(), from.getClassInfo());
         from.analyseSource();
     }
 
@@ -2096,7 +2143,8 @@ public final class Package
 
         ClassTarget from = (ClassTarget) d.getFrom();
         ClassTarget to = (ClassTarget) d.getTo();
-        ClassInfo info = from.getSourceInfo().getInfo(from.getJavaSourceFile(), this);
+        ClassInfo info = from.getClassInfo();
+
         if (d instanceof ImplementsDependency) {
             from.getEditor().removeExtendsOrImplementsInterface(to.getBaseName(), info);
         }
@@ -2837,7 +2885,7 @@ public final class Package
                      * names)
                      */
                     try {
-                        ClassInfo info = t.getSourceInfo().getInfo(t.getJavaSourceFile(), t.getPackage());
+                        ClassInfo info = t.getClassInfo();
 
                         if (info != null) {
                             // Use ClassTarget method to create and save context

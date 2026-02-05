@@ -22,10 +22,13 @@
 package bluej.parser.nodes;
 
 import bluej.extensions2.SourceType;
+import bluej.parser.SourceLocation;
+import bluej.parser.lexer.LineColPos;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +45,22 @@ public interface ReparseableDocument
     public Element getDefaultRootElement();
     
     public int getLength();
+
+    String getVirtualPath();
+
+    Charset getCharset();
+
+    int getLineFromPosition(int position);
+
+    int getColumnFromPosition(int position);
+
+    default LineColPos getPosition(int position)
+    {
+        int lineStart = getLineFromPosition(position);
+        int lineEnd = getColumnFromPosition(position);
+
+        return new LineColPos(lineStart, lineEnd, position);
+    }
     
     public Reader makeReader(int startPos, int endPos);
 

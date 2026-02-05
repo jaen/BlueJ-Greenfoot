@@ -47,13 +47,12 @@ import bluej.extmgr.ExtensionsManager;
 import bluej.extmgr.ExtensionsMenuManager;
 import bluej.parser.DummyReflective;
 import bluej.parser.ParseFailure;
-import bluej.parser.context.CompilationUnitContext;
-import bluej.parser.context.CompilationUnitContextLoader;
 import bluej.parser.entity.EntityResolver;
 import bluej.parser.entity.PackageResolver;
 import bluej.parser.entity.ParsedReflective;
 import bluej.parser.nodes.ParsedCUNode;
 import bluej.parser.nodes.ParsedTypeNode;
+import bluej.parser.psi.SourceInput;
 import bluej.parser.symtab.ClassInfo;
 import bluej.parser.symtab.Selection;
 import bluej.pkgmgr.Package;
@@ -149,7 +148,7 @@ public class ClassTarget extends DependentTarget
     // role should be accessed using getRole() and set using
     // setRole(). A role should not contain important state information
     // because role objects are thrown away at a whim.
-    private ClassRole role = new StdClassRole();
+    private ClassRole role; //  = new StdClassRole();
 
     // a flag indicating whether an editor, when opened for the first
     // time, should display the interface of this class
@@ -158,7 +157,7 @@ public class ClassTarget extends DependentTarget
     // cached information obtained by parsing the source code
     // automatically becomes invalidated when the source code is
     // edited
-    private SourceInfo sourceInfo = new SourceInfo();
+    private CachedSourceInfo sourceInfo = null;
 
     // caches whether the class is abstract. Only accurate when the
     // classtarget state is normal (ie. the class is compiled).
@@ -257,7 +256,7 @@ public class ClassTarget extends DependentTarget
      */
     public ClassTarget(Package pkg, String baseName, String template)
     {
-        super(pkg, baseName, "Class");
+        super(pkg, baseName, "Class", baseName.replaceFirst("Kt$", ""));
 
         if (pseudos == null)
         {
@@ -267,7 +266,7 @@ public class ClassTarget extends DependentTarget
         JavaFXUtil.addStyleClass(pane, "class-target");
         JavaFXUtil.addStyleClass(pane, "class-target-id-" + baseName);
 
-        nameLabel = new Label(baseName);
+        nameLabel = new Label(getDisplayName());
         JavaFXUtil.addStyleClass(nameLabel, "class-target-name");
         nameLabel.setMaxWidth(9999.0);
         stereotypeLabel = new Label();
@@ -325,12 +324,13 @@ public class ClassTarget extends DependentTarget
             {
                 setRole(new KotlinFileFacadeRole());
             }
-            else
-            {
-                setRole(new StdClassRole());
-            }
-
         }
+
+        if (role == null) {
+            setRole(new StdClassRole());
+        }
+
+
         JavaFXUtil.addChangeListener(canvas.sceneProperty(), scene -> {
             JavaFXUtil.runNowOrLater(() -> {
                 nameLabel.applyCss();
@@ -357,10 +357,20 @@ public class ClassTarget extends DependentTarget
      */
     private void calcSourceAvailable()
     {
-
         if (sourceAvailable != SourceType.NONE) {
+            if (sourceAvailable == SourceType.Kotlin) {
+                try { ensureSaved(); } catch (IOException e) { Debug.reportError("Failed to save class target: " + e); }
+
+                var sourceInfo = getSourceInfo();
+
+                if (!sourceInfo.hasClass(getIdentifierName())) {
+                    sourceAvailable = SourceType.NONE;
+                }
+            }
+
             return;
         }
+
         // It's important to check for Stride source first!
         final SourceType[] languageTypes = { SourceType.Stride, SourceType.Java, SourceType.Kotlin };
         for (SourceType languageType : languageTypes) {
@@ -433,12 +443,31 @@ public class ClassTarget extends DependentTarget
      *
      * @return The source info object.
      */
-    public SourceInfo getSourceInfo()
+    protected CachedSourceInfo getSourceInfo()
     {
+        if (sourceInfo != null) return sourceInfo;
+
+        sourceInfo = new CachedSourceInfo(getSourceInput());
+
         return sourceInfo;
     }
 
-    /**
+    public ClassInfo getClassInfo() {
+        return getSourceInfo().getClassInfo(getIdentifierName()).orElse(null);
+    }
+
+    protected SourceInput getSourceInput() {
+        File sourceFile = getSourceFile();
+
+        if (sourceFile == null) return null;
+
+        String fileName = sourceFile.getAbsolutePath();
+        SourceType sourceType = fileName.endsWith("." + SourceType.Kotlin.getExtension() ) ? SourceType.Kotlin : SourceType.Java;
+
+        return SourceInput.fromFile(sourceFile, sourceType, getPackage().getProject().getProjectCharset(), getPackage());
+    }
+
+    /**(String ident
      * Get a reflective for the type represented by this target.
      *
      * @return A suitable reflective, or null.
@@ -493,9 +522,7 @@ public class ClassTarget extends DependentTarget
      *
      * @return The displayName value
      */
-    @Override
-    public String getDisplayName()
-    {
+    public String getTypeName() {
         return getBaseName() + getTypeParameters();
     }
 
@@ -593,7 +620,8 @@ public class ClassTarget extends DependentTarget
      */
     protected final void setRole(ClassRole newRole)
     {
-        if (role == null || role.getRoleName() != newRole.getRoleName()) {
+        // TODO: don't switch in the direction of the file facade role for now
+        if (role == null || (role.getRoleName() != newRole.getRoleName()) && !newRole.getRoleName().equals("KotlinFileFacadeTarget")) {
             role = newRole;
 
             String select = pseudoFor(role.getClass());
@@ -606,6 +634,11 @@ public class ClassTarget extends DependentTarget
             else
                 stereotypeLabel.setText("");
         }
+    }
+
+    protected final void forceSetRole(ClassRole newRole) {
+        role = null;
+        setRole(newRole);
     }
 
     @OnThread(Tag.Any)
@@ -803,7 +836,7 @@ public class ClassTarget extends DependentTarget
                 setRole(new UnitTestClassRole(UnitTestFramework.JUnit5));
             }
             else if (isKotlinFileFacadeClass(cl)) {
-                setRole(new KotlinFileFacadeRole());
+                forceSetRole(new KotlinFileFacadeRole());
             }
             else {
                 setRole(new StdClassRole());
@@ -813,7 +846,7 @@ public class ClassTarget extends DependentTarget
             isAbstract = false;
 
             // try the parsed source code
-            ClassInfo classInfo = sourceInfo.getInfoIfAvailable();
+            ClassInfo classInfo = getClassInfo(); // sourceInfo.getInfoIfAvailable();
 
             if (classInfo != null) {
                 if (classInfo.isUnitTest()) {
@@ -827,8 +860,8 @@ public class ClassTarget extends DependentTarget
                 }
                 else if (classInfo.isAbstract()) {
                     setRole(new AbstractClassRole());
-                } else if (classInfo.hasTopLevelFunctions()) {
-                    setRole(new KotlinFileFacadeRole());
+                } else if (classInfo.isKotlinTopLevelFacade()) {
+                    forceSetRole(new KotlinFileFacadeRole());
                 }
                 else {
                     // We shouldn't override applet/unit test class roles based only
@@ -1147,6 +1180,7 @@ public class ClassTarget extends DependentTarget
      */
     public boolean hasSourceCode()
     {
+        calcSourceAvailable();
         return sourceAvailable != SourceType.NONE;
     }
 
@@ -1169,8 +1203,9 @@ public class ClassTarget extends DependentTarget
         {
             return null;
         }
+        // Kotlin facade class SomeFileKt will be located in SomeFile.kt, so we needto strip the suffix
         String defaultNameBySourceType = (role instanceof KotlinFileFacadeRole
-                ? getBaseName().substring(0, getBaseName().length() - 2)
+                ? getBaseName().replaceFirst("Kt$", "")
                 : getBaseName()) + "." + sourceType.getExtension();
         String sourceFileName = sourceType == SourceType.Kotlin
                 ?  ktSourceFileName.orElse(defaultNameBySourceType)
@@ -1296,6 +1331,8 @@ public class ClassTarget extends DependentTarget
      * @throws IOException if an I/O error occurs while saving
      */
     public void updateMetadata(@NotNull ClassInfo info) throws IOException {
+        if (getPackage() == null) { return; }
+
         this.getPackage().getProject().updateClassMetadata(getQualifiedName(), info);
     }
 
@@ -1435,7 +1472,7 @@ public class ClassTarget extends DependentTarget
                         return project.getDefaultFXTabbedEditor();
                     }
                 };
-                editor = new FlowEditor(fetchTabbedEditor, getBaseName(), this,
+                editor = new FlowEditor(fetchTabbedEditor, getDisplayName(), this,
                         resolver, project.getJavadocResolver(), openCallback,
                         PrefMgr.flagProperty(PrefMgr.HIGHLIGHTING),
                         FlowSource.fromSourceType(sourceAvailable));
@@ -1529,24 +1566,31 @@ public class ClassTarget extends DependentTarget
     {
         invalidate();
 
+        var pkg = getPackage();
+
+        if (pkg == null) { return; }
+
         removeBreakpoints();
-        if (getPackage().getProject().getDebugger() != null)
+        if (pkg.getProject().getDebugger() != null)
         {
-            getPackage().getProject().getDebugger().removeBreakpointsForClass(getQualifiedName());
+            pkg.getProject().getDebugger().removeBreakpointsForClass(getQualifiedName());
         }
         if (isCompiled())
         {
             setState(State.NEEDS_COMPILE);
         }
-        sourceInfo.setSourceModified();
+        getSourceInfo().setSourceModified();
     }
 
     @Override
     public void saveEvent(Editor editor)
     {
+        if (getPackage() == null) { return; }
+
         ClassInfo info = analyseSource();
         if (info != null) {
             updateTargetFile(info);
+
             try {
                 updateMetadata(info);
             } catch (IOException e) {
@@ -1554,6 +1598,11 @@ public class ClassTarget extends DependentTarget
             }
         }
         determineRole(null);
+
+        var changed = getSourceInfo().didClassInfoChange();
+        if (changed) {
+            getPackage().reload(true);
+        }
     }
 
     @Override
@@ -1734,7 +1783,7 @@ public class ClassTarget extends DependentTarget
             throw new IllegalArgumentException();
         }
 
-        ClassInfo info = sourceInfo.getInfo(getSourceFile(), getPackage());
+        ClassInfo info = getClassInfo();
         if (info == null) {
             return;
         }
@@ -1835,7 +1884,7 @@ public class ClassTarget extends DependentTarget
 
         analysing = true;
 
-        ClassInfo info = sourceInfo.getInfo(getSourceFile(), getPackage());
+        ClassInfo info = getClassInfo();
 
         // info will be null if the source was unparseable
         if (info != null) {
@@ -1858,6 +1907,8 @@ public class ClassTarget extends DependentTarget
      */
     private void updateTargetFile(ClassInfo info)
     {
+        if (getPackage() == null) { return; }
+
         if (analyseClassName(info)) {
             if (nameEqualsIgnoreCase(info.getName())) {
                 // this means file has same name but different case
@@ -1927,7 +1978,11 @@ public class ClassTarget extends DependentTarget
     {
         String newName = info.getPackage();
 
-        return (!getPackage().getQualifiedName().equals(newName));
+        var pkg = getPackage();
+
+        if (pkg == null) { return true; }
+
+        return (!pkg.getQualifiedName().equals(newName));
     }
 
     /**
@@ -1941,7 +1996,11 @@ public class ClassTarget extends DependentTarget
         removeAllOutDependencies();
         removeInheritDependencies();
 
-        String pkgPrefix = getPackage().getQualifiedName();
+        var pkg = getPackage();
+
+        if (pkg == null) { return; }
+
+        String pkgPrefix = pkg.getQualifiedName();
         pkgPrefix = (pkgPrefix.length() == 0) ? pkgPrefix : pkgPrefix + ".";
 
         // handle superclass dependency
@@ -2149,6 +2208,10 @@ public class ClassTarget extends DependentTarget
         }
     }
 
+    public void setDisplayName(String newName) {
+        // Ignore changing display name explicitly
+    }
+
     /**
      * Update the displayed class name (which includes type parameters).
      */
@@ -2164,7 +2227,7 @@ public class ClassTarget extends DependentTarget
     /**
      * Checks for ClassTarget name equality if case is ignored.
      * 
-     * 
+     * DisplayName
      * @param newName
      * @return true if name is equal ignoring case.
      */
@@ -2228,7 +2291,7 @@ public class ClassTarget extends DependentTarget
      */
     private void updateSize()
     {
-        String displayName = getDisplayName();
+        String displayName = getTypeName();
         // Don't make size smaller if user has already resized
         // to larger than is needed for text width:
         int width = calculateWidth(nameLabel, displayName, (int)pane.getPrefWidth());

@@ -60,12 +60,14 @@ import bluej.parser.entity.ValueEntity;
 import bluej.parser.entity.WildcardExtendsEntity;
 import bluej.parser.entity.WildcardSuperEntity;
 import bluej.parser.lexer.JavaTokenTypes;
+import bluej.parser.lexer.LineColPos;
 import bluej.parser.lexer.LocatableToken;
+import bluej.parser.psi.SourceInput;
 import bluej.utility.JavaReflective;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
-import static bluej.parser.JavaParser.isPrimitiveType;
+import static bluej.parser.ParseUtils.isPrimitiveJavaType;
 
 /**
  * A parser for the codepad.
@@ -137,7 +139,7 @@ public class TextParser extends SourceParser
      */
     public TextParser(EntityResolver resolver, Reader r, JavaEntity accessType, boolean staticAccess)
     {
-        super(r, SourceType.Java);
+        super(SourceInput.fromReader(r, SourceType.Java));
         this.resolver = resolver;
         this.accessType = accessType;
         this.staticAccess = staticAccess;
@@ -155,9 +157,13 @@ public class TextParser extends SourceParser
      * @param col         The column in the source where the expression occurs
      */
     public TextParser(EntityResolver resolver, Reader r, JavaEntity accessType, boolean staticAccess,
-            int line, int col, int pos)
+                      LineColPos position)
     {
-        super(r, SourceType.Java, line, col, pos);
+        super(SourceInput.fromReader(r, SourceType.Java));
+
+        // TODO: re-implement this differently
+//        this.setStartPosition(position);
+
         this.resolver = resolver;
         this.accessType = accessType;
         this.staticAccess = staticAccess;
@@ -2001,7 +2007,7 @@ public class TextParser extends SourceParser
     {
         LocatableToken token = i.next();
 
-        if (isPrimitiveType(token)) {
+        if (isPrimitiveJavaType(token)) {
             if (token.getType() == JavaTokenTypes.LITERAL_void) {
                 return new TypeEntity(JavaPrimitiveType.getVoid());
             }
