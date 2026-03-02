@@ -1,6 +1,6 @@
 /*
  This file is part of the BlueJ program. 
- Copyright (C) 2015 Michael Kölling and John Rosenberg 
+ Copyright (C) 2026 Michael Kölling and John Rosenberg
 
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
@@ -19,17 +19,34 @@
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
-package bluej.utility.javafx;
+package bluej.utility.javafx.threading;
 
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
 /**
- * Equivalent to Supplier, but clearer (including to plugin) that it runs on FX thread
+ * A variant of {@link FXSupplier} whose {@link #get()} method is permitted to
+ * throw checked exceptions.
+ *
+ * <p>This interface is annotated with {@code @OnThread(Tag.FX)}, indicating
+ * that its method is intended for use on the broader FX thread. Unlike
+ * {@link FXSupplier}, checked exceptions are propagated.</p>
+ *
+ * @param <T> the type of results supplied by this supplier
+ * @see FXSupplier
+ * @see FXPlatformSupplierThrowing
+ * @see SupplierThrowing
  */
 @FunctionalInterface
-public interface FXFunction<FROM, TO>
+public interface FXSupplierThrowing<T> extends FXPlatformSupplierThrowing<T>
 {
+    /**
+     * Gets a result on the FX thread.
+     *
+     * @return a result
+     * @throws Exception if the operation fails
+     */
+    @Override
     @OnThread(Tag.FX)
-    TO apply(FROM x);
+    T get() throws Exception;
 }

@@ -1,6 +1,6 @@
 /*
  This file is part of the BlueJ program. 
- Copyright (C) 2014,2015 Michael Kölling and John Rosenberg 
+ Copyright (C) 2026 Michael Kölling and John Rosenberg
 
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
@@ -19,17 +19,34 @@
  This file is subject to the Classpath exception as provided in the  
  LICENSE.txt file that accompanied this code.
  */
-package bluej.utility.javafx;
+package bluej.utility.javafx.threading;
 
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
 /**
- * Equivalent to BiConsumer, but clearer (including to plugin) that it runs on FX thread
+ * A thread-agnostic variant of {@link java.util.function.Supplier} whose
+ * {@link #get()} method is permitted to throw checked exceptions.
+ *
+ * <p>This interface is used as the non-thread-annotated base for
+ * {@link FXPlatformSupplierThrowing} and {@link FXSupplierThrowing},
+ * enabling exception-propagating lambdas to be passed to
+ * {@link JavaFXThreadingUtil#runPlatformAndWait} and {@link JavaFXThreadingUtil#runPlatform}
+ * without requiring callers to wrap checked exceptions manually.</p>
+ *
+ * @param <T> the type of results supplied by this supplier
+ * @see FXPlatformSupplierThrowing
+ * @see FXSupplierThrowing
  */
 @FunctionalInterface
-public interface FXBiConsumer<T, U>
+public interface SupplierThrowing<T>
 {
-    @OnThread(Tag.FX)
-    public void accept(T t, U u);
+    /**
+     * Gets a result.
+     *
+     * @return a result
+     * @throws Exception if the operation fails
+     */
+    @OnThread(Tag.Any)
+    T get() throws Exception;
 }

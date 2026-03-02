@@ -19,17 +19,24 @@
  This file is subject to the Classpath exception as provided in the
  LICENSE.txt file that accompanied this code.
  */
-package bluej.utility.javafx;
+package bluej.utility.javafx.threading;
 
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
 /**
- * Equivalent to BiConsumer, but clearer (including to plugin) that it runs on FX thread
+ * Equivalent to {@link java.util.function.BiConsumer}, annotated with
+ * {@code @OnThread(Tag.FXPlatform)} to indicate it must run on the
+ * JavaFX platform thread.
+ *
+ * @param <T> the type of the first argument to the operation
+ * @param <U> the type of the second argument to the operation
+ * @see FXBiConsumer
+ * @see FXPlatformBiConsumerThrowing
  */
 @FunctionalInterface
 @OnThread(Tag.FXPlatform)
 public interface FXPlatformBiConsumer<T, U>
 {
-    public void accept(T t, U u);
+    void accept(T t, U u);
 }

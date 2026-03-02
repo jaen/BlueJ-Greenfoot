@@ -1,6 +1,6 @@
 /*
  This file is part of the BlueJ program. 
- Copyright (C) 2014,2015,2016,2017,2018,2019,2021,2023 Michael Kölling and John Rosenberg
+ Copyright (C) 2014,2015,2016,2017,2018,2019,2021,2023,2026 Michael Kölling and John Rosenberg
 
  This program is free software; you can redistribute it and/or 
  modify it under the terms of the GNU General Public License 
@@ -22,6 +22,7 @@
 package bluej.utility.javafx;
 
 import bluej.Config;
+import bluej.utility.javafx.threading.*;
 import bluej.editor.stride.CodeOverlayPane.WidthLimit;
 import bluej.editor.stride.FXTabbedEditor;
 import bluej.editor.stride.WindowOverlayPane;
@@ -77,6 +78,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import threadchecker.OnThread;
 import threadchecker.Tag;
 
@@ -85,6 +88,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -800,7 +805,7 @@ public class JavaFXUtil
                 @Override
                 public void run()
                 {
-                    runPlatformLater(runnable);
+                    runPlatformLater(runnable::run);
                     scene.removePostLayoutPulseListener(this);
                 }
             });
@@ -1731,36 +1736,121 @@ public class JavaFXUtil
     }
 
     /**
-     * A method which runs the given action on the platform thread when it
-     * later becomes available.  A specific way to call Platform.runLater
-     * from the platform thread when you really mean to (thread checker will warn
-     * you otherwise).
+     * @deprecated Use {@link bluej.utility.javafx.threading.JavaFXThreadingUtil#runAfterCurrent} instead.
      */
+    @Deprecated
     @OnThread(Tag.FXPlatform)
     public static void runAfterCurrent(FXPlatformRunnable r)
     {
-        // Defeat thread checker:
-        ((FXPlatformConsumer<Runnable>)(Platform::runLater)).accept(r::run);
+        bluej.utility.javafx.threading.JavaFXThreadingUtil.runAfterCurrent(r);
     }
 
     /**
-     * Runs the action on the FX platform thread (after the current action,
-     * if called on the platform thread).
-     *
-     * Be very careful using this: race hazards ahoy if you use it from an FX
-     * loading thread, expecting it to nicely take place after the current code.
-     * Instead, it could run alongside the currently executing code.
-     *
-     * @param r
+     * @deprecated Use {@link bluej.utility.javafx.threading.JavaFXThreadingUtil#unwrapCause} instead.
      */
-    @OnThread(Tag.FX)
-    public static void runPlatformLater(FXPlatformRunnable r)
+    @Deprecated
+    @OnThread(Tag.Any)
+    public static <E extends Throwable> @Nullable E unwrapCause(@NotNull Throwable throwable, @NotNull Class<E> type)
     {
-        Platform.runLater(r::run);
+        return bluej.utility.javafx.threading.JavaFXThreadingUtil.unwrapCause(throwable, type);
+    }
+
+    // ========================================================================
+    // Deprecated threading delegates — use JavaFXThreadingUtil directly
+    // ========================================================================
+
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformRunnableThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static @NotNull Future<Void> runPlatformLater(@NotNull FXPlatformRunnableThrowing task) {
+        return JavaFXThreadingUtil.runPlatformLater(task);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformSupplierThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> @NotNull Future<T> runPlatformLater(@NotNull FXPlatformSupplierThrowing<T> task) {
+        return JavaFXThreadingUtil.runPlatformLater(task);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformConsumerThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> @NotNull Future<Void> runPlatformLater(@NotNull FXPlatformConsumerThrowing<T> task, T arg) {
+        return JavaFXThreadingUtil.runPlatformLater(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformFunctionThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, R> @NotNull Future<R> runPlatformLater(@NotNull FXPlatformFunctionThrowing<T, R> task, T arg) {
+        return JavaFXThreadingUtil.runPlatformLater(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformBiConsumerThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U> @NotNull Future<Void> runPlatformLater(@NotNull FXPlatformBiConsumerThrowing<T, U> task, T arg1, U arg2) {
+        return JavaFXThreadingUtil.runPlatformLater(task, arg1, arg2);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformLater(FXPlatformBiFunctionThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U, R> @NotNull Future<R> runPlatformLater(@NotNull FXPlatformBiFunctionThrowing<T, U, R> task, T arg1, U arg2) {
+        return JavaFXThreadingUtil.runPlatformLater(task, arg1, arg2);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformRunnableThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static void runPlatformAndWait(@NotNull FXPlatformRunnableThrowing r) {
+        JavaFXThreadingUtil.runPlatformAndWait(r);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformSupplierThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> T runPlatformAndWait(@NotNull FXPlatformSupplierThrowing<T> task) {
+        return JavaFXThreadingUtil.runPlatformAndWait(task);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformConsumerThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> void runPlatformAndWait(@NotNull FXPlatformConsumerThrowing<T> task, T arg) {
+        JavaFXThreadingUtil.runPlatformAndWait(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformFunctionThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, R> R runPlatformAndWait(@NotNull FXPlatformFunctionThrowing<T, R> task, T arg) {
+        return JavaFXThreadingUtil.runPlatformAndWait(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformBiConsumerThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U> void runPlatformAndWait(@NotNull FXPlatformBiConsumerThrowing<T, U> task, T arg1, U arg2) {
+        JavaFXThreadingUtil.runPlatformAndWait(task, arg1, arg2);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatformAndWait(FXPlatformBiFunctionThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U, R> R runPlatformAndWait(@NotNull FXPlatformBiFunctionThrowing<T, U, R> task, T arg1, U arg2) {
+        return JavaFXThreadingUtil.runPlatformAndWait(task, arg1, arg2);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformRunnableThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static @NotNull Future<Void> runPlatform(@NotNull FXPlatformRunnableThrowing task) {
+        return JavaFXThreadingUtil.runPlatform(task);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformSupplierThrowing)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> @NotNull Future<T> runPlatform(@NotNull FXPlatformSupplierThrowing<T> task) {
+        return JavaFXThreadingUtil.runPlatform(task);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformConsumerThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T> @NotNull Future<Void> runPlatform(@NotNull FXPlatformConsumerThrowing<T> task, T arg) {
+        return JavaFXThreadingUtil.runPlatform(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformFunctionThrowing, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, R> @NotNull Future<R> runPlatform(@NotNull FXPlatformFunctionThrowing<T, R> task, T arg) {
+        return JavaFXThreadingUtil.runPlatform(task, arg);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformBiConsumerThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U> @NotNull Future<Void> runPlatform(@NotNull FXPlatformBiConsumerThrowing<T, U> task, T arg1, U arg2) {
+        return JavaFXThreadingUtil.runPlatform(task, arg1, arg2);
+    }
+    /** @deprecated Use {@link JavaFXThreadingUtil#runPlatform(FXPlatformBiFunctionThrowing, Object, Object)} */
+    @Deprecated @OnThread(Tag.Any)
+    public static <T, U, R> @NotNull Future<R> runPlatform(@NotNull FXPlatformBiFunctionThrowing<T, U, R> task, T arg1, U arg2) {
+        return JavaFXThreadingUtil.runPlatform(task, arg1, arg2);
     }
 
     /**
-     * Draw stripes over a rectangle - yet another thing missing from the AWT
      */
     public static void stripeRect(GraphicsContext g, int x, int y, int width, int height, int separation, int thickness, boolean backslash, Color color)
     {
